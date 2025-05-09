@@ -1,0 +1,4 @@
+<!-- res/drawable/edittext_no_underline.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@android:color/transparent"/>
+</shape>

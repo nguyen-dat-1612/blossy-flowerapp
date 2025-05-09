@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="green_primary">#F48FB1</color>
+    <color name="green_dark">#EC407A</color>
+    <color name="green_light">#72D7A1</color>
+    <color name="green_pale">#DAEFDE</color>
+    <color name="green_accent">#388E3C</color> <!-- Dark green for price, in-stock -->
+    <color name="pink_primary">#F48FB1</color>
+    <color name="pink_dark">#EC407A</color>
+    <color name="pink_light">#F8BBD0</color>
+    <color name="pink_pale">#FCE4EC</color>
+
+    <color name="grey_light">#F5F5F5</color> <!-- Light gray for backgrounds -->
+    <color name="grey_dark">#757575</color> <!-- Dark gray for secondary text -->
+
+    <color name="gray_light">#F2F4F5</color>
+    <color name="gray_extra_light">#FAFAFA</color>
+    <color name="gray_e9edef">#E9EDEF</color>
+
+    <color name="colorItemDefault">#FAFAFA</color> <!-- Màu khi không chọn -->
+    <color name="colorItemSelected">#72D7A1</color> <!-- Màu khi chọn -->
+
+    <color name="yellow_dark">#FFA000</color>  <!-- Amber 800 -->
+    <!-- Trong res/values/colors.xml -->
+    <color name="red_dark">#D32F2F</color>  <!-- Red 700 -->
+
+    <color name="yellow_accent">#FFB300</color> <!-- Yellow for ratings -->
+    <color name="orange_light">#FFCA28</color> <!-- Light orange for highlights -->
+
+
+
+
+    
+    <color name="beige_light">#FFF8E1</color> <!-- Card background -->
+
+    <color name="stock_low">#FF6F00</color>
+    <color name="stock_out">#D32F2F</color>
+</resources>

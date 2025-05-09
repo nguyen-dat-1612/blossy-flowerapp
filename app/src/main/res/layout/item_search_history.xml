@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="24dp"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="8dp">
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:padding="1dp"
+        android:src="@drawable/ic_time" />
+
+    <TextView
+        android:id="@+id/textHistory"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingStart="20dp"
+        android:text="History"
+        android:fontFamily="@font/merriweather_bold"
+        android:gravity="center_vertical"
+        />
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:padding="1dp"
+        android:src="@drawable/ic_right" />
+
+
+</LinearLayout>

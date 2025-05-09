@@ -1,0 +1,43 @@
+package com.blossy.flowerstore.presentation.notification.ui
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.blossy.flowerstore.R
+import com.blossy.flowerstore.databinding.FragmentNotificationBinding
+
+class NotificationFragment : Fragment() {
+
+    private lateinit var binding: FragmentNotificationBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentNotificationBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setOnClickListener()
+    }
+
+    private fun setOnClickListener() {
+        binding.btnBack.setOnClickListener {
+            val navController = requireActivity().findNavController(R.id.nav_host_main)
+            navController.navigate(R.id.action_notificationFragment_to_mainFragment)
+        }
+    }
+    companion object {
+
+    }
+}
