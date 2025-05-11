@@ -1,6 +1,7 @@
 package com.blossy.flowerstore.data.remote.api
 
 import com.blossy.flowerstore.data.remote.dto.AddressResponse
+import com.blossy.flowerstore.data.remote.dto.PushRequest
 import com.blossy.flowerstore.data.remote.dto.UserProfileResponse
 import com.blossy.flowerstore.data.remote.utils.BaseResponse
 import retrofit2.Response
@@ -34,4 +35,8 @@ interface UserApi {
 
     @PUT("users/address")
     suspend fun updateAddress(@Body address: AddressResponse):  Response<BaseResponse<List<AddressResponse>>>
+
+    @PUT("users/fcm")
+    suspend fun updateFcmToken(@Body pushRequest: PushRequest): Response<BaseResponse<Boolean>>
+
 }

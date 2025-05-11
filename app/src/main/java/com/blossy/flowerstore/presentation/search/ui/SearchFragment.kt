@@ -103,8 +103,8 @@ class SearchFragment : Fragment() {
     }
 
     private fun navigateBackToMain() {
-        val navController = requireActivity().findNavController(R.id.nav_host_main)
-        navController.navigate(R.id.action_searchFragment_to_mainFragment)
+        findNavController().navigate(R.id.action_searchFragment_to_mainFragment)
+        findNavController().popBackStack()
     }
 
     private fun setupRecyclerView() {

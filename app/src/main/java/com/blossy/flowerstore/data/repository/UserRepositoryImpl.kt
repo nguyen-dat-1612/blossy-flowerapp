@@ -9,6 +9,7 @@ import com.blossy.flowerstore.domain.model.User
 import com.blossy.flowerstore.domain.repository.UserRepository
 import com.blossy.flowerstore.domain.utils.Result
 import com.blossy.flowerstore.data.mapper.toAddress
+import com.blossy.flowerstore.data.remote.dto.PushRequest
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -122,6 +123,24 @@ class UserRepositoryImpl @Inject constructor(
                     Result.Error(body?.message ?: "An error occurred")
                     }
             } else {
+                Result.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "An error occurred")
+        }
+    }
+
+    override suspend fun updateFcmToken(token: String): Result<Boolean> {
+        return try {
+            val response = userApi.updateFcmToken(PushRequest(token))
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.success) {
+                    Result.Success(body.success)
+                } else {
+                    Result.Error(body?.message ?: "An error occurred")
+                }
+                } else {
                 Result.Error(response.message())
             }
         } catch (e: Exception) {

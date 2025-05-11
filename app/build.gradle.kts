@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -96,4 +97,14 @@ dependencies {
     implementation ("com.github.momo-wallet:mobile-sdk:1.0.7")
 
     implementation ("com.yazantarifi:slider:1.0.0")
+
+    //Swipe Refresh Layout
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+
+    // Firebase Push Notifications
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation ("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-analytics")
 }

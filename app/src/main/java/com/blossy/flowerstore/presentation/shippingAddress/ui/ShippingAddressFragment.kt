@@ -39,7 +39,7 @@ class ShippingAddressFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentShippingAddressBinding.inflate(inflater, container, false)
-
+        viewModel.getUserAddresses()
         val fromCheckout = args.fromCheckout
 
         addressAdapter = AddressAdapter(fromCheckout,
@@ -63,17 +63,17 @@ class ShippingAddressFragment : Fragment() {
         }
         binding.addressRecyclerView.adapter = addressAdapter
 
-        // Show/Hide Select Button based on source
+
         binding.selectAddressButton.visibility = if (fromCheckout) View.VISIBLE else View.GONE
         binding.selectAddressButton.isEnabled = false // Initially disabled until an address is selected
 
         binding.btnBack.setOnClickListener {
             if (fromCheckout) {
                 findNavController().navigate(R.id.action_shippingAddressFragment_to_checkOutFragment)
+                findNavController().popBackStack()
             } else {
-                val navController = requireActivity().findNavController(R.id.nav_host_main)
-                val bundle = bundleOf("selectedTab" to "account")
-                navController.navigate(R.id.action_shippingAddressFragment_to_mainFragment, bundle)
+                findNavController().navigate(R.id.action_shippingAddressFragment_to_mainFragment)
+                findNavController().popBackStack()
             }
         }
 
@@ -104,6 +104,7 @@ class ShippingAddressFragment : Fragment() {
         }
 
         observeData()
+
         return binding.root
     }
 
@@ -131,6 +132,6 @@ class ShippingAddressFragment : Fragment() {
         }
     }
     companion object {
-
+        const val TAG = "ShippingAddressFragment"
     }
 }

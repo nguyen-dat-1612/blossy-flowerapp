@@ -4,11 +4,9 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="green_primary">#F48FB1</color>
-    <color name="green_dark">#EC407A</color>
-    <color name="green_light">#72D7A1</color>
-    <color name="green_pale">#DAEFDE</color>
+    <color name="green_dark">#388E3C</color>
     <color name="green_accent">#388E3C</color> <!-- Dark green for price, in-stock -->
-    <color name="pink_primary">#F48FB1</color>
+    <color name="pink_primary">#FFC0CB</color>
     <color name="pink_dark">#EC407A</color>
     <color name="pink_light">#F8BBD0</color>
     <color name="pink_pale">#FCE4EC</color>
@@ -30,7 +28,13 @@
     <color name="yellow_accent">#FFB300</color> <!-- Yellow for ratings -->
     <color name="orange_light">#FFCA28</color> <!-- Light orange for highlights -->
 
-
+    <color name="background_light">#F5F7FA</color>
+    <color name="accent_primary">#FF6B6B</color>
+    <color name="accent_secondary">#4ECDC4</color>
+    <color name="text_primary">#2D3436</color>
+    <color name="text_secondary">#636E72</color>
+    <color name="gradient_start">#FF6B6B</color>
+    <color name="gradient_end">#4ECDC4</color>
 
 
     

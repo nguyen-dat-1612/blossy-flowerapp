@@ -3,6 +3,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string name="sign_up_text">Don’t have an account?<font color="#EC407A"><b>Sign Up for free</b></font></string>
-    <string name="sign_in_text">Already have an account?<font color="#EC407A"><b>Sign in</b></font></string>
+    <string name="sign_up_text">Don’t have an account?<font color="#FFC0CB"><b>Sign Up for free</b></font></string>
+    <string name="sign_in_text">Already have an account?<font color="#FFC0CB"><b>Sign in</b></font></string>
+
+    <string name="tab_pending">Pending</string>
+    <string name="tab_processing">Processing</string>
+    <string name="tab_shipped">Shipped</string>
+    <string name="tab_delivered">Delivered</string>
+    <string name="tab_cancelled">Cancelled</string>
 </resources>

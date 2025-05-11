@@ -3,7 +3,7 @@ package com.blossy.flowerstore.domain.model
 import com.google.gson.annotations.SerializedName
 
 data class Order (
-    val user: String,
+    val user: String?,
     val orderItems: List<OrderItem>,
     val shippingAddress: ShippingAddress,
     val paymentMethod: String,
@@ -11,6 +11,7 @@ data class Order (
     val totalPrice: Double,
     val isPaid: Boolean,
     val isDelivered: Boolean,
+    val paymentResult: PaymentResult?,
     val status: String,
     @SerializedName("_id")
     val id: String,

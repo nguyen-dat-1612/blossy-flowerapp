@@ -1,8 +1,10 @@
 package com.blossy.flowerstore.presentation.common
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -14,6 +16,9 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.ActivityMainBinding
+import com.blossy.flowerstore.presentation.shippingAddress.ui.AddEditAddressFragment.Companion.TAG
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,31 +34,28 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_main) as NavHostFragment
         navController = navHostFragment.navController
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            Log.d("NavDebug", "Navigated to: ${destination.label}")
 
-//        setupActionBarWithNavController(navController)
-//        handleDeepLinks(intent)
+            val fragments = supportFragmentManager
+                .findFragmentById(R.id.nav_host_main)
+                ?.childFragmentManager
+                ?.fragments
+
+            fragments?.forEach {
+                Log.d("NavDebug", "Current fragment in stack: ${it::class.java.simpleName}")
+            }
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission("android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf("android.permission.POST_NOTIFICATIONS"), 1)
+                Log.d(TAG, "onCreate: Requesting POST_NOTIFICATIONS permission")
+            }
+        }
+
+
     }
-
-
-//    private fun handleDeepLinks(intent: Intent) {
-//        intent.data?.let { uri ->
-//            when (uri.host) {
-//                "search" -> navController.navigate(
-//                    Uri.parse("app://main/search"),
-//                    NavOptions.Builder()
-//                        .setPopUpTo(R.id.mainFragment, false)
-//                        .build()
-//                )
-//                "checkOut" -> navController.navigate(
-//                    Uri.parse("app://main/checkOut"),
-//                    NavOptions.Builder()
-//                        .setPopUpTo(R.id.mainFragment, false)
-//                        .build()
-//                )
-//                // Xử lý các Deep Links khác
-//            }
-//        }
-//    }
 
 
     override fun onNewIntent(intent: Intent) {
@@ -82,8 +84,8 @@ class MainActivity : AppCompatActivity() {
                     "transactionId" to transactionId
                 )
 
-                navController.popBackStack(R.id.checkOutFragment, false)
-                navController.navigate(R.id.paymentResultFragment, args)
+//                navController.popBackStack(R.id.checkOutFragment, false)
+                navController.navigate(R.id.checkOutFragment, args)
             }
         }
     }

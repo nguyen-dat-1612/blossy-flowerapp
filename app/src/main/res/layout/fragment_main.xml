@@ -20,7 +20,7 @@
         android:layout_height="70dp"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_nav_menu"
-        android:background="@color/green_dark"
+        android:background="@color/black"
         app:labelVisibilityMode="labeled"
         android:paddingTop="6dp"
         android:paddingBottom="6dp"

@@ -10,7 +10,7 @@
     app:cardBackgroundColor="@color/pink_light"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp"
-    app:rippleColor="@color/green_light">
+    app:rippleColor="@color/pink_primary">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
             android:layout_gravity="center"
             app:cardCornerRadius="36dp"
             app:cardElevation="0dp"
-            app:strokeColor="@color/pink_dark"
+            app:strokeColor="@color/white"
             app:strokeWidth="1dp">
 
             <com.google.android.material.imageview.ShapeableImageView

@@ -3,7 +3,7 @@ package com.blossy.flowerstore.presentation.checkout.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.blossy.flowerstore.databinding.ItemOrderBinding
+import com.blossy.flowerstore.databinding.ItemProductPaymentBinding
 import com.blossy.flowerstore.domain.model.CartItem
 import com.bumptech.glide.Glide
 
@@ -11,13 +11,14 @@ class OrderItemAdapter (
     private var cartItems: MutableList<CartItem>,
 ) : RecyclerView.Adapter<OrderItemAdapter.ViewHolder>() {
 
-    inner class ViewHolder (private val binding: ItemOrderBinding) : RecyclerView.ViewHolder(binding.root){
+    inner class ViewHolder (private val binding: ItemProductPaymentBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(cartItem: CartItem) {
             binding.apply {
                 Glide.with(binding.imageProduct.context)
                     .load(cartItem.product.images[0])
                     .into(binding.imageProduct)
                 nameProduct.text = cartItem.product.name
+                descriptionProduct.text = cartItem.product.description
                 quantityProduct.text = "x" +"${cartItem.quantity}"
                 priceProduct.text = cartItem.product.price.toString()
 
@@ -26,7 +27,7 @@ class OrderItemAdapter (
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemOrderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemProductPaymentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 

@@ -4,6 +4,9 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
-
+    <style name="CustomSwitchStyle" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:scaleX">1.2</item> <!-- Phóng to -->
+        <item name="android:scaleY">1.2</item>
+    </style>
     <style name="Theme.Blossy" parent="Base.Theme.Blossy" />
 </resources>

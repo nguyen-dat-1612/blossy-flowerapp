@@ -1,5 +1,8 @@
 package com.blossy.flowerstore.presentation.home.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -25,6 +29,10 @@ import com.blossy.flowerstore.R
 import com.blossy.flowerstore.presentation.common.MainFragmentDirections
 import com.blossy.flowerstore.presentation.home.adapter.BannerAdapter
 import com.bumptech.glide.Glide
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import java.io.IOException
+import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -33,7 +41,8 @@ class HomeFragment : Fragment() {
     private lateinit var categoryAdapter: CategoryAdapter
     private lateinit var productAdapter: ProductAdapter
     private lateinit var homeViewModel: HomeViewModel;
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var scrollPosition = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
@@ -57,8 +66,56 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.scrollView.post {
+            binding.scrollView.scrollTo(0, scrollPosition)
+        }
         onClickListener()
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        getCurrentLocation()
+
     }
+    private fun getCurrentLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        val latitude = location.latitude
+                        val longitude = location.longitude
+
+                        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                        try {
+                            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                            if (!addresses.isNullOrEmpty()) {
+                                val address = addresses[0]
+                                val subcity = address.subAdminArea ?: "Không rõ huyện"
+                                val city = address.adminArea
+                                    ?: "Không rõ thành phố"
+                                Log.d("LocationDebug", "Full address: ${address}")
+                                val country = address.countryName ?: "Không rõ quốc gia"
+                                binding.locationText.text = "$subcity, $city, $country"
+                            } else {
+                                binding.locationText.text = "Không thể xác định địa chỉ từ vị trí"
+                            }
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            binding.locationText.text = "Lỗi khi lấy địa chỉ: ${e.message}"
+                        }
+
+                    } else {
+                        binding.locationText.text = "Không lấy được vị trí hiện tại"
+                    }
+                }
+                .addOnFailureListener {
+                    binding.locationText.text = "Lỗi khi lấy vị trí: ${it.message}"
+                }
+        } else {
+            binding.locationText.text = "Chưa được cấp quyền truy cập vị trí"
+        }
+    }
+
+
 
     private fun onClickListener() {
         binding.searchClickOverlay.setOnClickListener {
@@ -72,6 +129,16 @@ class HomeFragment : Fragment() {
             navController.navigate(R.id.action_mainFragment_to_notificationFragment)
 
         }
+
+        binding.seeAllPopular.setOnClickListener {
+            val navController = requireActivity().findNavController(R.id.nav_host_main)
+            navController.navigate(R.id.action_mainFragment_to_popularFragment)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        scrollPosition = binding.scrollView.scrollY
     }
 
     private fun autoScrollViewPager(viewPager: ViewPager2, itemCount: Int) {

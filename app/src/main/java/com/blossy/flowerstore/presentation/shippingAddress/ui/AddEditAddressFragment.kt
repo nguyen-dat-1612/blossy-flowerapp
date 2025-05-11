@@ -71,6 +71,7 @@ class AddEditAddressFragment : Fragment() {
     fun setOnClickListener() {
         binding.btnBack.setOnClickListener {
             findNavController().navigate(R.id.action_addEditAddressFragment_to_shippingAddressFragment)
+            findNavController().popBackStack()
         }
 
         binding.saveButton.setOnClickListener {
@@ -105,10 +106,8 @@ class AddEditAddressFragment : Fragment() {
                     Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
                 }
                 is UiState.Success -> {
-                    Toast.makeText(context, "Thêm địa chỉ thành công", Toast.LENGTH_SHORT).show()
-                    val action = AddEditAddressFragmentDirections
-                        .actionAddEditAddressFragmentToShippingAddressFragment(state.data.toTypedArray())
-                    findNavController().navigate(action)
+                    findNavController().navigate(R.id.action_addEditAddressFragment_to_shippingAddressFragment)
+                    findNavController().popBackStack()
                 }
                 is UiState.Error -> {
                     Log.d(TAG, "Error: ${state.message}")

@@ -33,8 +33,8 @@ class NotificationFragment : Fragment() {
 
     private fun setOnClickListener() {
         binding.btnBack.setOnClickListener {
-            val navController = requireActivity().findNavController(R.id.nav_host_main)
-            navController.navigate(R.id.action_notificationFragment_to_mainFragment)
+            findNavController().navigate(R.id.action_notificationFragment_to_mainFragment)
+            findNavController().popBackStack()
         }
     }
     companion object {

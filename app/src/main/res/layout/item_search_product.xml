@@ -10,7 +10,7 @@
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
     app:cardBackgroundColor="@color/white"
-    app:rippleColor="@color/green_light">
+    app:rippleColor="@color/pink_primary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

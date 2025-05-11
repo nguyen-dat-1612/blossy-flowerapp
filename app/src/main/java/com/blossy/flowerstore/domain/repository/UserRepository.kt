@@ -22,4 +22,5 @@ interface UserRepository  {
 
     suspend fun deleteAddress(addressId: String): Result<List<Address>>
 
+    suspend fun updateFcmToken(token: String): Result<Boolean>
 }

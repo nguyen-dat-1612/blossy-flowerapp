@@ -55,7 +55,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
             android:text="Bouquet"
-            android:textColor="@color/pink_dark"
+            android:textColor="@color/pink_primary"
             android:textSize="12sp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -88,7 +88,7 @@
                 android:layout_marginStart="4dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="(123)"
-                android:textColor="@color/pink_dark"
+                android:textColor="@color/pink_primary"
                 android:textSize="12sp"
                 tools:ignore="HardcodedText" />
 

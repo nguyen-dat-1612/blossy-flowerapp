@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:text="View Price Details"
                 android:fontFamily="@font/poppins_regular"
-                android:textColor="@color/pink_dark"
+                android:textColor="@color/pink_primary"
                 android:textSize="14sp"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="18dp"
@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:text="Price details"
                     android:fontFamily="@font/poppins_bold"
-                    android:textColor="@color/green_dark"
+                    android:textColor="@color/pink_primary"
                     android:textSize="24sp"
                     android:layout_marginTop="8dp"
                     android:layout_marginStart="18dp"
@@ -132,7 +132,7 @@
                     app:layout_constraintTop_toBottomOf="@id/recyclerViewPriceDetail"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:dividerColor="@color/green_pale"/>
+                    app:dividerColor="@color/pink_primary"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -143,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:text="Subtotal"
                 android:fontFamily="@font/poppins_bold"
-                android:textColor="@color/green_dark"
+                android:textColor="@color/pink_primary"
                 android:textSize="16sp"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="18dp"
@@ -172,7 +172,7 @@
                 android:layout_marginTop="16sp"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/green_dark"
+                android:textColor="@color/pink_primary"
                 app:layout_constraintStart_toStartOf="@id/subtoalTitle"
                 app:layout_constraintTop_toBottomOf="@id/subtoalTitle"/>
 

@@ -35,7 +35,7 @@
             android:textSize="36sp"
             android:layout_marginTop="39dp"
             android:fontFamily="@font/poppins_bold"
-            android:textColor="@color/green_dark"
+            android:textColor="@color/pink_primary"
             android:layout_gravity="center_horizontal"
             app:layout_constraintTop_toBottomOf="@id/btnBack"
             app:layout_constraintStart_toStartOf="parent"

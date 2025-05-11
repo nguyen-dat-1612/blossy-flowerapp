@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light"
+    tools:context=".presentation.order.ui.DetailOrderFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Header Section -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="59dp"
+            android:padding="12dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_left"
+                app:tint="@color/pink_primary"
+                android:background="@drawable/bg_circle_button"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:contentDescription="Back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/brandText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Detail Information"
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="20sp"
+                android:textColor="@color/text_primary"
+                app:layout_constraintTop_toTopOf="@id/btnBack"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/btnBack"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Scrollable Content -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp">
+
+                <!-- Shipping Information -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/shippingCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/shippingTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Shipping Address"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/locationIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_location"
+                            app:tint="@color/text_secondary"
+                            android:layout_marginTop="12dp"
+                            app:layout_constraintTop_toBottomOf="@id/shippingTitle"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/recipientName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Nguyen Thanh Dat (+84) 377 398 266"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintTop_toTopOf="@id/locationIcon"
+                            app:layout_constraintStart_toEndOf="@id/locationIcon"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <TextView
+                            android:id="@+id/address"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="112 Hiep Binh, Hiep Binh Chanh Ward, Thu Duc, Ho Chi Minh City"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintTop_toBottomOf="@id/recipientName"
+                            app:layout_constraintStart_toStartOf="@id/recipientName"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Order Items -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/orderItemsCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:layout_constraintTop_toBottomOf="@id/shippingCard"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/shopName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Product Detail"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/orderItemsRecyclerView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:overScrollMode="never"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            app:layout_constraintTop_toBottomOf="@id/shopName"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            tools:listitem="@layout/item_order" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Order Total -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/totalCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:layout_constraintTop_toBottomOf="@id/orderItemsCard"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/totalTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Subtotal"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/subtotal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="179,000 VND"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            app:layout_constraintTop_toTopOf="@id/totalTitle"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <TextView
+                            android:id="@+id/shippingFeeLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Shipping Fee"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintTop_toBottomOf="@id/totalTitle"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/shippingFee"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="12,800 VND"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            app:layout_constraintTop_toTopOf="@id/shippingFeeLabel"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <View
+                            android:id="@+id/divider"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:background="@color/text_secondary"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginEnd="6dp"
+                            app:layout_constraintTop_toBottomOf="@id/shippingFeeLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <TextView
+                            android:id="@+id/totalPriceLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total:"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/pink_primary"
+                            android:layout_marginTop="12dp"
+                            app:layout_constraintTop_toBottomOf="@id/divider"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/totalPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="115,230 VND"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/pink_primary"
+                            app:layout_constraintTop_toTopOf="@id/totalPriceLabel"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Support Section -->
+<!--                <androidx.cardview.widget.CardView-->
+<!--                    android:id="@+id/supportCard"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="16dp"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:layout_marginTop="16dp"-->
+<!--                    app:cardCornerRadius="8dp"-->
+<!--                    app:cardElevation="2dp"-->
+<!--                    app:cardBackgroundColor="@color/white"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/totalCard"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="16dp">-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/supportTitle"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Need Support?"-->
+<!--                            android:fontFamily="@font/poppins_bold"-->
+<!--                            android:textSize="16sp"-->
+<!--                            android:textColor="@color/text_primary"-->
+<!--                            app:layout_constraintTop_toTopOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                            android:id="@+id/supportOption1"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="12dp"-->
+<!--                            app:layout_constraintTop_toBottomOf="@id/supportTitle"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--                            <ImageView-->
+<!--                                android:id="@+id/returnIcon"-->
+<!--                                android:layout_width="24dp"-->
+<!--                                android:layout_height="24dp"-->
+<!--                                android:src="@drawable/ic_return"-->
+<!--                                app:tint="@color/text_secondary"-->
+<!--                                app:layout_constraintTop_toTopOf="parent"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--                            <TextView-->
+<!--                                android:id="@+id/returnText"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="Submit Return/Refund Request"-->
+<!--                                android:fontFamily="@font/poppins_regular"-->
+<!--                                android:textSize="14sp"-->
+<!--                                android:textColor="@color/text_primary"-->
+<!--                                android:layout_marginStart="12dp"-->
+<!--                                app:layout_constraintTop_toTopOf="@id/returnIcon"-->
+<!--                                app:layout_constraintBottom_toBottomOf="@id/returnIcon"-->
+<!--                                app:layout_constraintStart_toEndOf="@id/returnIcon"-->
+<!--                                app:layout_constraintEnd_toStartOf="@id/returnArrow" />-->
+
+<!--                            <ImageView-->
+<!--                                android:id="@+id/returnArrow"-->
+<!--                                android:layout_width="24dp"-->
+<!--                                android:layout_height="24dp"-->
+<!--                                android:src="@drawable/ic_right_arrow"-->
+<!--                                app:tint="@color/text_secondary"-->
+<!--                                app:layout_constraintTop_toTopOf="parent"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                            android:id="@+id/supportOption2"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="12dp"-->
+<!--                            app:layout_constraintTop_toBottomOf="@id/supportOption1"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--                            <ImageView-->
+<!--                                android:id="@+id/contactIcon"-->
+<!--                                android:layout_width="24dp"-->
+<!--                                android:layout_height="24dp"-->
+<!--                                android:src="@drawable/ic_chat"-->
+<!--                                app:tint="@color/text_secondary"-->
+<!--                                app:layout_constraintTop_toTopOf="parent"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--                            <TextView-->
+<!--                                android:id="@+id/contactText"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="Contact Shop"-->
+<!--                                android:fontFamily="@font/poppins_regular"-->
+<!--                                android:textSize="14sp"-->
+<!--                                android:textColor="@color/text_primary"-->
+<!--                                android:layout_marginStart="12dp"-->
+<!--                                app:layout_constraintTop_toTopOf="@id/contactIcon"-->
+<!--                                app:layout_constraintBottom_toBottomOf="@id/contactIcon"-->
+<!--                                app:layout_constraintStart_toEndOf="@id/contactIcon"-->
+<!--                                app:layout_constraintEnd_toStartOf="@id/contactArrow" />-->
+
+<!--                            <ImageView-->
+<!--                                android:id="@+id/contactArrow"-->
+<!--                                android:layout_width="24dp"-->
+<!--                                android:layout_height="24dp"-->
+<!--                                android:src="@drawable/ic_right_arrow"-->
+<!--                                app:tint="@color/text_secondary"-->
+<!--                                app:layout_constraintTop_toTopOf="parent"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                            android:id="@+id/supportOption3"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="12dp"-->
+<!--                            app:layout_constraintTop_toBottomOf="@id/supportOption2"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--                            <ImageView-->
+<!--                                android:id="@+id/helpIcon"-->
+<!--                                android:layout_width="24dp"-->
+<!--                                android:layout_height="24dp"-->
+<!--                                android:src="@drawable/ic_help"-->
+<!--                                app:tint="@color/text_secondary"-->
+<!--                                app:layout_constraintTop_toTopOf="parent"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--                            <TextView-->
+<!--                                android:id="@+id/helpText"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="Support Center"-->
+<!--                                android:fontFamily="@font/poppins_regular"-->
+<!--                                android:textSize="14sp"-->
+<!--                                android:textColor="@color/text_primary"-->
+<!--                                android:layout_marginStart="12dp"-->
+<!--                                app:layout_constraintTop_toTopOf="@id/helpIcon"-->
+<!--                                app:layout_constraintBottom_toBottomOf="@id/helpIcon"-->
+<!--                                app:layout_constraintStart_toEndOf="@id/helpIcon"-->
+<!--                                app:layout_constraintEnd_toStartOf="@id/helpArrow" />-->
+
+<!--                            <ImageView-->
+<!--                                android:id="@+id/helpArrow"-->
+<!--                                android:layout_width="24dp"-->
+<!--                                android:layout_height="24dp"-->
+<!--                                android:src="@drawable/ic_right_arrow"-->
+<!--                                app:tint="@color/text_secondary"-->
+<!--                                app:layout_constraintTop_toTopOf="parent"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+<!--                </androidx.cardview.widget.CardView>-->
+
+                <!-- Order Details -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/orderDetailsCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:layout_constraintTop_toBottomOf="@id/totalCard"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <!-- Order ID -->
+                        <TextView
+                            android:id="@+id/orderIdLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Order ID"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/orderId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="25050663267BG0"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginEnd="20dp"
+                            app:layout_constraintTop_toTopOf="@id/orderIdLabel"
+                            app:layout_constraintEnd_toStartOf="@id/copyButton" />
+
+                        <TextView
+                            android:id="@+id/copyButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Copy"
+                            android:background="@android:color/transparent"
+                            android:textColor="@color/pink_primary"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="12sp"
+                            app:layout_constraintTop_toTopOf="@id/orderIdLabel"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <!-- Payment Method -->
+                        <TextView
+                            android:id="@+id/paymentMethodLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Payment Method:"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="12dp"
+                            app:layout_constraintTop_toBottomOf="@id/orderId"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/paymentMethod"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="COD"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintTop_toTopOf="@id/paymentMethodLabel"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <!-- Order Time -->
+                        <TextView
+                            android:id="@+id/orderTimeLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Order Time:"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintTop_toBottomOf="@id/paymentMethod"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/orderTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2025-05-11 13:00"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintTop_toTopOf="@id/orderTimeLabel"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <!-- Payment Time -->
+                        <TextView
+                            android:id="@+id/paymentTimeLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Payment Time:"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintTop_toBottomOf="@id/orderTime"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/paymentTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2025-05-11 14:30"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintTop_toTopOf="@id/paymentTimeLabel"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <!-- Shipping Time -->
+                        <TextView
+                            android:id="@+id/shippingTimeLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Shipping Time:"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintTop_toBottomOf="@id/paymentTime"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/shippingTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2025-05-12 09:00"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintTop_toTopOf="@id/shippingTimeLabel"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <!-- Completion Time -->
+                        <TextView
+                            android:id="@+id/completionTimeLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Completion Time:"
+                            android:fontFamily="@font/poppins_bold"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintTop_toBottomOf="@id/shippingTime"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/completionTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2025-05-14 17:45"
+                            android:fontFamily="@font/poppins_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintTop_toTopOf="@id/completionTimeLabel"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+
+
+                <!-- Action Buttons -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/actionButtons"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/orderDetailsCard"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <Button
+                        android:id="@+id/returnButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Refund"
+                        android:background="@drawable/bg_button_primary"
+                        android:textColor="@color/accent_primary"
+                        android:fontFamily="@font/poppins_bold"
+                        android:textSize="18sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/reviewButton"
+                        app:layout_constraintWidth_percent="0.48" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/reviewButton"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:text="Review"
+                        android:background="@drawable/bg_button_primary"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
+                        android:textSize="18sp"
+                        android:textAllCaps="false"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/returnButton"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintWidth_percent="0.48" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

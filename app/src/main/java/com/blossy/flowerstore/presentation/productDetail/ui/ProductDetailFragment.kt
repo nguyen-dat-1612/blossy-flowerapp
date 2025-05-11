@@ -176,13 +176,15 @@ class ProductDetailFragment : Fragment() {
     private fun onClickListener() {
         binding.btnBack.setOnClickListener {
             val navController = requireActivity().findNavController(R.id.nav_host_main)
-            val bundle = bundleOf("selectedTab" to selectedTab)
             if (selectedTab == "home") {
-                navController.navigate(R.id.action_productDetailFragment_to_mainFragment)
+                findNavController().navigate(R.id.action_productDetailFragment_to_mainFragment)
+                findNavController().popBackStack()
             } else if (selectedTab == "search") {
-                navController.navigate(R.id.action_productDetailFragment_to_searchFragment, bundle)
+                findNavController().navigate(R.id.action_productDetailFragment_to_searchFragment)
+                findNavController().popBackStack()
             } else if (selectedTab == "cartProduct") {
-                navController.navigate(R.id.action_productDetailFragment_to_categoryProductFragment, bundle)
+                findNavController().navigate(R.id.action_productDetailFragment_to_categoryProductFragment)
+                findNavController().popBackStack()
             }
         }
         binding.addToCartBtn.setOnClickListener {

@@ -26,7 +26,7 @@
             android:layout_height="44dp"
             android:src="@drawable/ic_left"
             android:background="@drawable/bg_circle_button"
-            app:tint="@color/pink_dark"
+            app:tint="@color/pink_primary"
             android:padding="12dp"
             android:scaleType="centerInside"
             app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +73,7 @@
                 android:text="Recipient name"
                 android:fontFamily="@font/poppins_regular"
                 android:textSize="14sp"
-                android:textColor="@color/green_dark" />
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/nameInput"
@@ -94,7 +94,7 @@
                 android:text="Phone number"
                 android:fontFamily="@font/poppins_regular"
                 android:textSize="14sp"
-                android:textColor="@color/green_dark"
+                android:textColor="@color/black"
                 android:layout_marginTop="16dp" />
 
             <EditText
@@ -117,19 +117,20 @@
                 android:text="Address"
                 android:fontFamily="@font/poppins_regular"
                 android:textSize="14sp"
-                android:textColor="@color/green_dark"
+                android:textColor="@color/black"
                 android:layout_marginTop="16dp" />
 
             <EditText
                 android:id="@+id/addressInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rounded_edittext_background"
-                android:padding="12dp"
+                android:layout_height="80dp"
+                android:background="@drawable/rounded_background"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:fontFamily="@font/poppins_regular"
                 android:textSize="16sp"
                 android:minHeight="48dp"
-                android:minLines="1"
+                android:minLines="2"
                 android:maxLines="2"
                 android:textColor="@color/black"
                 android:layout_marginTop="4dp" />

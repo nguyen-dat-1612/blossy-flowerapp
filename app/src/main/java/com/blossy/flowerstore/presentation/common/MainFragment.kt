@@ -35,15 +35,15 @@ class MainFragment : Fragment() {
         // Kết nối BottomNav với NavController
         binding.bottomNavigation.setupWithNavController(navController)
 
-        // 3. Xử lý selected tab từ arguments (nếu có)
-        args.selectedTab?.let { tab ->
-            when (tab) {
-                "home" -> binding.bottomNavigation.selectedItemId = R.id.homeFragment
-                "favorites" -> binding.bottomNavigation.selectedItemId = R.id.favoritesFragment
-                "cart" -> binding.bottomNavigation.selectedItemId = R.id.cartFragment
-                "account" -> binding.bottomNavigation.selectedItemId = R.id.accountFragment
-            }
-        }
+//        // 3. Xử lý selected tab từ arguments (nếu có)
+//        args.selectedTab?.let { tab ->
+//            when (tab) {
+//                "home" -> binding.bottomNavigation.selectedItemId = R.id.homeFragment
+//                "favorites" -> binding.bottomNavigation.selectedItemId = R.id.favoritesFragment
+//                "cart" -> binding.bottomNavigation.selectedItemId = R.id.cartFragment
+//                "account" -> binding.bottomNavigation.selectedItemId = R.id.accountFragment
+//            }
+//        }
 
         return binding.root
 

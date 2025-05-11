@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@drawable/rounded_background"
+    android:layout_width="match_parent"
+    android:backgroundTint="#F8F9FA"
+    android:layout_height="wrap_content"
+    android:elevation="8dp">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel Order"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#212121"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Description -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please enter the reason for canceling the order"
+        android:textSize="14sp"
+        android:textColor="#757575"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Reason Input -->
+    <EditText
+        android:id="@+id/reasonEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="120dp"
+        android:hint="Enter reason..."
+        android:inputType="textMultiLine"
+        android:background="@drawable/rounded_background"
+        android:padding="16dp"
+        android:gravity="top|start"
+        android:textSize="16sp"
+        android:textColor="#212121"
+        android:textColorHint="#B0B0B0"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Button Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:gravity="end">
+
+        <!-- Cancel Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Cancel"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_button_cancel"
+            android:paddingHorizontal="16dp"
+            android:layout_marginEnd="12dp" />
+
+        <!-- Confirm Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/confirmButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Confirm"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_button_confirm"
+            android:paddingHorizontal="16dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -66,7 +66,7 @@
         android:text="Default"
         android:textSize="12sp"
         android:fontFamily="@font/poppins_regular"
-        android:textColor="@color/green_dark"
+        android:textColor="@color/white"
         android:background="@drawable/default_indicator_background"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"

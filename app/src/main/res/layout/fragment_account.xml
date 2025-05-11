@@ -379,7 +379,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -390,13 +391,13 @@
                     android:fontFamily="@font/poppins_regular"
                     android:textColor="@color/black" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/pushNotificationsSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    app:thumbTint="@color/white"
-                    app:trackTint="@color/green_dark" />
+                    android:checked="false"
+                    app:trackTint="@color/switch_track_tint"
+                    app:thumbTint="@android:color/white" />
 
             </LinearLayout>
 
@@ -406,7 +407,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -417,14 +419,13 @@
                     android:fontFamily="@font/poppins_regular"
                     android:textColor="@color/black" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/locationServicesSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    app:thumbTint="@color/white"
-                    app:trackTint="@color/green_dark"
-                    />
+                    android:checked="false"
+                    app:trackTint="@color/switch_track_tint"
+                    app:thumbTint="@android:color/white" />
 
             </LinearLayout>
 
@@ -434,7 +435,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -445,14 +447,15 @@
                     android:fontFamily="@font/poppins_regular"
                     android:textColor="@color/black" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/darkModeSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    app:thumbTint="@color/white"
-                    app:trackTint="@color/green_dark"
-                     />
+                    app:trackTint="@color/switch_track_tint"
+                    app:thumbTint="@android:color/white"
+                    android:track="@drawable/custom_track"
+                    />
 
             </LinearLayout>
 

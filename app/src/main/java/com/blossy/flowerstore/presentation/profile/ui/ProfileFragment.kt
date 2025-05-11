@@ -48,10 +48,8 @@ class ProfileFragment : Fragment() {
 
     private fun setOnClickListener() {
         binding.btnBack.setOnClickListener {
-            val navController = requireActivity().findNavController(R.id.nav_host_main)
-            // Truyền tham số chỉ định tab cần mở (ví dụ: "profile")
-            val bundle = bundleOf("selectedTab" to "account")
-            navController.navigate(R.id.action_profileFragment_to_mainFragment, bundle)
+            findNavController().navigate(R.id.action_profileFragment_to_mainFragment)
+            findNavController().popBackStack()
         }
         binding.editBtn.setOnClickListener {
             binding.apply {

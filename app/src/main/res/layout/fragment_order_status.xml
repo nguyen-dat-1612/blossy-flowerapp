@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/orderRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:listitem="@layout/item_order_history" />
+
+    <TextView
+        android:id="@+id/emptyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Không có đơn hàng"
+        android:textSize="16sp"
+        android:textColor="@color/grey_dark"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/orderRecyclerView"
+        app:layout_constraintBottom_toBottomOf="@id/orderRecyclerView"
+        app:layout_constraintStart_toStartOf="@id/orderRecyclerView"
+        app:layout_constraintEnd_toEndOf="@id/orderRecyclerView" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/orderRecyclerView"
+        app:layout_constraintBottom_toBottomOf="@id/orderRecyclerView"
+        app:layout_constraintStart_toStartOf="@id/orderRecyclerView"
+        app:layout_constraintEnd_toEndOf="@id/orderRecyclerView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

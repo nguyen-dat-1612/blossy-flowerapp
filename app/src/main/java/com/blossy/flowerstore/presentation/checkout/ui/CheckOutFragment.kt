@@ -185,8 +185,8 @@ class CheckOutFragment : Fragment() {
 
             val shipping = ShippingAddress(
                 name = binding.recipientName.text.toString(),
-                address = binding.recipientAddress.text.toString(),
                 phone = binding.recipientPhone.text.toString(),
+                address = binding.recipientAddress.text.toString(),
                 city = "Hồ Chí Minh",
                 postalCode = "100000",
                 country = "Việt Nam"
@@ -202,9 +202,8 @@ class CheckOutFragment : Fragment() {
         }
 
         binding.btnBack.setOnClickListener {
-            val navController = requireActivity().findNavController(R.id.nav_host_main)
-            val bundle = bundleOf("selectedTab" to "cart")
-            navController.navigate(R.id.action_checkOutFragment_to_mainFragment, bundle)
+            findNavController().navigate(R.id.action_checkOutFragment_to_mainFragment)
+            findNavController().popBackStack()
         }
 
         binding.editAddressBtn.setOnClickListener {

@@ -74,6 +74,20 @@
                 />
 
         </action>
+        <action
+            android:id="@+id/action_mainFragment_to_orderHistoryFragment"
+            app:destination="@id/orderHistoryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"/>
+        <action
+            android:id="@+id/action_mainFragment_to_popularFragment"
+            app:destination="@id/popularFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"/>
 
     </fragment>
 
@@ -99,10 +113,10 @@
         <action
             android:id="@+id/action_searchFragment_to_mainFragment"
             app:destination="@id/mainFragment"
-            app:popUpTo="@id/nav_graph_main"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/productDetailFragment"
@@ -119,29 +133,30 @@
         <action
             android:id="@+id/action_productDetailFragment_to_mainFragment"
             app:destination="@id/mainFragment"
-            app:popUpTo="@id/nav_graph_main"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_productDetailFragment_to_searchFragment"
             app:destination="@id/searchFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_productDetailFragment_to_categoryProductFragment"
             app:destination="@id/categoryProductFragment"
             app:popUpTo="@id/categoryProductFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/checkOutFragment"
         android:name="com.blossy.flowerstore.presentation.checkout.ui.CheckOutFragment"
         android:label="fragment_check_out"
         tools:layout="@layout/fragment_check_out" >
+
         <argument
             android:name="selectedName"
             app:argType="string" />
@@ -155,10 +170,10 @@
         <action
             android:id="@+id/action_checkOutFragment_to_mainFragment"
             app:destination="@id/mainFragment"
-            app:popUpTo="@id/nav_graph_main"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_checkOutFragment_to_shippingAddressFragment"
             app:destination="@id/shippingAddressFragment"
@@ -183,10 +198,10 @@
         <action
             android:id="@+id/action_profileFragment_to_mainFragment"
             app:destination="@id/mainFragment"
-            app:popUpTo="@id/nav_graph_main"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/notificationFragment"
@@ -197,10 +212,10 @@
         <action
             android:id="@+id/action_notificationFragment_to_mainFragment"
             app:destination="@id/mainFragment"
-            app:popUpTo="@id/nav_graph_main"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/shippingAddressFragment"
@@ -217,19 +232,13 @@
             android:name="action"
             app:argType="string"
             android:defaultValue="" />
-
-        <argument
-            android:name="addressList"
-            app:argType="com.blossy.flowerstore.domain.model.Address[]"
-            app:nullable="true"
-            android:defaultValue="@null" />
         <action
             android:id="@+id/action_shippingAddressFragment_to_checkOutFragment"
             app:destination="@id/checkOutFragment"
             app:popUpTo="@id/checkOutFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right">
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
             <argument
                 android:name="selectedName"
                 app:argType="string" />
@@ -243,10 +252,10 @@
         <action
             android:id="@+id/action_shippingAddressFragment_to_mainFragment"
             app:destination="@id/mainFragment"
-            app:popUpTo="@id/nav_graph_main"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_shippingAddressFragment_to_addEditAddressFragment"
             app:destination="@id/addEditAddressFragment"
@@ -276,15 +285,9 @@
             android:id="@+id/action_addEditAddressFragment_to_shippingAddressFragment"
             app:destination="@id/shippingAddressFragment"
             app:popUpTo="@id/shippingAddressFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right">
-
-            <argument
-                android:name="addressList"
-                app:argType="com.blossy.flowerstore.domain.model.Address[]"
-                app:nullable="true"
-                android:defaultValue="@null" />
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
         </action>
     </fragment>
     <fragment
@@ -300,10 +303,10 @@
         <action
             android:id="@+id/action_categoryProductFragment_to_mainFragment"
             app:destination="@id/mainFragment"
-            app:popUpTo="@id/nav_graph_main"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"/>
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_categoryProductFragment_to_productDetailFragment"
             app:destination="@id/productDetailFragment"
@@ -316,5 +319,60 @@
                 app:argType="string" />
 
         </action>
+    </fragment>
+    <fragment
+        android:id="@+id/orderHistoryFragment"
+        android:name="com.blossy.flowerstore.presentation.order.ui.OrderHistoryFragment"
+        android:label="fragment_order_history"
+        tools:layout="@layout/fragment_order_history" >
+        <action
+            android:id="@+id/action_orderHistoryFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_orderHistoryFragment_to_detailOrderFragment"
+            app:destination="@id/detailOrderFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" >
+            <argument
+                android:name="orderId"
+                app:argType="string" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/detailOrderFragment"
+        android:name="com.blossy.flowerstore.presentation.order.ui.DetailOrderFragment"
+        android:label="fragment_detail_order"
+        tools:layout="@layout/fragment_detail_order" >
+
+        <argument
+            android:name="orderId"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_detailOrderFragment_to_orderHistoryFragment"
+            app:destination="@id/orderHistoryFragment"
+            app:popUpTo="@id/orderHistoryFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/popularFragment"
+        android:name="com.blossy.flowerstore.presentation.topProducts.ui.PopularFragment"
+        android:label="fragment_popular"
+        tools:layout="@layout/fragment_popular" >
+        <action
+            android:id="@+id/action_popularFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 </navigation>
