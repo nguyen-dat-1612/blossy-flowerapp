@@ -14,12 +14,12 @@ class OrderItemsAdapter(
     class ViewHolder(private val binding: ItemOrderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(orderItem: OrderItem) {
             binding.apply {
-                Glide.with(productImage.context)
+                Glide.with(imageView.context)
                     .load(orderItem.image)
-                    .into(productImage)
-                productName.text = orderItem.name
-                quantity.text = orderItem.quantity.toString()
-                price.text = orderItem.price.toString()
+                    .into(imageView)
+                nameText.text = orderItem.name
+                quantityText.text = orderItem.quantity.toString()
+                priceText.text = orderItem.price.toString()
             }
         }
     }

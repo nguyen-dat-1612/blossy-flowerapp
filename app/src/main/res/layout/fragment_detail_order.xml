@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="@color/white"
     tools:context=".presentation.order.ui.DetailOrderFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,7 +29,6 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_left"
-                app:tint="@color/pink_primary"
                 android:background="@drawable/bg_circle_button"
                 android:padding="12dp"
                 android:scaleType="centerInside"
@@ -74,6 +73,7 @@
                     android:id="@+id/shippingCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     app:cardCornerRadius="8dp"
@@ -162,7 +162,7 @@
                             android:id="@+id/shopName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Product Detail"
+                            android:text="Order Detail"
                             android:fontFamily="@font/poppins_bold"
                             android:textSize="16sp"
                             android:textColor="@color/black"
@@ -268,7 +268,7 @@
                             android:text="Total:"
                             android:fontFamily="@font/poppins_bold"
                             android:textSize="16sp"
-                            android:textColor="@color/pink_primary"
+                            android:textColor="@color/primary"
                             android:layout_marginTop="12dp"
                             app:layout_constraintTop_toBottomOf="@id/divider"
                             app:layout_constraintStart_toStartOf="parent" />
@@ -280,7 +280,7 @@
                             android:text="115,230 VND"
                             android:fontFamily="@font/poppins_bold"
                             android:textSize="16sp"
-                            android:textColor="@color/pink_primary"
+                            android:textColor="@color/primary"
                             app:layout_constraintTop_toTopOf="@id/totalPriceLabel"
                             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -495,22 +495,28 @@
                             android:text="25050663267BG0"
                             android:fontFamily="@font/poppins_regular"
                             android:textSize="14sp"
+                            android:layout_marginTop="6dp"
                             android:textColor="@color/text_primary"
                             android:layout_marginEnd="20dp"
-                            app:layout_constraintTop_toTopOf="@id/orderIdLabel"
-                            app:layout_constraintEnd_toStartOf="@id/copyButton" />
+                            app:layout_constraintStart_toStartOf="@id/orderIdLabel"
+                            app:layout_constraintTop_toBottomOf="@id/orderIdLabel"/>
 
                         <TextView
                             android:id="@+id/copyButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Copy"
-                            android:background="@android:color/transparent"
-                            android:textColor="@color/pink_primary"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:background="@drawable/rounded_background"
+                            android:textColor="@color/primary"
                             android:fontFamily="@font/poppins_regular"
                             android:textSize="12sp"
                             app:layout_constraintTop_toTopOf="@id/orderIdLabel"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="@id/orderIdLabel"/>
 
                         <!-- Payment Method -->
                         <TextView
@@ -646,7 +652,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/actionButtons"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="16dp"
@@ -655,15 +661,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/returnButton"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="48dp"
                         android:text="Refund"
                         android:background="@drawable/bg_button_primary"
-                        android:textColor="@color/accent_primary"
+                        android:backgroundTint="@color/red_dark"
+                        android:textColor="@color/white"
                         android:fontFamily="@font/poppins_bold"
                         android:textSize="18sp"
+                        android:textAllCaps="false"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/reviewButton"

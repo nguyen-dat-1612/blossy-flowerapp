@@ -132,8 +132,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_bold"
-                android:text="$150.00"
-                android:textColor="@color/green_accent"
+                android:text="150.000 VND"
+                android:textColor="@color/primary"
                 android:textSize="14sp"
                 tools:ignore="HardcodedText" />
 

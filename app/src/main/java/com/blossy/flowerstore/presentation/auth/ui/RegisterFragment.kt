@@ -68,7 +68,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 password = binding.passwordText.text.toString()
             )
         }
-        binding.btnBack.setOnClickListener {
+        binding.signInText.setOnClickListener {
             findNavController().popBackStack()
         }
 

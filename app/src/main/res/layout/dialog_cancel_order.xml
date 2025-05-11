@@ -59,7 +59,9 @@
             android:text="Cancel"
             android:textSize="16sp"
             android:textAllCaps="false"
-            android:background="@drawable/bg_button_cancel"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button_primary"
+            android:backgroundTint="@color/red_dark"
             android:paddingHorizontal="16dp"
             android:layout_marginEnd="12dp" />
 
@@ -71,7 +73,8 @@
             android:text="Confirm"
             android:textSize="16sp"
             android:textAllCaps="false"
-            android:background="@drawable/bg_button_confirm"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button_primary"
             android:paddingHorizontal="16dp" />
 
     </LinearLayout>

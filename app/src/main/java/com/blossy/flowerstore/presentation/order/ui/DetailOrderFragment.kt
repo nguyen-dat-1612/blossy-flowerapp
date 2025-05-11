@@ -63,6 +63,7 @@ class DetailOrderFragment : Fragment() {
                         recipientName.text = order.shippingAddress.name + " (+84) " + order.shippingAddress.phone
                         address.text = order.shippingAddress.address
                         subtotal.text = order.totalPrice.toString()
+                        orderId.text = order.id
                         shippingFee.text = order.shippingPrice.toString()
                         totalPrice.text = order.totalPrice.toString()
                         orderItemsRecyclerView.adapter = OrderItemsAdapter(order.orderItems)

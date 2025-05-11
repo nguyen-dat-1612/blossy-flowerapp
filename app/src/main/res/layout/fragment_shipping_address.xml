@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#F8F9FA"
+    android:background="@color/white"
     tools:context=".presentation.shippingAddress.ui.ShippingAddressFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,7 +43,7 @@
                 android:layout_height="44dp"
                 android:src="@drawable/ic_left"
                 android:background="@drawable/bg_circle_button"
-                app:tint="@color/pink_dark"
+                app:tint="@color/primary"
                 android:padding="12dp"
                 android:scaleType="centerInside"
                 app:layout_constraintStart_toStartOf="parent"
@@ -73,10 +73,11 @@
             android:id="@+id/addAddressBtn"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/bg_edittext_primary"
+
             style="@style/Widget.AppCompat.Button"
-            android:text="+ Add Address"
-            android:fontFamily="@font/poppins_regular"
+            android:text="Add New Address"
+            android:fontFamily="@font/poppins_bold"
             android:textSize="16sp"
             android:textAllCaps="false"
             android:textColor="@color/black"

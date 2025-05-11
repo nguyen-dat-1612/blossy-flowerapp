@@ -1,55 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
-    android:layout_marginBottom="8dp">
+    android:layout_height="120dp"
+    android:layout_marginVertical="8dp"
+    android:background="@drawable/bg_item_cart"
+    android:padding="10dp">
 
     <ImageView
-        android:id="@+id/productImage"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:scaleType="centerCrop"
+        android:id="@+id/imageView"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:scaleType="center"
+        android:clipToOutline="true"
+        android:outlineProvider="background"
+        android:background="@drawable/item_product_background"
+        tool:srcCompat="@tools:sample/avatars"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
-        android:id="@+id/productName"
-        android:layout_width="0dp"
+        android:id="@+id/nameText"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="Product Name"
+        android:text="101 red roses"
+        android:textSize="16sp"
         android:textColor="@color/black"
         android:fontFamily="@font/poppins_regular"
-        app:layout_constraintTop_toTopOf="@id/productImage"
-        app:layout_constraintStart_toEndOf="@id/productImage"
-        app:layout_constraintEnd_toStartOf="@id/quantity"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp" />
+        android:minLines="1"
+        android:maxLines="2"
+        android:layout_marginStart="12dp"
+        app:layout_constraintStart_toEndOf="@id/imageView"
+        app:layout_constraintTop_toTopOf="@id/imageView"/>
 
+    <!-- Price -->
     <TextView
-        android:id="@+id/quantity"
+        android:id="@+id/priceText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="x8"
-        android:fontFamily="@font/poppins_regular"
-        android:textColor="@color/grey_dark"
-        app:layout_constraintTop_toTopOf="@id/productName"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="300000"
-        android:fontFamily="@font/poppins_regular"
+        android:text="100.000 VND"
+        android:textSize="16sp"
+        android:fontFamily="@font/poppins_bold"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@id/productImage"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toStartOf="@id/nameText"
+        app:layout_constraintBottom_toBottomOf="@id/imageView"/>
+
+    <ImageView
+        android:id="@+id/deleteButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_trash"
+        app:tint="@color/red_dark"
+        app:layout_constraintTop_toTopOf="@id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/quantityText"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:text="1"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:background="@drawable/bg_button_quantity"
+        android:fontFamily="@font/poppins_regular"
+        app:layout_constraintBottom_toBottomOf="@id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

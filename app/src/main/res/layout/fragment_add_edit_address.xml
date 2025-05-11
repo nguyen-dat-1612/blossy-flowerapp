@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA"
+    android:background="@color/white"
     tools:context=".presentation.shippingAddress.ui.AddEditAddressFragment">
 
     <!-- Header -->
@@ -26,7 +26,7 @@
             android:layout_height="44dp"
             android:src="@drawable/ic_left"
             android:background="@drawable/bg_circle_button"
-            app:tint="@color/pink_primary"
+            app:tint="@color/primary"
             android:padding="12dp"
             android:scaleType="centerInside"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Address"
+            android:text="Add New Address"
             android:fontFamily="@font/poppins_bold"
             android:textSize="20sp"
             android:textColor="@color/black"
@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Recipient name"
-                android:fontFamily="@font/poppins_regular"
+                android:fontFamily="@font/poppins_bold"
                 android:textSize="14sp"
                 android:textColor="@color/black" />
 
@@ -79,10 +79,8 @@
                 android:id="@+id/nameInput"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/rounded_edittext_background"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:fontFamily="@font/poppins_regular"
+                android:background="@drawable/bg_edittext_primary"
+                android:hint="Recipient name"
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="4dp" />
@@ -92,7 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Phone number"
-                android:fontFamily="@font/poppins_regular"
+                android:fontFamily="@font/poppins_bold"
                 android:textSize="14sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="16dp" />
@@ -101,7 +99,7 @@
                 android:id="@+id/phoneInput"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/rounded_edittext_background"
+                android:background="@drawable/bg_edittext_primary"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:fontFamily="@font/poppins_regular"
@@ -115,7 +113,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Address"
-                android:fontFamily="@font/poppins_regular"
+                android:fontFamily="@font/poppins_bold"
                 android:textSize="14sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="16dp" />
@@ -124,7 +122,7 @@
                 android:id="@+id/addressInput"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:background="@drawable/rounded_background"
+                android:background="@drawable/bg_edittext_primary"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:fontFamily="@font/poppins_regular"
@@ -141,7 +139,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Đặt làm địa chỉ mặc định"
-                android:fontFamily="@font/poppins_regular"
+                android:fontFamily="@font/poppins_medium"
                 android:textSize="14sp"
                 android:textColor="@color/grey_dark"
                 android:layout_marginTop="16dp" />
@@ -168,7 +166,8 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_button_danger"
+            android:background="@drawable/bg_button_primary"
+            android:backgroundTint="@color/red_dark"
             android:text="Delete"
             android:visibility="visible"
             android:textColor="@color/white"

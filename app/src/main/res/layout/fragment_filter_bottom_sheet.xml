@@ -96,16 +96,14 @@
             android:layout_height="20dp"
             android:id="@+id/slider"
             app:rectangle_height="6dp"
-            app:slider_from_progress="0"
-            app:slider_to_progress="200000"
             app:corner_radius="20dp"
             app:thumb_size="10dp"
             app:thumb_single_color="false"
-            app:thumb_color="@color/pink_primary"
+            app:thumb_color="@color/primary"
             app:thumb_second_color="@color/background_color_screen"
             app:slider_min_value="0"
             app:slider_max_value="1000000"
-            app:slider_active_color="@color/pink_primary" />
+            app:slider_active_color="@color/primary" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

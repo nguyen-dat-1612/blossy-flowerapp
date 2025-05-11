@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#F8F9FA"
+    android:background="@color/white"
     tools:context=".presentation.profile.ui.ProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,7 +44,7 @@
                 android:layout_height="44dp"
                 android:src="@drawable/ic_left"
                 android:background="@drawable/bg_circle_button"
-                app:tint="@color/pink_primary"
+                app:tint="@color/primary"
                 android:padding="12dp"
                 android:scaleType="centerInside"
                 app:layout_constraintStart_toStartOf="parent"
@@ -55,10 +55,10 @@
                 android:id="@+id/editBtn"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
-                android:padding="12dp"
+                android:padding="10dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_edit"
-                app:tint="@color/pink_primary"
+                app:tint="@color/primary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
@@ -117,7 +117,7 @@
             android:layout_height="32dp"
             android:src="@drawable/ic_camera"
             android:background="@drawable/bg_circle_button"
-            android:backgroundTint="@color/pink_dark"
+            android:backgroundTint="@color/primary"
             app:tint="@color/white"
             android:translationY="-10dp"
             android:padding="6dp"
@@ -149,7 +149,7 @@
             android:layout_height="wrap_content"
             android:text="Full Name"
             android:textSize="16sp"
-            android:fontFamily="@font/poppins_regular"
+            android:fontFamily="@font/poppins_bold"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/userName"
@@ -163,16 +163,15 @@
             android:layout_height="48dp"
             android:text="Nguyen Van A"
             android:textSize="16sp"
-            android:fontFamily="@font/poppins_regular"
             android:textColor="@color/black"
-            android:background="@drawable/rounded_edittext_background"
+            android:background="@drawable/bg_edittext_primary"
             android:enabled="false"
-            app:layout_constraintTop_toBottomOf="@id/fullNameLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/fullNameLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Email Address Section -->
         <TextView
@@ -182,7 +181,7 @@
             android:text="Email Address"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:fontFamily="@font/poppins_regular"
+            android:fontFamily="@font/poppins_bold"
             android:textColor="@color/black"
             app:layout_constraintTop_toBottomOf="@id/fullNameInput"
             app:layout_constraintStart_toStartOf="parent"
@@ -195,16 +194,15 @@
             android:layout_height="48dp"
             android:text="nguyenvana@example.com"
             android:textSize="16sp"
-            android:fontFamily="@font/poppins_regular"
             android:textColor="@color/black"
-            android:background="@drawable/rounded_edittext_background"
+            android:background="@drawable/bg_edittext_primary"
             android:enabled="false"
-            app:layout_constraintTop_toBottomOf="@id/emailLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/emailLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Password Section -->
         <TextView
@@ -214,7 +212,7 @@
             android:text="Password"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:fontFamily="@font/poppins_regular"
+            android:fontFamily="@font/poppins_bold"
             android:textColor="@color/black"
             app:layout_constraintTop_toBottomOf="@id/emailInput"
             app:layout_constraintStart_toStartOf="parent"
@@ -227,17 +225,16 @@
             android:layout_height="48dp"
             android:text="********"
             android:textSize="16sp"
-            android:fontFamily="@font/poppins_regular"
             android:textColor="@color/black"
-            android:background="@drawable/rounded_edittext_background"
+            android:background="@drawable/bg_edittext_primary"
             android:enabled="false"
             android:inputType="textPassword"
-            app:layout_constraintTop_toBottomOf="@id/passwordLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/passwordLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

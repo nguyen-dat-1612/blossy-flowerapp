@@ -16,6 +16,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <ImageView
+        android:id="@+id/iconAddress"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:tint="@color/primary"
+        android:src="@drawable/ic_location"
+        android:layout_gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/addressRadioButton" />
+
     <!-- Name -->
     <TextView
         android:id="@+id/nameTextView"
@@ -27,7 +37,7 @@
         android:textColor="@color/black"
         android:layout_marginStart="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/addressRadioButton"
+        app:layout_constraintStart_toEndOf="@id/iconAddress"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Phone -->
@@ -82,7 +92,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/ic_edit"
-        app:tint="@color/pink_dark"
+        app:tint="@color/primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

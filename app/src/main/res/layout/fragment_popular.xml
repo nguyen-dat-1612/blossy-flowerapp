@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#F8F9FA"
+    android:background="@color/white"
     tools:context=".presentation.topProducts.ui.PopularFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,7 +43,7 @@
                 android:layout_height="44dp"
                 android:src="@drawable/ic_left"
                 android:background="@drawable/bg_circle_button"
-                app:tint="@color/pink_primary"
+                app:tint="@color/primary"
                 android:padding="12dp"
                 android:scaleType="centerInside"
                 app:layout_constraintStart_toStartOf="parent"

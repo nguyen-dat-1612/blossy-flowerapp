@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="160dp"
+    android:layout_width="170dp"
     android:layout_height="275dp"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
@@ -42,8 +42,7 @@
             android:textColor="@color/black"
             android:textSize="14sp"
             android:ellipsize="end"
-            android:minLines="2"
-            android:maxLines="2"
+            android:maxLines="1"
             android:gravity="start"
             tools:ignore="HardcodedText" />
 
@@ -55,7 +54,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
             android:text="Bouquet"
-            android:textColor="@color/pink_primary"
+            android:textColor="@color/primary"
             android:textSize="12sp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -88,7 +87,7 @@
                 android:layout_marginStart="4dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="(123)"
-                android:textColor="@color/pink_primary"
+                android:textColor="@color/primary"
                 android:textSize="12sp"
                 tools:ignore="HardcodedText" />
 
@@ -108,8 +107,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_bold"
-                android:text="$150.00"
-                android:textColor="@color/green_accent"
+                android:text="đ100.000"
+                android:textColor="@color/primary"
                 android:textSize="14sp"
                 tools:ignore="HardcodedText" />
 

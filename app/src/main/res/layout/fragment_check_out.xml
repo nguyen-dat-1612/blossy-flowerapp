@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA"
+    android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".presentation.checkout.ui.CheckOutFragment">
 
@@ -44,7 +44,7 @@
                 android:layout_height="44dp"
                 android:src="@drawable/ic_left"
                 android:background="@drawable/bg_circle_button"
-                app:tint="@color/pink_dark"
+                app:tint="@color/primary"
                 android:padding="12dp"
                 android:scaleType="centerInside"
                 app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +57,7 @@
                 android:layout_height="44dp"
                 android:src="@drawable/ic_notification"
                 android:background="@drawable/bg_circle_button"
-                app:tint="@color/pink_dark"
+                app:tint="@color/primary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
@@ -102,7 +102,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                app:tint="@color/pink_dark"
+                                app:tint="@color/primary"
                                 android:src="@drawable/ic_location"
                                 android:layout_gravity="center_vertical"/>
 
@@ -124,10 +124,15 @@
                                 android:id="@+id/editAddressBtn"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Edit"
-                                android:fontFamily="@font/poppins_regular"
-                                android:textColor="@color/pink_primary"
-                                android:textSize="14sp"/>
+                                android:fontFamily="@font/poppins_medium"
+                                android:background="@drawable/rounded_background"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:paddingTop="2dp"
+                                android:paddingBottom="2dp"
+                                android:text="Change"
+                                android:textColor="@color/primary"
+                                android:textSize="14sp" />
                         </LinearLayout>
 
                         <!-- Name and Phone -->
@@ -307,6 +312,7 @@
                                 android:layout_weight="1"
                                 android:text="Total Payment"
                                 android:textSize="16sp"
+                                android:fontFamily="@font/poppins_bold"
                                 android:textStyle="bold"
                                 android:textColor="@android:color/black"/>
 
@@ -316,8 +322,9 @@
                                 android:layout_height="wrap_content"
                                 android:text="₫580,000"
                                 android:textSize="16sp"
+                                android:fontFamily="@font/poppins_bold"
                                 android:textStyle="bold"
-                                android:textColor="@color/pink_primary"/>
+                                android:textColor="@color/primary"/>
                         </LinearLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -353,20 +360,6 @@
                                 android:textSize="16sp"
                                 android:fontFamily="@font/poppins_bold"
                                 android:textColor="@android:color/black"/>
-
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"/>
-
-                            <TextView
-                                android:id="@+id/changePaymentBtn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Change"
-                                android:fontFamily="@font/poppins_regular"
-                                android:textColor="@color/pink_primary"
-                                android:textSize="14sp"/>
                         </LinearLayout>
 
                         <!-- RadioGroup to ensure only one option can be selected -->
@@ -489,10 +482,10 @@
                     android:id="@+id/bottomTotalValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="580,000 VND"
+                    android:text="đ580,000"
                     android:textSize="18sp"
                     android:fontFamily="@font/poppins_bold"
-                    android:textColor="@color/pink_primary"/>
+                    android:textColor="@color/primary"/>
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatButton

@@ -21,7 +21,7 @@ class CartAdapter (
                     .into(binding.imageView)
                 nameText.text = cartItem.product.name
                 quantityText.text = "${cartItem.quantity}"
-
+                priceText.text = "đ${cartItem.product.price}"
                 addQuantityButton.setOnClickListener {
                     val newQuantity = cartItem.quantity + 1
                     onQuantityChanged(cartItem, newQuantity)

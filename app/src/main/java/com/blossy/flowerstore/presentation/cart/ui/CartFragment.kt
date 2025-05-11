@@ -22,6 +22,9 @@ import com.blossy.flowerstore.presentation.cart.viewmodel.CartViewModel
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.common.collectState
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.NumberFormat
+import java.util.Currency
+import java.util.Locale
 
 @AndroidEntryPoint
 class CartFragment : Fragment() {
@@ -73,25 +76,29 @@ class CartFragment : Fragment() {
         collectState(cartViewModel.getCartUiState) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    // Chắc chắn xử lý loading, có thể hiển thị progress bar.
                     // binding.progressBar.visibility = View.VISIBLE
                 }
 
                 is UiState.Success -> {
-                    // Khi nhận dữ liệu thành công, hãy xác minh lại dữ liệu
+
                     Log.d(TAG, "Data received: ${state.data.size} items")
                     cartAdapter.submitList(state.data)
-                    // Khi dữ liệu giỏ hàng thay đổi:
+
                     val priceDetails = state.data.map {
                         PriceDetailItem(it.product.name, it.quantity, it.quantity * it.product.price)
                     }
                     priceDetailAdapter.updateList(priceDetails)
 
-                    val subTotalAmount = calculateSubtotal(state.data) // Float hoặc Double
-                    val totalAmount = calculateTotal(subTotalAmount)       // (nếu có thêm thuế, phí...)
+                    val subTotalAmount = calculateSubtotal(state.data)
+                    val totalAmount = calculateTotal(subTotalAmount)
 
-                    val formattedSubTotal = String.format("%.2f $", subTotalAmount)
-                    val formattedTotal = String.format("%.2f $", totalAmount)
+                    val vnLocale = Locale("vi", "VN")
+                    val currencyFormat = NumberFormat.getCurrencyInstance(vnLocale)
+                    currencyFormat.maximumFractionDigits = 0 // Không có .00
+                    currencyFormat.currency = Currency.getInstance("VND")
+
+                    val formattedSubTotal = currencyFormat.format(subTotalAmount)
+                    val formattedTotal = currencyFormat.format(totalAmount)
 
                     binding.subTotal.text = formattedSubTotal
                     binding.total.text = formattedTotal
@@ -99,12 +106,10 @@ class CartFragment : Fragment() {
                 }
 
                 is UiState.Error -> {
-                    // Kiểm tra lỗi và thông báo người dùng
                     Log.e(TAG, "observeCart: ${state.message}")
                     Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                 }
                 else -> {
-                    // Xử lý khi không có dữ liệu (empty hoặc null)
                     Log.w(TAG, "Received empty or null state")
                 }
             }
@@ -112,7 +117,7 @@ class CartFragment : Fragment() {
         collectState(cartViewModel.updateCartUiState) { state ->
             when (state) {
                 is UiState.Success -> {
-                    cartViewModel.getCart() // Gọi lại để refresh UI sau khi cập nhật số lượng
+                    cartViewModel.getCart()
                 }
                 is UiState.Error -> {
                     Log.e(TAG, "observeCart: ${state.message}")
@@ -125,7 +130,7 @@ class CartFragment : Fragment() {
         collectState(cartViewModel.removeCartUiState) { state ->
             when (state) {
                 is UiState.Success -> {
-                    cartViewModel.getCart() // Gọi lại để refresh UI sau khi xóa
+                    cartViewModel.getCart()
                 }
                 is UiState.Error -> {
                     Log.e(TAG, "observeCart: ${state.message}")
