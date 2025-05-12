@@ -1,11 +1,9 @@
-<!-- fragment_main.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <!-- Fragment container cho các tab -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_tabs"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -22,8 +20,10 @@
         android:minHeight="75dp"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:background="@color/black"
+        android:background="?attr/colorPrimary"
         android:paddingTop="6dp"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
         android:paddingBottom="6dp"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />

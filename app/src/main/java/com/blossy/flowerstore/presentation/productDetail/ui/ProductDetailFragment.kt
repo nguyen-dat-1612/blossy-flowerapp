@@ -74,34 +74,6 @@ class ProductDetailFragment : Fragment() {
                         ratingBar.rating = state.data.rating.toFloat()
                         priceProduct.text = "₫${state.data.price}"
                         descriptionProduct.text = state.data.description
-//                        stockStatus.text =
-//                            if (state.data.stock > 0) {
-//                                if (state.data.stock <= 5) {
-//                                    stockStatus.setTextColor(
-//                                        ContextCompat.getColor(
-//                                            requireContext(),
-//                                            R.color.stock_low
-//                                        )
-//                                    )  // Màu cam
-//                                    "Low Stock"
-//                                } else {
-//                                    stockStatus.setTextColor(
-//                                        ContextCompat.getColor(
-//                                            requireContext(),
-//                                            R.color.green_dark
-//                                        )
-//                                    )  // Màu xanh lá
-//                                    "In Stock"
-//                                }
-//                            } else {
-//                                stockStatus.setTextColor(
-//                                    ContextCompat.getColor(
-//                                        requireContext(),
-//                                        R.color.stock_out
-//                                    )
-//                                )  // Màu đỏ
-//                                "Out of Stock"
-//                            }
                         addToCartBtn.isEnabled = state.data.stock > 0
                         addToCartBtn.text =
                             if (state.data.stock > 0) "Add to Cart" else "Out of Stock"
@@ -175,7 +147,7 @@ class ProductDetailFragment : Fragment() {
 
     private fun onClickListener() {
         binding.btnBack.setOnClickListener {
-            val navController = requireActivity().findNavController(R.id.nav_host_main)
+            Log.d(TAG, selectedTab)
             if (selectedTab == "home") {
                 findNavController().navigate(R.id.action_productDetailFragment_to_mainFragment)
                 findNavController().popBackStack()
@@ -222,6 +194,6 @@ class ProductDetailFragment : Fragment() {
     }
 
     companion object {
-
+        private const val TAG = "ProductDetailFragment"
     }
 }

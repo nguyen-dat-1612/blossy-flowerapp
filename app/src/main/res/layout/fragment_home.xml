@@ -97,7 +97,7 @@
                     android:layout_height="44dp"
                     android:src="@drawable/ic_notification"
                     android:background="@drawable/bg_circle_button"
-                    app:tint="@color/primary"
+                    app:tint="?attr/colorPrimary"
                     android:padding="12dp"
                     android:scaleType="centerInside"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -172,7 +172,7 @@
                 android:layout_height="wrap_content"
                 android:text="Special Offers"
                 android:fontFamily="@font/poppins_bold"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="20sp"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="18dp"
@@ -220,7 +220,7 @@
                     android:text="Categories"
                     android:textSize="20sp"
                     android:fontFamily="@font/poppins_bold"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/colorPrimary"
                     android:gravity="center_vertical"/>
 
                 <TextView
@@ -260,7 +260,7 @@
                     android:text="Trends &amp; Popular Now"
                     android:textSize="20sp"
                     android:fontFamily="@font/poppins_bold"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/colorPrimary"
                     android:gravity="center_vertical"/>
 
                 <TextView

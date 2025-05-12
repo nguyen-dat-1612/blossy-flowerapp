@@ -23,7 +23,6 @@ class PushNotifications : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        // Kiểm tra nếu thông báo có payload
         message.notification?.let {
             showNotification(it.title ?: "Thông báo mới", it.body ?: "Bạn vừa nhận được một thông báo!")
         }

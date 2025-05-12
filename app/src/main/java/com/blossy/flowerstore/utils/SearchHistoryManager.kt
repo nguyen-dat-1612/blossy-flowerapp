@@ -15,7 +15,6 @@ class SearchHistoryManager @Inject constructor(
         val historyJson = sharedPreferences.getString(key, "[]") ?: "[]"
         val historyList = JSONArray(historyJson)
 
-        // Xoá nếu trùng
         for (i in 0 until historyList.length()) {
             if (historyList.getString(i) == query) {
                 historyList.remove(i)
@@ -23,7 +22,6 @@ class SearchHistoryManager @Inject constructor(
             }
         }
 
-        // Thêm mới
         val newHistory = JSONArray().apply {
             put(query)
             for (i in 0 until historyList.length()) {
@@ -31,7 +29,6 @@ class SearchHistoryManager @Inject constructor(
             }
         }
 
-        // Giới hạn 10
         while (newHistory.length() > 10) {
             newHistory.remove(newHistory.length() - 1)
         }

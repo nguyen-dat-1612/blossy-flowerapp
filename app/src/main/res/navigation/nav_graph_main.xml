@@ -140,6 +140,7 @@
         <action
             android:id="@+id/action_productDetailFragment_to_searchFragment"
             app:destination="@id/searchFragment"
+            app:popUpTo="@id/searchFragment"
             app:popUpToInclusive="false"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>

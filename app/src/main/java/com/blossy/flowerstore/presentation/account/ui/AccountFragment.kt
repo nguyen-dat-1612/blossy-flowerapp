@@ -22,18 +22,23 @@ import com.blossy.flowerstore.presentation.account.viewmodel.AccountViewModel
 import com.blossy.flowerstore.presentation.common.MainFragmentDirections
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.FcmManager
+import com.blossy.flowerstore.utils.LocationHelper
+import com.blossy.flowerstore.utils.SettingsManager
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class AccountFragment : Fragment() {
-
     private lateinit var binding: FragmentAccountBinding
-    private lateinit var navController: NavController
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var firebaseMessaging: FirebaseMessaging
     private val viewModel: AccountViewModel by viewModels()
+
+    private lateinit var navController: NavController
+    private lateinit var settingsManager: SettingsManager
+    private lateinit var fcmManager: FcmManager
+    private lateinit var locationHelper: LocationHelper
 
 
     override fun onCreateView(
@@ -42,14 +47,12 @@ class AccountFragment : Fragment() {
     ): View? {
         binding = FragmentAccountBinding.inflate(inflater, container, false)
 
-        sharedPreferences = requireContext().getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+        settingsManager = SettingsManager(requireContext())
+        fcmManager = FcmManager(FirebaseMessaging.getInstance())
+        locationHelper = LocationHelper(requireContext())
 
-        // Khởi tạo trạng thái từ SharedPreferences
         initSwitchStates()
-
-        // Thiết lập sự kiện cho các switch
         setupSwitches()
-
         observe()
 
         return binding.root
@@ -57,190 +60,112 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        firebaseMessaging = FirebaseMessaging.getInstance()
         navController = requireActivity().findNavController(R.id.nav_host_main)
         setOnClickListener();
     }
 
-    fun setOnClickListener() {
-        binding.profile.setOnClickListener {
-            navController.navigate(R.id.action_mainFragment_to_profileFragment)
-        }
-        binding.orderHistory.setOnClickListener {
-            navController.navigate(R.id.action_mainFragment_to_orderHistoryFragment)
-        }
-        binding.shippingAddress.setOnClickListener {
-            val navController = requireActivity().findNavController(R.id.nav_host_main)
-            val action = MainFragmentDirections.actionMainFragmentToShippingAddressFragment(
-                fromCheckout = false
-            )
+    fun setOnClickListener() = with(binding) {
+        profile.setOnClickListener {  navController.navigate(R.id.action_mainFragment_to_profileFragment) }
+        orderHistory.setOnClickListener { navController.navigate(R.id.action_mainFragment_to_orderHistoryFragment) }
+        shippingAddress.setOnClickListener {
+            val action = MainFragmentDirections.actionMainFragmentToShippingAddressFragment(fromCheckout = false)
             navController.navigate(action)
         }
     }
 
-    private fun initSwitchStates() {
-        // Lấy trạng thái đã lưu hoặc dùng giá trị mặc định
-        binding.pushNotificationsSwitch.isChecked = sharedPreferences.getBoolean("push_notifications", true)
-        binding.locationServicesSwitch.isChecked = sharedPreferences.getBoolean("location_services", true)
-        binding.darkModeSwitch.isChecked = sharedPreferences.getBoolean("dark_mode", false)
+    private fun initSwitchStates() = with(binding) {
+        pushNotificationsSwitch.isChecked = settingsManager.isPushEnabled
+        locationServicesSwitch.isChecked = settingsManager.isLocationEnabled
+        darkModeSwitch.isChecked = settingsManager.isDarkMode
 
-        // Áp dụng dark mode ngay lập tức nếu cần
-        if (binding.darkModeSwitch.isChecked) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
+        AppCompatDelegate.setDefaultNightMode(
+            if (settingsManager.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 
-    private fun setupSwitches() {
-        // Push Notifications Switch
-        binding.pushNotificationsSwitch.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean("push_notifications", isChecked).apply()
-
-            binding.pushNotificationsSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    enablePushNotifications()
-                } else {
-                    disablePushNotifications()
-                }
-                showNotificationStatusToast(isChecked)
-                saveNotificationPreference(isChecked)
+    private fun setupSwitches() = with(binding) {
+        pushNotificationsSwitch.setOnCheckedChangeListener { _, isChecked ->
+            settingsManager.isPushEnabled = isChecked
+            if (isChecked) {
+                fcmManager.enableFCM(
+                    onSuccess = {viewModel.updateFcmToken(it)},
+                    onError = {handleFcmError(it)}
+                )
+            } else {
+                fcmManager.disableFCM { handleFcmError(it) }
             }
+            showToast(if (isChecked) "Notifications enabled" else "Notifications disabled")
         }
-        // Location Services Switch
-        binding.locationServicesSwitch.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean("location_services", isChecked).apply()
+
+
+        locationServicesSwitch.setOnCheckedChangeListener { _, isChecked ->
+            settingsManager.isLocationEnabled = isChecked
 
             if (isChecked) {
-                // Kiểm tra quyền truy cập vị trí
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                    // Đã có quyền, có thể bật dịch vụ vị trí
-                    enableLocationServices()
+                    locationHelper.getLastLocation(
+                        onSuccess = { location ->
+                            // Xử lý vị trí hiện tại nếu cần
+                        },
+                        onError = { exception ->
+                            Log.e("Location", "Error getting location: ${exception.message}")
+                        }
+                    )
                 } else {
-                    // Yêu cầu quyền
-                    requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        REQUEST_LOCATION_PERMISSION)
+                    requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
                 }
             }
-
-            Toast.makeText(context, "Location services ${if (isChecked) "enabled" else "disabled"}", Toast.LENGTH_SHORT).show()
+            showToast("Location services ${if (isChecked) "enabled" else "disabled"}")
         }
 
         // Dark Mode Switch
         binding.darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean("dark_mode", isChecked).apply()
+            settingsManager.isDarkMode = isChecked
 
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-
-            // Yêu cầu activity recreate để áp dụng theme mới
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
             requireActivity().recreate()
         }
     }
-    private fun enablePushNotifications() {
-        try {
-            firebaseMessaging.token.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val token = task.result
-                    Log.d("FCM", "FCM Token: $token")
-                    sendTokenToServer(token)
-                } else {
-                    handleFcmError(task.exception)
-                }
-            }
-        } catch (e: Exception) {
-            handleFcmError(e)
-        }
-    }
 
-    private fun disablePushNotifications() {
-        try {
-            firebaseMessaging.deleteToken().addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    handleFcmError(task.exception)
-                }
-            }
-        } catch (e: Exception) {
-            handleFcmError(e)
-        }
-    }
-
-    private fun sendTokenToServer(token: String) {
-        viewModel.updateFcmToken(token)
-    }
-
-    private fun handleFcmError(exception: Exception?) {
-        Log.e("FCM", "FCM operation failed", exception)
-        binding.pushNotificationsSwitch.isChecked = false
-        Toast.makeText(
-            requireContext(),
-            "Failed to update notification settings",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
-    private fun showNotificationStatusToast(isEnabled: Boolean) {
-        val message = if (isEnabled) "Notifications enabled" else "Notifications disabled"
+    private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun saveNotificationPreference(isEnabled: Boolean) {
-        sharedPreferences.edit().putBoolean("push_notifications", isEnabled).apply()
+    private fun handleFcmError(exception: Exception?) {
+        Log.e(TAG, "FCM failed", exception)
+        binding.pushNotificationsSwitch.isChecked = false
+        showToast("Failed to update FCM settings")
     }
 
-    private fun enableLocationServices() {
-        // Khởi tạo FusedLocationProviderClient
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        try {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    // Xử lý vị trí hiện tại nếu cần
-                }
-        } catch (e: SecurityException) {
-            Log.e("Location", "Error getting location: ${e.message}")
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when (requestCode) {
-            REQUEST_LOCATION_PERMISSION -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Quyền được cấp, bật dịch vụ vị trí
-                    enableLocationServices()
-                } else {
-                    // Quyền bị từ chối, tắt switch
-                    binding.locationServicesSwitch.isChecked = false
-                    Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
 
     private fun observe() {
         collectState(viewModel.updateFcm) {
             when(it) {
-                is UiState.Loading -> {
-
-                }
-                is UiState.Success -> {
-                    Log.d(TAG, "observe: ${it.data}")
-                }
-                is UiState.Error -> {
-                    Log.d(TAG, "observe: ${it.message}")
-                }
+                is UiState.Success ->  Log.d(TAG, "observe: ${it.data}")
+                is UiState.Error -> Log.d(TAG, "observe: ${it.message}")
                 else -> {}
             }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_LOCATION_PERMISSION && grantResults.isNotEmpty()
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationHelper.getLastLocation(
+                onSuccess = { /* handle location */ },
+                onError = { Log.e(TAG, "Location error: ${it.message}") }
+            )
+        } else {
+            binding.locationServicesSwitch.isChecked = false
+            showToast("Location permission denied")
         }
     }
 

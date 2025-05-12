@@ -18,6 +18,9 @@ class SearchHistoryAdapter(
         return HistoryViewHolder(view)
     }
 
+    override fun submitList(list: List<String>?) {
+        super.submitList(list?.let { ArrayList(it) })
+    }
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
         holder.bind(getItem(position))
     }

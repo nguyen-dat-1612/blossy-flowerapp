@@ -43,7 +43,7 @@
                 android:layout_height="44dp"
                 android:src="@drawable/ic_left"
                 android:background="@drawable/bg_circle_button"
-                app:tint="@color/primary"
+                app:tint="?attr/colorPrimary"
                 android:padding="12dp"
                 android:scaleType="centerInside"
                 app:layout_constraintStart_toStartOf="parent"

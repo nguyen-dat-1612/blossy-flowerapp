@@ -28,25 +28,24 @@ class OrderHistoryAdapter (
             binding.apply {
 
                 orderId.text = order.id
-                orderStatus.text = "${order.status}"
-                val statusColor = when (order.status.lowercase()) {
-                    "pending" -> R.color.orange_light
-                    "processing" -> R.color.beige_light
-                    "shipped" -> R.color.pink_primary
-                    "delivered" -> R.color.grey_dark
-                    "cancelled" -> R.color.red_dark
-                    else -> R.color.grey_dark
-                }
-                orderStatus.setTextColor(ContextCompat.getColor(itemView.context, statusColor))
+                orderStatus.text = "${order.status.uppercase()}"
+//                val statusColor = when (order.status.lowercase()) {
+//                    "pending" -> R.color.orange_light
+//                    "processing" -> R.color.beige_light
+//                    "shipped" -> R.color.pink_primary
+//                    "delivered" -> R.color.grey_dark
+//                    "cancelled" -> R.color.red_dark
+//                    else -> R.color.grey_dark
+//                }
+//                orderStatus.setTextColor(ContextCompat.getColor(itemView.context, statusColor))
 
-                // Set first product details
                 val firstItem = order.orderItems[0]
                 Glide.with(itemView.context)
                     .load(firstItem.image)
-                    .into(productImage)
-                productName.text = firstItem.name
-                quantity.text = "x${firstItem.quantity}"
-                price.text = "$${firstItem.price}"
+                    .into(imageView)
+                nameText.text = firstItem.name
+                quantityText.text = "${firstItem.quantity}"
+                priceText.text = "đ${firstItem.price}"
 
                 totalPrice.text = "Total (${order.orderItems.size} items): $${order.totalPrice}"
 
@@ -94,12 +93,12 @@ class OrderHistoryAdapter (
             otherItems.forEach { item ->
                 val itemView = LayoutInflater.from(itemView.context)
                     .inflate(R.layout.item_order, binding.otherItemsContainer, false)
-                itemView.findViewById<ImageView>(R.id.productImage).also {
+                itemView.findViewById<ImageView>(R.id.imageView).also {
                     Glide.with(itemView.context).load(item.image).into(it)
                 }
-                itemView.findViewById<TextView>(R.id.productName).text = item.name
-                itemView.findViewById<TextView>(R.id.quantity).text = "x${item.quantity}"
-                itemView.findViewById<TextView>(R.id.price).text = "$${item.price}"
+                itemView.findViewById<TextView>(R.id.nameText).text = item.name
+                itemView.findViewById<TextView>(R.id.quantityText).text = "${item.quantity}"
+                itemView.findViewById<TextView>(R.id.priceText).text = "đ${item.price}"
                 binding.otherItemsContainer.addView(itemView)
             }
         }

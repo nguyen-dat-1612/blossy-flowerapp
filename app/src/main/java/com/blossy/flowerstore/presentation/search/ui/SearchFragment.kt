@@ -6,18 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.widget.SearchView
-import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,14 +44,15 @@ class SearchFragment : Fragment() {
         Log.d(TAG, "onCreate: savedInstanceState is ${if (savedInstanceState == null) "null" else "not null"}")
         searchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
 
-        isSearching = searchViewModel.isInSearchMode()
-        lastSearchQuery = searchViewModel.getLastSearchQuery()
-        Log.d(TAG, "Retrieved state from ViewModel: isSearching=$isSearching, query='$lastSearchQuery'")
-
         if (!isSearching) {
             Log.d(TAG, "Loading search history (not in search mode)")
             searchViewModel.loadSearchHistory()
         }
+
+        isSearching = searchViewModel.isInSearchMode()
+        lastSearchQuery = searchViewModel.getLastSearchQuery()
+        Log.d(TAG, "Retrieved state from ViewModel: isSearching=$isSearching, query='$lastSearchQuery'")
+        Log.d(TAG, "Search history state: ${searchViewModel.searchHistory.value}")
 
         requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -69,7 +66,6 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
-        Log.d(TAG, "onCreateView")
 
         setupRecyclerView()
         setupSearchInput()
@@ -77,26 +73,11 @@ class SearchFragment : Fragment() {
         setupListeners()
         observeSearchUiState()
 
-        // Khôi phục trạng thái tìm kiếm từ ViewModel
         if (isSearching && lastSearchQuery.isNotEmpty()) {
-            Log.d(TAG, "Restoring search view from ViewModel: query='$lastSearchQuery'")
             binding.searchInput.setText(lastSearchQuery)
             setupSearchResultsView()
-            // Không cần tìm kiếm lại vì kết quả nên được lưu trong ViewModel
         } else {
-            Log.d(TAG, "Setting up history view in onCreateView")
             setupHistoryView()
-        }
-
-        // Theo dõi lịch sử tìm kiếm
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                searchViewModel.searchHistory.collect { history ->
-                    if (!isSearching) {
-                        searchHistoryAdapter.submitList(history)
-                    }
-                }
-            }
         }
 
         return binding.root
@@ -108,7 +89,6 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        // Khởi tạo adapter
         searchHistoryAdapter = SearchHistoryAdapter { keyword ->
             binding.searchInput.setText(keyword)
             performSearch(keyword)
@@ -123,41 +103,37 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupSearchInput() {
-        // Xử lý sự kiện search bằng nhấn enter trên bàn phím
-        binding.searchInput.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val query = binding.searchInput.text.toString()
-                if (query.isNotEmpty()) {
-                    performSearch(query)
-                }
-                true
-            } else {
-                false
-            }
-        }
 
-        // Lắng nghe thay đổi thông tin trong chuỗi tìm kiếm, nếu rỗng thì trả về lịch sử tìm kiếm
-        binding.searchInput.addTextChangedListener {
-            val newText = it?.toString()
-            if (newText.isNullOrEmpty() && isSearching) {
-                setupHistoryView()
+        binding.apply {
+            searchInput.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    val query = binding.searchInput.text.toString()
+                    if (query.isNotEmpty()) performSearch(query)
+                    true
+                } else false
+            }
+            searchInput.addTextChangedListener {
+                val newText = it?.toString()
+                if (newText.isNullOrEmpty() && isSearching) {
+                    setupHistoryView()
+                }
+                searchViewModel.loadSearchHistory()
             }
         }
     }
 
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            navigateBackToMain()
-        }
-
-
-        binding.clearAll.setOnClickListener {
-            searchViewModel.clearSearchHistory()
-        }
-
-        binding.btnFilter.setOnClickListener {
-            showFilterDialog()
+        binding.apply {
+            btnBack.setOnClickListener {
+                navigateBackToMain()
+            }
+            clearAll.setOnClickListener {
+                searchViewModel.clearSearchHistory()
+            }
+            btnFilter.setOnClickListener {
+                showFilterDialog()
+            }
         }
     }
 
@@ -168,50 +144,46 @@ class SearchFragment : Fragment() {
 
         searchViewModel.setSearchMode(true)
         searchViewModel.setLastSearchQuery(query)
-
+        searchViewModel.saveSearchQuery(query)
         setupSearchResultsView()
 //        binding.progress.root.visibility = View.VISIBLE
         binding.recyclerViewHistory.visibility = View.GONE
         searchViewModel.searchProducts(keyword = query)
     }
 
-    // Thiết lập giao diện cho kết quả tìm kiếm
-    private fun setupSearchResultsView() {
-        Log.d(TAG, "Setting up search results view")
-        binding.searchHistoryTitle.text = "Results"
-        binding.clearAll.visibility = View.GONE
 
-        // Đảm bảo adapter là searchProductAdapter và layoutManager là GridLayoutManager
-        if (binding.recyclerViewHistory.adapter != searchProductAdapter) {
-            binding.recyclerViewHistory.adapter = searchProductAdapter
-            binding.recyclerViewHistory.layoutManager = GridLayoutManager(requireContext(), 2)
-            Log.d(TAG, "Changed to product adapter with GridLayoutManager")
+    private fun setupSearchResultsView() {
+        binding.apply {
+            searchHistoryTitle.text = "Results"
+            clearAll.visibility = View.GONE
+            if (recyclerViewHistory.adapter != searchProductAdapter) {
+                recyclerViewHistory.adapter = searchProductAdapter
+                recyclerViewHistory.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
         }
     }
 
     private fun setupHistoryView() {
-        Log.d(TAG, "Setting up history view")
         isSearching = false
         lastSearchQuery = ""
 
-        // Lưu trạng thái vào ViewModel
-        searchViewModel.setSearchMode(false)
-        searchViewModel.setLastSearchQuery("")
-
-        binding.clearAll.visibility = View.VISIBLE
-        binding.searchHistoryTitle.text = "Search History"
-
-        try {// Đảm bảo adapter là searchHistoryAdapter và layoutManager là LinearLayoutManager
-        } catch (e: Exception) {
-            TODO("Not yet implemented")
+        searchViewModel.apply {
+            setSearchMode(false)
+            setLastSearchQuery("")
         }
-        if (binding.recyclerViewHistory.adapter != searchHistoryAdapter) {
-            binding.recyclerViewHistory.adapter = searchHistoryAdapter
-            binding.recyclerViewHistory.layoutManager = LinearLayoutManager(requireContext())
-            Log.d(TAG, "Changed to history adapter with LinearLayoutManager")
+        binding.apply {
+            searchInput.setText("")
+            progress.root.visibility = View.GONE
+            recyclerViewHistory.visibility = View.VISIBLE
+            clearAll.visibility = View.VISIBLE
+            searchHistoryTitle.text = "Search History"
+
+            recyclerViewHistory.adapter = searchHistoryAdapter
+            recyclerViewHistory.layoutManager = LinearLayoutManager(requireContext())
+
+            searchViewModel.loadSearchHistory()
         }
 
-        searchViewModel.loadSearchHistory()
     }
 
     private fun showFilterDialog() {
@@ -233,8 +205,6 @@ class SearchFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                Log.d(TAG, "Cuộn tải thêm dữ liệu")
-                // Chỉ load thêm khi đang ở chế độ tìm kiếm (dùng GridLayoutManager)
                 if (isSearching && recyclerView.layoutManager is GridLayoutManager) {
                     val layoutManager = recyclerView.layoutManager as GridLayoutManager
 
@@ -265,7 +235,6 @@ class SearchFragment : Fragment() {
                             binding.progress.root.visibility = View.GONE
                             binding.recyclerViewHistory.visibility = View.VISIBLE
 
-                            // Giữ lại danh sách nếu search lại
                             if (isSearching) {
                                 searchProductAdapter.submitList(state.data.products)
                             }
@@ -283,37 +252,14 @@ class SearchFragment : Fragment() {
                 }
             }
         }
-    }
-
-
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d(TAG, "onDestroyView")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy")
+        collectState(searchViewModel.searchHistory) {
+            when (it) {
+                is UiState.Success -> {
+                    searchHistoryAdapter.submitList(it.data)
+                }
+                else -> {}
+            }
+        }
     }
 
     companion object {

@@ -24,7 +24,7 @@
 
     <TextView
         android:id="@+id/nameText"
-        android:layout_width="150dp"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:text="101 red roses"
         android:textSize="16sp"
@@ -83,6 +83,7 @@
             android:layout_width="0dp"
             android:layout_height="20dp"
             android:text="1"
+            android:textColor="@color/black"
             android:layout_weight="1"
             android:textSize="16sp"
             android:gravity="center_horizontal"

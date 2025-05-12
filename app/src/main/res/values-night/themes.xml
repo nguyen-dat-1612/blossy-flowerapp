@@ -1,7 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Blossy" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/primary</item>
+<!--        <item name="colorOnPrimary">@color/on_primary_light</item>-->
+        <item name="colorSecondary">@color/pink_primary</item>
+<!--        <item name="colorOnSecondary">@color/on_secondary_light</item>-->
+<!--        <item name="colorBackground">@color/background_light</item>-->
+<!--        <item name="colorOnBackground">@color/on_background_light</item>-->
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/white</item>
+<!--        <item name="colorError">@color/error_light</item>-->
+<!--        <item name="colorOnError">@color/on_error_light</item>-->
+        <item name="itemIconTint">@color/white</item>
+        <item name="itemTextColor">@color/white</item>
     </style>
 </resources>

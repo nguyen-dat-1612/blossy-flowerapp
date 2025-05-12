@@ -26,8 +26,8 @@ class SearchViewModel @Inject constructor(
     private val _productsUiState = MutableStateFlow<UiState<ProductResponse>>(UiState.Loading)
     val productsUiState: StateFlow<UiState<ProductResponse>> = _productsUiState
 
-    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
-    val searchHistory: StateFlow<List<String>> = _searchHistory
+    private val _searchHistory = MutableStateFlow<UiState<List<String>>>(UiState.Idle)
+    val searchHistory: StateFlow<UiState<List<String>>> = _searchHistory
 
     fun isInSearchMode(): Boolean = _isInSearchMode
 
@@ -107,7 +107,8 @@ class SearchViewModel @Inject constructor(
     }
 
     fun loadSearchHistory() {
-        _searchHistory.value = searchHistoryManager.getHistory()
+        val history = searchHistoryManager.getHistory()
+        _searchHistory.value = UiState.Success(history)
     }
 
     fun setSearchMode(isSearching: Boolean) {
@@ -119,10 +120,13 @@ class SearchViewModel @Inject constructor(
     fun setLastSearchQuery(query: String) {
         _lastSearchQuery = query
     }
-
-
+    fun saveSearchQuery(query: String) {
+        searchHistoryManager.saveQuery(query)
+        val history = searchHistoryManager.getHistory()
+        _searchHistory.value = UiState.Success(history)
+    }
     fun clearSearchHistory() {
         searchHistoryManager.clearHistory()
-        _searchHistory.value = emptyList()
+        _searchHistory.value = UiState.Success(emptyList())
     }
 }

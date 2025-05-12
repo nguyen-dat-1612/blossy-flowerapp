@@ -3,45 +3,36 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="primary">#FF000000</color> <!-- used -->
+    <color name="primary">#FF000000</color>
 
-    <color name="green_primary">#F48FB1</color>
-    <color name="green_dark">#388E3C</color>
-    <color name="green_accent">#388E3C</color> <!-- Dark green for price, in-stock -->
-    <color name="pink_primary">#FFC0CB</color>
+    <color name="green_accent">#388E3C</color>
+    <color name="pink_primary">#e91e63</color>
     <color name="pink_dark">#EC407A</color>
     <color name="pink_light">#F8BBD0</color>
-    <color name="pink_pale">#FCE4EC</color>
 
-    <color name="grey_light">#DADADA</color> <!-- Light gray for backgrounds -->
-    <color name="grey_dark">#757575</color> <!-- Dark gray for secondary text -->
+    <color name="grey_light">#DADADA</color>
+    <color name="grey_dark">#757575</color>
 
     <color name="gray_light">#F2F4F5</color>
-    <color name="gray_extra_light">#FAFAFA</color>
     <color name="gray_e9edef">#E9EDEF</color>
 
-    <color name="colorItemDefault">#FAFAFA</color> <!-- Màu khi không chọn -->
-    <color name="colorItemSelected">#72D7A1</color> <!-- Màu khi chọn -->
+    <color name="colorItemDefault">#FAFAFA</color>
+    <color name="colorItemSelected">#72D7A1</color>
+    <color name="yellow_dark">#FFA000</color>
 
-    <color name="yellow_dark">#FFA000</color>  <!-- Amber 800 -->
-    <!-- Trong res/values/colors.xml -->
-    <color name="red_dark">#D32F2F</color>  <!-- Red 700 -->
 
-    <color name="yellow_accent">#FFB300</color> <!-- Yellow for ratings -->
-    <color name="orange_light">#FFCA28</color> <!-- Light orange for highlights -->
+    <color name="red_dark">#D32F2F</color>
 
-    <color name="background_light">#F5F7FA</color>
+    <color name="yellow_accent">#FFB300</color>
+    <color name="orange_light">#FFCA28</color>
+
     <color name="accent_primary">#FF6B6B</color>
     <color name="accent_secondary">#4ECDC4</color>
     <color name="text_primary">#2D3436</color>
     <color name="text_secondary">#636E72</color>
-    <color name="gradient_start">#FF6B6B</color>
-    <color name="gradient_end">#4ECDC4</color>
 
 
     
-    <color name="beige_light">#FFF8E1</color> <!-- Card background -->
+    <color name="beige_light">#FFF8E1</color>
 
-    <color name="stock_low">#FF6F00</color>
-    <color name="stock_out">#D32F2F</color>
 </resources>

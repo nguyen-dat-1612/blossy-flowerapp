@@ -51,7 +51,6 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Khởi tạo adapter rỗng ban đầu
         cartAdapter = CartAdapter(mutableListOf(),
             onDeleteClicked = { cartItem ->
                 cartViewModel.deleteCartItem(cartItem.product.id)
@@ -94,7 +93,7 @@ class CartFragment : Fragment() {
 
                     val vnLocale = Locale("vi", "VN")
                     val currencyFormat = NumberFormat.getCurrencyInstance(vnLocale)
-                    currencyFormat.maximumFractionDigits = 0 // Không có .00
+                    currencyFormat.maximumFractionDigits = 0
                     currencyFormat.currency = Currency.getInstance("VND")
 
                     val formattedSubTotal = currencyFormat.format(subTotalAmount)

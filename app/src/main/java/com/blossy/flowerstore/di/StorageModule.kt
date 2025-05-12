@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.blossy.flowerstore.utils.EncryptionManager
 import com.blossy.flowerstore.utils.SecureTokenManager
+import com.blossy.flowerstore.utils.SettingsManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,9 +37,17 @@ object StorageModule {
         @ApplicationContext context: Context
     ): SharedPreferences {
         return context.getSharedPreferences(
-            "BlossyFlowerPrefs", // Tên file preferences
+            "BlossyFlowerPrefs",
             Context.MODE_PRIVATE
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingsManager(
+        context: Context
+    ) : SettingsManager {
+        return SettingsManager(context)
     }
 
 }

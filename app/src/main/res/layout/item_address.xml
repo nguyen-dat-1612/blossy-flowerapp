@@ -10,9 +10,13 @@
     <!-- Radio Button (Visible only from Checkout) -->
     <RadioButton
         android:id="@+id/addressRadioButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_width="32dp"
+        android:layout_height="24dp"
+        android:visibility="visible"
+        android:focusable="false"
+        android:clickable="false"
+        android:focusableInTouchMode="false"
+        style="@style/Widget.Material3.CompoundButton.RadioButton"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -20,7 +24,7 @@
         android:id="@+id/iconAddress"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        app:tint="@color/primary"
+        app:tint="?attr/colorPrimary"
         android:src="@drawable/ic_location"
         android:layout_gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
@@ -78,6 +82,7 @@
         android:fontFamily="@font/poppins_regular"
         android:textColor="@color/white"
         android:background="@drawable/default_indicator_background"
+        android:backgroundTint="?attr/colorPrimary"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:paddingTop="4dp"
@@ -92,7 +97,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/ic_edit"
-        app:tint="@color/primary"
+        app:tint="?attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

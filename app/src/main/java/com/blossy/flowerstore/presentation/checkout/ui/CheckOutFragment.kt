@@ -30,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CheckOutFragment : Fragment() {
+
     private lateinit var viewModel: CheckOutViewModel
     private lateinit var orderItemAdapter: OrderItemAdapter
     private var _binding: FragmentCheckOutBinding? = null

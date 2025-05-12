@@ -15,6 +15,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:padding="12dp">
 
         <!-- Product Image -->
@@ -44,15 +45,49 @@
 
         </FrameLayout>
 
+        <!-- Product Name -->
+        <TextView
+            android:id="@+id/nameProduct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="101 Red Roses"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageContainer"
+            tools:ignore="HardcodedText" />
+
+        <!-- Category -->
+        <TextView
+            android:id="@+id/categoryProduct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="Bouquet"
+            android:textColor="@color/grey_dark"
+            android:textSize="12sp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nameProduct"
+            tools:ignore="HardcodedText" />
+
         <!-- Rating -->
         <LinearLayout
             android:id="@+id/ratingContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageContainer">
+            app:layout_constraintTop_toBottomOf="@id/categoryProduct">
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -79,41 +114,6 @@
 
         </LinearLayout>
 
-        <!-- Product Name -->
-        <TextView
-            android:id="@+id/nameProduct"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/poppins_bold"
-            android:text="101 Red Roses"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:ellipsize="end"
-            android:minLines="2"
-            android:maxLines="2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ratingContainer"
-            tools:ignore="HardcodedText" />
-
-        <!-- Category -->
-        <TextView
-            android:id="@+id/categoryProduct"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="@font/poppins_regular"
-            android:text="Bouquet"
-            android:textColor="@color/grey_dark"
-            android:textSize="12sp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nameProduct"
-            tools:ignore="HardcodedText" />
-
         <!-- Price and Stock -->
         <LinearLayout
             android:id="@+id/priceContainer"
@@ -124,7 +124,7 @@
             android:gravity="center_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/categoryProduct">
+            app:layout_constraintTop_toBottomOf="@id/ratingContainer">
 
             <TextView
                 android:id="@+id/priceProduct"
@@ -151,28 +151,6 @@
                 tools:ignore="HardcodedText" />
 
         </LinearLayout>
-
-<!--        &lt;!&ndash; Add to Cart Button &ndash;&gt;-->
-<!--        <com.google.android.material.button.MaterialButton-->
-<!--            android:id="@+id/btnAddToCart"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="12dp"-->
-<!--            android:paddingVertical="8dp"-->
-<!--            android:text="Add to cart"-->
-<!--            android:textAllCaps="false"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:fontFamily="@font/poppins_bold"-->
-<!--            android:textSize="12sp"-->
-<!--            app:backgroundTint="@color/green_accent"-->
-<!--            app:cornerRadius="8dp"-->
-<!--            app:icon="@drawable/ic_shopping_cart_add"-->
-<!--            app:iconTint="@color/white"-->
-<!--            app:iconGravity="end"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/priceContainer"-->
-<!--            tools:ignore="HardcodedText" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
