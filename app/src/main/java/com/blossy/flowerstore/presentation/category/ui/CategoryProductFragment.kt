@@ -10,29 +10,27 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
-import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentCategoryProductBinding
-import com.blossy.flowerstore.presentation.category.viewmodel.CategoryProductViewModel
+import com.blossy.flowerstore.presentation.category.viewmodel.CategoryViewModel
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.common.collectState
 import com.blossy.flowerstore.presentation.search.adapter.SearchProductAdapter
-import com.blossy.flowerstore.presentation.shippingAddress.ui.AddEditAddressFragmentArgs
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-
+import com.blossy.flowerstore.R
 
 @AndroidEntryPoint
 class CategoryProductFragment : Fragment() {
 
     private lateinit var binding: FragmentCategoryProductBinding
-    private lateinit var viewModel: CategoryProductViewModel
+    private lateinit var viewModel: CategoryViewModel
     private lateinit var searchProductAdapter: SearchProductAdapter
     private val args: CategoryProductFragmentArgs by navArgs()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(CategoryProductViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(CategoryViewModel::class.java)
         val category = args.category
-        viewModel.loadProducts(category = category.id);
+        val set = setOf(category.id)
+        viewModel.loadProducts(categories = set);
     }
 
     override fun onCreateView(
@@ -40,7 +38,7 @@ class CategoryProductFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentCategoryProductBinding.inflate(inflater, container, false)
-        binding.brandText.text = args.category.name
+        binding.titleText.text = args.category.name
         searchProductAdapter = SearchProductAdapter() { product ->
             val action = CategoryProductFragmentDirections
                 .actionCategoryProductFragmentToProductDetailFragment(product.id, "cartProduct")
@@ -52,7 +50,12 @@ class CategoryProductFragment : Fragment() {
         return binding.root
     }
 
-    fun observeData() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setOnClickListener()
+    }
+
+    private fun observeData() {
         collectState(viewModel.productsUiState) { state ->
             when (state) {
                 is UiState.Loading -> {
@@ -71,6 +74,15 @@ class CategoryProductFragment : Fragment() {
                 else -> {}
             }
 
+        }
+    }
+
+    private fun setOnClickListener() {
+        binding.btnBack.setOnClickListener {
+            findNavController().apply {
+                navigate(R.id.action_categoryProductFragment_to_categoryListFragment)
+                popBackStack()
+            }
         }
     }
 

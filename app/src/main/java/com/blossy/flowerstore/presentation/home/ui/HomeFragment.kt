@@ -134,6 +134,11 @@ class HomeFragment : Fragment() {
             val navController = requireActivity().findNavController(R.id.nav_host_main)
             navController.navigate(R.id.action_mainFragment_to_popularFragment)
         }
+
+        binding.seeAllCategories.setOnClickListener {
+            val navController = requireActivity().findNavController(R.id.nav_host_main)
+            navController.navigate(R.id.action_mainFragment_to_categoryListFragment)
+        }
     }
 
     override fun onPause() {

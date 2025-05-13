@@ -3,6 +3,8 @@ package com.blossy.flowerstore.presentation.category.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.blossy.flowerstore.data.remote.dto.ProductResponse
+import com.blossy.flowerstore.domain.model.Category
+import com.blossy.flowerstore.domain.usecase.category.GetCategoriesUseCase
 import com.blossy.flowerstore.domain.usecase.product.GetProductsUseCase
 import com.blossy.flowerstore.domain.utils.Result
 import com.blossy.flowerstore.presentation.common.UiState
@@ -14,23 +16,27 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoryProductViewModel @Inject constructor(
-    private val getProductsUseCase: GetProductsUseCase
+class CategoryViewModel @Inject constructor(
+    private val getProductsUseCase: GetProductsUseCase,
+    private val getCategoriesUseCase: GetCategoriesUseCase,
 ) : ViewModel()  {
 
     private val _productsUiState = MutableStateFlow<UiState<ProductResponse>>(UiState.Loading)
     val productsUiState: StateFlow<UiState<ProductResponse>> = _productsUiState
 
+    private val _categoryUiState = MutableStateFlow<UiState<List<Category>>>(UiState.Idle)
+    val categoryUiState: StateFlow<UiState<List<Category>>> = _categoryUiState
 
     fun loadProducts(
-        category: String? = null,
-        keyword: String ? = null,
-        page: Int? = 1,
-        limit: Int? = 10
+        keyword: String ?= null,
+        categories: Set<String> = emptySet(),
+        minPrice: Int? = null,
+        maxPrice: Int? = null,
+        page: Int = 1
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             _productsUiState.value = UiState.Loading
-            when (val result = getProductsUseCase.invoke(keyword!!)) {
+            when (val result = getProductsUseCase.invoke(categories = categories)) {
                 is Result.Success -> {
                     _productsUiState.value = UiState.Success(result.data)
                 }
@@ -43,4 +49,23 @@ class CategoryProductViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadCategories() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _categoryUiState.value = UiState.Loading
+
+            when (val result = getCategoriesUseCase.invoke()) {
+                is Result.Success -> {
+                    _categoryUiState.value = UiState.Success(result.data)
+                }
+                is Result.Error -> {
+                    _categoryUiState.value = UiState.Error(result.message)
+                }
+                is Result.Empty -> {
+                }
+            }
+        }
+    }
+
+
 }
