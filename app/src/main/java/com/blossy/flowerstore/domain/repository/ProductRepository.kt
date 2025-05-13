@@ -7,7 +7,7 @@ interface ProductRepository {
     suspend fun getTopProducts(): Result<List<Product>>
 
     suspend fun searchProducts(
-        keyword: String,
+        keyword: String ?,
         categories: Set<String> = emptySet(),
         minPrice: Int? = null,
         maxPrice: Int? = null,

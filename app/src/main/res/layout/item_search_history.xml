@@ -19,9 +19,9 @@
         android:layout_weight="1"
         android:paddingStart="20dp"
         android:text="History"
+        android:textColor="@color/black"
         android:fontFamily="@font/poppins_bold"
-        android:gravity="center_vertical"
-        />
+        android:gravity="center_vertical" />
 
     <ImageView
         android:layout_width="24dp"

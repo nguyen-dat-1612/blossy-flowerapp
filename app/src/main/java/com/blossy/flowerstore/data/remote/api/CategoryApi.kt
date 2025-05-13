@@ -10,5 +10,4 @@ interface CategoryApi {
     @Headers("No-Authentication: true")
     @GET("categories")
     suspend fun getCategories(): Response<BaseResponse<List<Category>>>
-
 }

@@ -52,6 +52,8 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -126,7 +128,7 @@
                 android:fontFamily="@font/poppins_regular"
                 android:textSize="16sp"
                 android:minHeight="48dp"
-                android:minLines="2"
+                android:minLines="1"
                 android:maxLines="2"
                 android:textColor="@color/black"
                 android:layout_marginTop="4dp" />

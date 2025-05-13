@@ -88,6 +88,21 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out"/>
+        <action
+            android:id="@+id/action_mainFragment_to_categoryListFragment"
+            app:destination="@id/categoryListFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"/>
+
+        <action
+            android:id="@+id/action_mainFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"/>
 
     </fragment>
 
@@ -320,6 +335,13 @@
                 app:argType="string" />
 
         </action>
+        <action
+            android:id="@+id/action_categoryProductFragment_to_categoryListFragment"
+            app:destination="@id/categoryListFragment"
+            app:popUpTo="@id/categoryListFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/orderHistoryFragment"
@@ -370,6 +392,44 @@
         tools:layout="@layout/fragment_popular" >
         <action
             android:id="@+id/action_popularFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/categoryListFragment"
+        android:name="com.blossy.flowerstore.presentation.category.ui.CategoryListFragment"
+        android:label="fragment_category_list"
+        tools:layout="@layout/fragment_category_list" >
+        <action
+            android:id="@+id/action_categoryListFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_categoryListFragment_to_categoryProductFragment"
+            app:destination="@id/categoryProductFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out">
+            <argument
+                android:name="category"
+                app:argType="com.blossy.flowerstore.domain.model.Category"
+                />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.blossy.flowerstore.presentation.account.ui.ChangePasswordFragment"
+        android:label="fragment_change_password"
+        tools:layout="@layout/fragment_change_password" >
+        <action
+            android:id="@+id/action_changePasswordFragment_to_mainFragment"
             app:destination="@id/mainFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false"

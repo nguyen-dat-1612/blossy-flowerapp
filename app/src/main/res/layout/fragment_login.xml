@@ -83,7 +83,7 @@
             android:layout_height="@dimen/edit_text_size"
             android:layout_marginTop="12dp"
             android:hint="Password"
-            android:text="123456"
+            android:text="12345678"
             android:background="@drawable/bg_edittext_primary"
             android:textSize="16sp"
             android:textColor="@color/black"

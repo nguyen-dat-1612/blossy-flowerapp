@@ -7,7 +7,7 @@ class GetProductsUseCase @Inject constructor(
     private val  productRepository: ProductRepository
 ){
     suspend operator fun invoke(
-        keyword: String,
+        keyword: String? = null,
         categories: Set<String> = emptySet(),
         minPrice: Int? = null,
         maxPrice: Int? = null,

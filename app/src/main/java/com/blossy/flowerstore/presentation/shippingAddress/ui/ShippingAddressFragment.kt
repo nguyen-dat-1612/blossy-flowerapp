@@ -28,6 +28,9 @@ class ShippingAddressFragment : Fragment() {
     private lateinit var viewModel: ShippingAddressViewModel
     private val args: ShippingAddressFragmentArgs by navArgs()
     private lateinit var addressAdapter: AddressAdapter
+
+    private  var fromCheckout: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(ShippingAddressViewModel::class.java)
@@ -40,7 +43,8 @@ class ShippingAddressFragment : Fragment() {
     ): View? {
         binding = FragmentShippingAddressBinding.inflate(inflater, container, false)
         viewModel.getUserAddresses()
-        val fromCheckout = args.fromCheckout
+
+        fromCheckout = args.fromCheckout
 
         addressAdapter = AddressAdapter(fromCheckout,
             onAddressSelected = { position ->
@@ -67,7 +71,19 @@ class ShippingAddressFragment : Fragment() {
         binding.selectAddressButton.visibility = if (fromCheckout) View.VISIBLE else View.GONE
         binding.selectAddressButton.isEnabled = false // Initially disabled until an address is selected
 
-        binding.btnBack.setOnClickListener {
+
+        observeData()
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setOnClickListeners()
+    }
+
+    private fun setOnClickListeners() = with(binding) {
+        btnBack.setOnClickListener {
             if (fromCheckout) {
                 findNavController().navigate(R.id.action_shippingAddressFragment_to_checkOutFragment)
                 findNavController().popBackStack()
@@ -77,7 +93,7 @@ class ShippingAddressFragment : Fragment() {
             }
         }
 
-        binding.selectAddressButton.setOnClickListener {
+        selectAddressButton.setOnClickListener {
             val selectedAddress = addressAdapter.getSelectedAddress()
             if (selectedAddress != null) {
 
@@ -93,19 +109,14 @@ class ShippingAddressFragment : Fragment() {
             }
         }
 
-        binding.addAddressBtn.setOnClickListener {
-            binding.addAddressBtn.setOnClickListener {
-                val action = ShippingAddressFragmentDirections
-                    .actionShippingAddressFragmentToAddEditAddressFragment(
-                        action = "add"
-                    )
-                findNavController().navigate(action)
-            }
+        addAddressBtn.setOnClickListener {
+            val action = ShippingAddressFragmentDirections
+                .actionShippingAddressFragmentToAddEditAddressFragment(
+                    action = "add"
+                )
+            findNavController().navigate(action)
         }
 
-        observeData()
-
-        return binding.root
     }
 
     private fun observeData() {

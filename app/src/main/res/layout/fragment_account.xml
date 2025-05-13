@@ -99,6 +99,46 @@
                 android:layout_marginEnd="18dp"
                 app:dividerColor="@color/gray_e9edef"/>
 
+            <!-- Profile -->
+            <LinearLayout
+                android:id="@+id/changePassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="18dp"
+                android:background="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_key_light"
+                    app:tint="@color/grey_dark" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Change Password"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="16dp" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_right"
+                    app:tint="@color/grey_dark" />
+
+            </LinearLayout>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginEnd="18dp"
+                app:dividerColor="@color/gray_e9edef"/>
+
             <!-- Order History -->
             <LinearLayout
                 android:id="@+id/orderHistory"
@@ -112,7 +152,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_history"
+                    android:src="@drawable/ic_order"
                     app:tint="@color/grey_dark" />
 
                 <TextView
@@ -120,47 +160,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Order History"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/poppins_regular"
-                    android:textColor="@color/black"
-                    android:layout_marginStart="16dp" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_right"
-                    app:tint="@color/grey_dark" />
-
-            </LinearLayout>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginStart="18dp"
-                android:layout_marginEnd="18dp"
-                app:dividerColor="@color/gray_e9edef"/>
-
-            <!-- Notification Settings -->
-            <LinearLayout
-                android:id="@+id/notificationSettings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="18dp"
-                android:background="?attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_notification_2"
-                    app:tint="@color/grey_dark" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Notification Settings"
                     android:textSize="14sp"
                     android:fontFamily="@font/poppins_regular"
                     android:textColor="@color/black"
@@ -223,9 +222,8 @@
                 app:dividerColor="@color/gray_e9edef"/>
 
 
-            <!-- Payment Info -->
             <LinearLayout
-                android:id="@+id/paymentInfo"
+                android:id="@+id/deleteAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -236,14 +234,14 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_credit_card"
+                    android:src="@drawable/ic_trash"
                     app:tint="@color/grey_dark" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Payment Info"
+                    android:text="Delete Account"
                     android:textSize="14sp"
                     android:fontFamily="@font/poppins_regular"
                     android:textColor="@color/black"
@@ -304,9 +302,9 @@
                 android:layout_marginEnd="18dp"
                 app:dividerColor="@color/gray_e9edef"/>
 
-            <!-- Delete Account -->
+            <!-- Logout Account -->
             <LinearLayout
-                android:id="@+id/deleteAccount"
+                android:id="@+id/logoutAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"

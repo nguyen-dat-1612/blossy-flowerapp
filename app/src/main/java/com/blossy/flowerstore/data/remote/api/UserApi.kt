@@ -1,7 +1,9 @@
 package com.blossy.flowerstore.data.remote.api
 
+import androidx.room.Update
 import com.blossy.flowerstore.data.remote.dto.AddressResponse
 import com.blossy.flowerstore.data.remote.dto.PushRequest
+import com.blossy.flowerstore.data.remote.dto.UpdateUserRequest
 import com.blossy.flowerstore.data.remote.dto.UserProfileResponse
 import com.blossy.flowerstore.data.remote.utils.BaseResponse
 import retrofit2.Response
@@ -38,5 +40,11 @@ interface UserApi {
 
     @PUT("users/fcm")
     suspend fun updateFcmToken(@Body pushRequest: PushRequest): Response<BaseResponse<Boolean>>
+
+    @POST("users/logout")
+    suspend fun logout(): Response<BaseResponse<Boolean>>
+
+    @PUT("users/{id}")
+    suspend fun updateUser(@Path("id") id: String, @Body user: UpdateUserRequest): Response<BaseResponse<UserProfileResponse>>
 
 }

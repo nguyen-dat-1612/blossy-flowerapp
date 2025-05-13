@@ -28,7 +28,7 @@ class ProductRepositoryImpl  @Inject constructor(
     }
 
     override suspend fun searchProducts(
-        keyword: String,
+        keyword: String?,
         categories: Set<String>,
         minPrice: Int?,
         maxPrice: Int?,
