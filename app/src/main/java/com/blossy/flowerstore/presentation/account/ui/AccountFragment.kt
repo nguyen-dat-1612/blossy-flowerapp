@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentAccountBinding
 import com.blossy.flowerstore.presentation.account.viewmodel.AccountViewModel
@@ -70,6 +71,9 @@ class AccountFragment : Fragment() {
         shippingAddress.setOnClickListener {
             val action = MainFragmentDirections.actionMainFragmentToShippingAddressFragment(fromCheckout = false)
             navController.navigate(action)
+        }
+        changePassword.setOnClickListener {
+             navController.navigate(R.id.action_mainFragment_to_changePasswordFragment)
         }
     }
 

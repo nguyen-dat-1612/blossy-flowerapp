@@ -5,6 +5,7 @@ import com.blossy.flowerstore.data.remote.api.AuthApi
 import com.blossy.flowerstore.data.remote.dto.LoginRequest
 import com.blossy.flowerstore.data.remote.dto.LoginResponse
 import com.blossy.flowerstore.data.remote.dto.RegisterRequest
+import com.blossy.flowerstore.data.remote.dto.UpdatePasswordRequest
 import com.blossy.flowerstore.domain.repository.AuthRepository
 import javax.inject.Inject
 import com.blossy.flowerstore.domain.utils.Result
@@ -60,4 +61,21 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updatePassword(oldPassword: String, newPassword: String): Result<Boolean> {
+        return try {
+            val response = api.updatePassword(UpdatePasswordRequest(oldPassword, newPassword))
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.success) {
+                    Result.Success(true)
+                } else {
+                    Result.Error(body?.message ?: "Unknown server error")
+                }
+            } else {
+                Result.Error(response.errorBody()?.string() ?: "Network error")
+            }
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Unknown exception")
+        }
+    }
 }
