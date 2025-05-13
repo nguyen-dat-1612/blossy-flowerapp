@@ -10,6 +10,7 @@ import com.blossy.flowerstore.domain.repository.UserRepository
 import com.blossy.flowerstore.domain.utils.Result
 import com.blossy.flowerstore.data.mapper.toAddress
 import com.blossy.flowerstore.data.remote.dto.PushRequest
+import com.blossy.flowerstore.data.remote.dto.UpdateUserRequest
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -137,6 +138,30 @@ class UserRepositoryImpl @Inject constructor(
                 val body = response.body()
                 if (body != null && body.success) {
                     Result.Success(body.success)
+                } else {
+                    Result.Error(body?.message ?: "An error occurred")
+                }
+                } else {
+                Result.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "An error occurred")
+        }
+    }
+
+    override suspend fun logout(): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateUserProfile(id: String, name: String, email: String): Result<User> {
+        return try {
+            val response = userApi.updateUser(id, UpdateUserRequest(name, email))
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.success
+                    && body.data != null) {
+                    val user = body.data.toUser()
+                    Result.Success(user)
                 } else {
                     Result.Error(body?.message ?: "An error occurred")
                 }

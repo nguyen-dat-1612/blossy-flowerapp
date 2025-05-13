@@ -23,4 +23,9 @@ interface UserRepository  {
     suspend fun deleteAddress(addressId: String): Result<List<Address>>
 
     suspend fun updateFcmToken(token: String): Result<Boolean>
+
+    suspend fun logout(): Result<Boolean>
+
+    suspend fun updateUserProfile(id: String, name: String, email: String): Result<User>
+
 }

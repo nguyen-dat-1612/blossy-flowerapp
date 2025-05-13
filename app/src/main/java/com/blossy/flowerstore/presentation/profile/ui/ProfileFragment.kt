@@ -46,35 +46,36 @@ class ProfileFragment : Fragment() {
         setOnClickListener()
     }
 
-    private fun setOnClickListener() {
-        binding.btnBack.setOnClickListener {
+    private fun setOnClickListener() = with(binding) {
+        btnBack.setOnClickListener {
             findNavController().navigate(R.id.action_profileFragment_to_mainFragment)
             findNavController().popBackStack()
         }
-        binding.editBtn.setOnClickListener {
-            binding.apply {
-                fullNameInput.isEnabled = true
-                emailInput.isEnabled = true
-                passwordInput.isEnabled = true
-                editProfileImage.visibility = View.GONE
-                editBtn.visibility = View.GONE
-                confirmBtn.visibility = View.VISIBLE
-            }
+        editBtn.setOnClickListener {
+            fullNameInput.isEnabled = true
+            emailInput.isEnabled = true
+            passwordInput.isEnabled = true
+            editProfileImage.visibility = View.GONE
+            editBtn.visibility = View.GONE
+            confirmBtn.visibility = View.VISIBLE
         }
 
         binding.confirmBtn.setOnClickListener{
-            binding.apply {
-                fullNameInput.isEnabled = false
-                emailInput.isEnabled = false
-                passwordInput.isEnabled = false
-                confirmBtn.visibility = View.GONE
-                editProfileImage.visibility = View.VISIBLE
-                editBtn.visibility = View.VISIBLE
-            }
+            fullNameInput.isEnabled = false
+            emailInput.isEnabled = false
+            passwordInput.isEnabled = false
+            confirmBtn.visibility = View.GONE
+            editProfileImage.visibility = View.VISIBLE
+            editBtn.visibility = View.VISIBLE
+            viewModel.updateUserProfile(
+                id = (viewModel.userProfileUiState.value as UiState.Success).data.id,
+                name = fullNameInput.text.toString(),
+                email = emailInput.text.toString()
+            )
         }
     }
 
-    fun observeData() {
+    private fun observeData() {
         collectState(viewModel.userProfileUiState) { state ->
             when (state) {
 
@@ -104,7 +105,35 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
+
+        collectState(viewModel.updateProfileUiState) {
+            when (it) {
+                is UiState.Loading -> {}
+
+                is UiState.Success -> {
+                    Toast.makeText(requireContext(), "Update Success", Toast.LENGTH_SHORT).show()
+                    Log.d("HomeFragment", "Success: ${it.data}")
+                    // Handle success state
+                    Glide.with(binding.profileImage.context)
+                        .load(it.data.avatar)
+                        .into(binding.profileImage)
+                    binding.apply {
+                        userName.text = it.data.name
+                        fullNameInput.setText(it.data.name)
+                        emailInput.setText(it.data.email)
+                    }
+                }
+                is UiState.Error -> {
+                    Log.e("HomeFragment", "Error: ${it.message}")
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    // Handle error state
+                }
+                else -> {}
+            }
+        }
     }
+
+
     companion object {
 
     }
