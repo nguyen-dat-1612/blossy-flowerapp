@@ -3,10 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:alpha="0.6"
     android:visibility="gone"
     android:gravity="center">
-
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="60dp"

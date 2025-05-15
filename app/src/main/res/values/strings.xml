@@ -11,4 +11,35 @@
     <string name="tab_shipped">Shipped</string>
     <string name="tab_delivered">Delivered</string>
     <string name="tab_cancelled">Cancelled</string>
+
+    <string name="location_unavailable">Location not available</string>
+    <string name="location_error">Error getting location: %1$s</string>
+    <string name="location_unknown">Location unknown</string>
+    <string name="geocoder_error">Error getting address</string>
+
+    <!-- Home Screen -->
+    <string name="search_hint">Looking for flowers</string>
+    <string name="special_offers">Special Offers</string>
+    <string name="see_all">See all</string>
+    <string name="categories">Categories</string>
+    <string name="trending">Trends &amp; Popular Now</string>
+
+    <!-- Error Messages -->
+    <string name="error_loading_data">Error loading data</string>
+    <string name="try_again">Try Again</string>
+
+    <!-- Navigation -->
+    <string name="menu_home">Home</string>
+    <string name="menu_categories">Categories</string>
+    <string name="menu_cart">Cart</string>
+    <string name="menu_profile">Profile</string>
+
+    <!-- User Interface -->
+    <string name="loading">Loading...</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="retry">Retry</string>
+
+    <!-- Format Strings -->
+    <string name="price_format">$%1$.2f</string>
+    <string name="discount_format">-%1$d%%</string>
 </resources>

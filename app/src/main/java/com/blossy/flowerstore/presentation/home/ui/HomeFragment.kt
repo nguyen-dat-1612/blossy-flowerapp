@@ -1,7 +1,5 @@
 package com.blossy.flowerstore.presentation.home.ui
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
 import android.os.Handler
@@ -11,12 +9,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.blossy.flowerstore.databinding.FragmentHomeBinding
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.common.collectState
@@ -26,237 +22,184 @@ import com.blossy.flowerstore.presentation.home.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.viewpager2.widget.ViewPager2
 import com.blossy.flowerstore.R
+import com.blossy.flowerstore.domain.model.Category
 import com.blossy.flowerstore.presentation.common.MainFragmentDirections
 import com.blossy.flowerstore.presentation.home.adapter.BannerAdapter
+import com.blossy.flowerstore.utils.LocationHelper
+import com.blossy.flowerstore.utils.setOnSingleClickListener
 import com.bumptech.glide.Glide
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    private lateinit var binding: FragmentHomeBinding
-    private lateinit var categoryAdapter: CategoryAdapter
-    private lateinit var productAdapter: ProductAdapter
-    private lateinit var homeViewModel: HomeViewModel;
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var scrollPosition = 0
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: HomeViewModel by viewModels()
+    private val locationHelper by lazy { LocationHelper(requireContext()) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
-        homeViewModel.loadHomeData()
+    private val categoryAdapter by lazy { CategoryAdapter(::navigateToCategoryProducts) }
+    private val productAdapter by lazy { ProductAdapter { navigateToProductDetail(it.id, SOURCE_HOME) } }
+    private val bannerAdapter by lazy { BannerAdapter(listOf(R.drawable.banner1, R.drawable.banner2, R.drawable.banner3)) }
+
+    private var scrollPosition = 0
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var autoScrollRunnable: Runnable
+
+    companion object {
+        private const val SOURCE_HOME = "home"
+        private const val AUTO_SCROLL_DELAY = 3000L
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
-        observeCategories()
-        observeTopProducts()
-        observeUserProfile()
-        val banners = listOf(R.drawable.banner1, R.drawable.banner2, R.drawable.banner3)
-        val adapter = BannerAdapter(banners)
-        binding.viewPager.adapter = adapter
-        autoScrollViewPager(binding.viewPager, banners.size)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.scrollView.post {
-            binding.scrollView.scrollTo(0, scrollPosition)
-        }
-        onClickListener()
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        getCurrentLocation()
-
+        initViews()
+        setupObservers()
+        loadData()
+        requestLocation()
     }
-    private fun getCurrentLocation() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
 
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    if (location != null) {
-                        val latitude = location.latitude
-                        val longitude = location.longitude
+    private fun initViews() = with(binding) {
+        // Banner setup
+        viewPager.adapter = bannerAdapter
+        setupAutoScroll()
 
-                        val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                        try {
-                            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-                            if (!addresses.isNullOrEmpty()) {
-                                val address = addresses[0]
-                                val subcity = address.subAdminArea ?: "Không rõ huyện"
-                                val city = address.adminArea
-                                    ?: "Không rõ thành phố"
-                                Log.d("LocationDebug", "Full address: ${address}")
-                                val country = address.countryName ?: "Không rõ quốc gia"
-                                binding.locationText.text = "$subcity, $city, $country"
-                            } else {
-                                binding.locationText.text = "Không thể xác định địa chỉ từ vị trí"
-                            }
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                            binding.locationText.text = "Lỗi khi lấy địa chỉ: ${e.message}"
-                        }
+        // RecyclerViews setup
+        recyclerViewCategories.apply {
+            adapter = categoryAdapter
+            setHasFixedSize(true)
+        }
 
-                    } else {
-                        binding.locationText.text = "Không lấy được vị trí hiện tại"
-                    }
-                }
-                .addOnFailureListener {
-                    binding.locationText.text = "Lỗi khi lấy vị trí: ${it.message}"
-                }
-        } else {
-            binding.locationText.text = "Chưa được cấp quyền truy cập vị trí"
+        recyclerViewPopular.apply {
+            adapter = productAdapter
+            setHasFixedSize(true)
+        }
+
+        // Click listeners
+        searchClickOverlay.setOnSingleClickListener { navigateTo(R.id.action_mainFragment_to_searchFragment) }
+        notificationBtn.setOnSingleClickListener { navigateTo(R.id.action_mainFragment_to_notificationFragment) }
+        seeAllPopular.setOnSingleClickListener { navigateTo(R.id.action_mainFragment_to_popularFragment) }
+        seeAllCategories.setOnSingleClickListener { navigateTo(R.id.action_mainFragment_to_categoryListFragment) }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            loadData(refresh = true)
+        }
+
+        scrollView.viewTreeObserver.addOnScrollChangedListener {
+            scrollPosition = scrollView.scrollY
         }
     }
 
-
-
-    private fun onClickListener() {
-        binding.searchClickOverlay.setOnClickListener {
-
-            requireActivity().findNavController(R.id.nav_host_main).navigate(
-                R.id.action_mainFragment_to_searchFragment,
-            )
-        }
-        binding.notificationBtn.setOnClickListener {
-            val navController = requireActivity().findNavController(R.id.nav_host_main)
-            navController.navigate(R.id.action_mainFragment_to_notificationFragment)
-
-        }
-
-        binding.seeAllPopular.setOnClickListener {
-            val navController = requireActivity().findNavController(R.id.nav_host_main)
-            navController.navigate(R.id.action_mainFragment_to_popularFragment)
-        }
-
-        binding.seeAllCategories.setOnClickListener {
-            val navController = requireActivity().findNavController(R.id.nav_host_main)
-            navController.navigate(R.id.action_mainFragment_to_categoryListFragment)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        scrollPosition = binding.scrollView.scrollY
-    }
-
-    private fun autoScrollViewPager(viewPager: ViewPager2, itemCount: Int) {
-        val handler = Handler(Looper.getMainLooper())
-        var index = 0
-        val runnable = object : Runnable {
+    private fun setupAutoScroll() {
+        autoScrollRunnable = object : Runnable {
             override fun run() {
-                index = (index + 1) % itemCount
-                viewPager.setCurrentItem(index, true)
-                handler.postDelayed(this, 3000) // 3 giây
+                binding.viewPager.currentItem = (binding.viewPager.currentItem + 1) % bannerAdapter.itemCount
+                handler.postDelayed(this, AUTO_SCROLL_DELAY)
             }
         }
-        handler.post(runnable)
+        handler.post(autoScrollRunnable)
     }
 
-    private fun observeCategories() {
-        collectState(homeViewModel.categoryUiState) { state ->
-            when (state) {
-                is UiState.Loading -> {
-//                    binding.progressBar.visibility = View.VISIBLE
-                }
-                is UiState.Success -> {
-                    Log.d("HomeFragment", "Success: ${state.data}")
-//                    binding.progressBar.visibility = View.GONE
-                    categoryAdapter = CategoryAdapter(state.data, onItemClick = { category ->
-                        val navController = requireActivity().findNavController(R.id.nav_host_main)
-                        val action = MainFragmentDirections.actionMainFragmentToCategoryProductFragment(category)
-                        navController.navigate(action)
-                    })
-                    binding.recyclerViewCategories.apply {
-                        layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                        adapter = categoryAdapter
-                    }
-                }
-                is UiState.Error -> {
-                    Log.e("HomeFragment", "Error: ${state.message}")
-//                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                    // Handle error state
-                }
-                is UiState.Idle -> {
-                    // Handle idle state
-                }
-            }
+    private fun loadData(refresh: Boolean = false) {
+        viewModel.loadHomeData()
+        if (refresh) binding.swipeRefreshLayout.isRefreshing = false
+    }
 
+    private fun setupObservers() {
+        collectState(viewModel.categoryUiState) { state ->
+            binding.progressOverlayCategories.root.isVisible = state is UiState.Loading
+            if (state is UiState.Success) categoryAdapter.submitList(state.data)
         }
 
-    }
-
-    private fun observeTopProducts() {
-        collectState(homeViewModel.productUiState) { state ->
-            when (state) {
-                is UiState.Loading -> {
-//                    binding.progressBar.visibility = View.VISIBLE
-                }
-
-                is UiState.Success -> {
-                    Log.d("HomeFragment", "Success: ${state.data}")
-//                    binding.progressBar.visibility = View.GONE
-                    productAdapter = ProductAdapter(state.data) { product ->
-                        val navController = requireActivity().findNavController(R.id.nav_host_main)
-                        val action = MainFragmentDirections.actionMainFragmentToProductDetailFragment(product.id, "home")
-                        navController.navigate(action)
-                    }
-                    binding.recyclerViewPopular.apply {
-                        layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                        adapter = productAdapter
-                    }
-                }
-
-                is UiState.Error -> {
-                    Log.e("HomeFragment", "Error: ${state.message}")
-//                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                    // Handle error state
-                }
-
-                is UiState.Idle -> {
-                    // Handle idle state
-                }
-            }
+        collectState(viewModel.productUiState) { state ->
+            binding.progressOverlayPopular.root.isVisible = state is UiState.Loading
+            if (state is UiState.Success) productAdapter.submitList(state.data)
         }
 
-    }
-    private fun observeUserProfile() {
-        collectState(homeViewModel.userProfileUiState) { state ->
+        collectState(viewModel.userProfileUiState) { state ->
             when (state) {
-
-                is UiState.Loading -> {}
                 is UiState.Success -> {
-                    Log.d("HomeFragment", "Success: ${state.data}")
-                    // Handle success state
                     binding.userName.text = state.data.name
-                    Glide.with(binding.userAvatar.context)
+                    Glide.with(this)
                         .load(state.data.avatar)
+                        .circleCrop()
                         .into(binding.userAvatar)
                 }
-
-                is UiState.Error -> {
-                    Log.e("HomeFragment", "Error: ${state.message}")
-                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                    // Handle error state
-                }
-                is UiState.Idle -> {
-                    // Handle idle state
-                }
+                is UiState.Error -> Log.e("HomeFragment", "Profile error: ${state.message}")
+                else -> Unit
             }
         }
-
     }
 
-    companion object {
+    private fun requestLocation() {
+        locationHelper.getLastLocation(
+            onSuccess = { location ->
+                location?.let {
+                    resolveAddress(it.latitude, it.longitude)
+                } ?: run {
+                    binding.locationText.text = getString(R.string.location_unavailable)
+                }
+            },
+            onError = {
+                binding.locationText.text = getString(R.string.location_error, it.message)
+            }
+        )
+    }
 
+    private fun resolveAddress(lat: Double, lng: Double) = lifecycleScope.launch(Dispatchers.IO) {
+        try {
+            val address = Geocoder(requireContext(), Locale.getDefault())
+                .getFromLocation(lat, lng, 1)
+                ?.firstOrNull()
+
+            withContext(Dispatchers.Main) {
+                address?.let {
+                    val locationText = listOfNotNull(
+                        it.subAdminArea,
+                        it.adminArea,
+                        it.countryName
+                    ).joinToString(", ")
+
+                    binding.locationText.text = locationText.ifEmpty {
+                        getString(R.string.location_unknown)
+                    }
+                } ?: run {
+                    binding.locationText.text = getString(R.string.location_unknown)
+                }
+            }
+        } catch (e: IOException) {
+            withContext(Dispatchers.Main) {
+                binding.locationText.text = getString(R.string.geocoder_error)
+            }
+        }
+    }
+
+    private fun navigateTo(actionId: Int) = findNavController().navigate(actionId)
+
+    private fun navigateToCategoryProducts(category: Category) {
+        val action = MainFragmentDirections.actionMainFragmentToCategoryProductFragment(category)
+        findNavController().navigate(action)
+    }
+
+    private fun navigateToProductDetail(productId: String, source: String) {
+        val action = MainFragmentDirections.actionMainFragmentToProductDetailFragment(productId, source)
+        findNavController().navigate(action)
+    }
+
+    private fun findNavController() = requireActivity().findNavController(R.id.nav_host_main)
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        handler.removeCallbacks(autoScrollRunnable)
+        _binding = null
     }
 }

@@ -9,9 +9,10 @@ import com.blossy.flowerstore.domain.model.Category
 import com.bumptech.glide.Glide
 
 class CategoryAdapter(
-    private var categoryList: List<Category>,
     private val onItemClick: (Category) -> Unit
 ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>(){
+
+    private var categoryList = mutableListOf<Category>()
 
     inner class CategoryViewHolder(private val binding: ItemCategoryBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(category: Category){
@@ -39,9 +40,8 @@ class CategoryAdapter(
     }
 
     fun submitList(categories: List<Category>) {
-        categoryList = categories
+        categoryList = categories.toMutableList()
         notifyDataSetChanged()
-
     }
 
 

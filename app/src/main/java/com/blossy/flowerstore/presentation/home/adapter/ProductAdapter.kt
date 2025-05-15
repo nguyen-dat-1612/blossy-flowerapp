@@ -8,9 +8,11 @@ import com.blossy.flowerstore.domain.model.Product
 import com.bumptech.glide.Glide
 
 class ProductAdapter (
-    private val products: List<Product>,
     private val onClickListener: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
+
+    private var productList = mutableListOf<Product>()
+
     inner class ViewHolder (private val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             Glide.with(binding.imageProduct.context)
@@ -22,7 +24,7 @@ class ProductAdapter (
                 ratingBar.rating = product.rating.toFloat()
                 numReviews.text = "(${product.numReviews})"
                 stockStatus.text = if (product.stock > 0) "In Stock" else "Out of Stock"
-                priceProduct.text = "$${String.format("%.2f", product.price)}"
+                priceProduct.text = "đ${String.format("%.2f", product.price)}"
             }
             binding.root.setOnClickListener {
                 onClickListener(product)
@@ -36,11 +38,16 @@ class ProductAdapter (
     }
 
     override fun getItemCount(): Int {
-        return products.size
+        return productList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(products[position])
+        holder.bind(productList[position])
+    }
+
+    fun submitList(products: List<Product>) {
+        productList = products.toMutableList()
+        notifyDataSetChanged()
     }
 
 }
