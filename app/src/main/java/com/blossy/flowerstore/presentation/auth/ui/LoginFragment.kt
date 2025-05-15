@@ -65,10 +65,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private fun setOnClickListener() {
         binding.loginButton.setOnSingleClickListener {
-            if (validateInputs()) viewModel.login(
-                email = binding.emailText.text.toString(),
-                password = binding.passwordText.text.toString()
-            )
+            if (validateInputs()) viewModel.login( email, password)
         }
         binding.signUpText.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
