@@ -43,6 +43,7 @@ class HomeFragment : Fragment() {
     private lateinit var homeViewModel: HomeViewModel;
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var scrollPosition = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]

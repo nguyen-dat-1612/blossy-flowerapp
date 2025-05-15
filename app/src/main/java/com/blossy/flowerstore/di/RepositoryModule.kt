@@ -4,6 +4,7 @@ import com.blossy.flowerstore.data.repository.AuthRepositoryImpl
 import com.blossy.flowerstore.data.repository.CartRepositoryImpl
 import com.blossy.flowerstore.data.repository.CategoryRepositoryImpl
 import com.blossy.flowerstore.data.repository.FavoriteRepositoryImpl
+import com.blossy.flowerstore.data.repository.NotificationRepositoryImpl
 import com.blossy.flowerstore.data.repository.OrderRepositoryImpl
 import com.blossy.flowerstore.data.repository.PaymentRepositoryImpl
 import com.blossy.flowerstore.data.repository.ProductRepositoryImpl
@@ -12,6 +13,7 @@ import com.blossy.flowerstore.domain.repository.AuthRepository
 import com.blossy.flowerstore.domain.repository.CartRepository
 import com.blossy.flowerstore.domain.repository.CategoryRepository
 import com.blossy.flowerstore.domain.repository.FavoriteRepository
+import com.blossy.flowerstore.domain.repository.NotificationRepository
 import com.blossy.flowerstore.domain.repository.OrderRepository
 import com.blossy.flowerstore.domain.repository.PaymentRepository
 import com.blossy.flowerstore.domain.repository.ProductRepository
@@ -57,4 +59,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindFavoriteRepository(impl: FavoriteRepositoryImpl): FavoriteRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRepository(impl: NotificationRepositoryImpl): NotificationRepository
+
 }

@@ -4,6 +4,7 @@ import com.blossy.flowerstore.data.remote.api.AuthApi
 import com.blossy.flowerstore.data.remote.api.CartApi
 import com.blossy.flowerstore.data.remote.api.CategoryApi
 import com.blossy.flowerstore.data.remote.api.FavoriteApi
+import com.blossy.flowerstore.data.remote.api.NotificationApi
 import com.blossy.flowerstore.data.remote.api.OrderApi
 import com.blossy.flowerstore.data.remote.api.PaymentApi
 import com.blossy.flowerstore.data.remote.api.ProductApi
@@ -24,7 +25,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "http://192.168.1.16:5000/api/"
+    private const val BASE_URL = "http://192.168.1.118:5000/api/"
 
     @Provides
     @Singleton
@@ -100,5 +101,12 @@ object NetworkModule {
     @Singleton
     fun provideFavoriteApi(retrofit: Retrofit): FavoriteApi {
         return retrofit.create(FavoriteApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationApi(retrofit: Retrofit): NotificationApi {
+        return retrofit.create(NotificationApi::class.java)
+
     }
 }
