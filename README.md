@@ -74,7 +74,7 @@ implementation("com.github.momo-wallet:mobile-sdk:1.0.7")
 ## **Screenshots**  
 | Home | Cart | Checkout |  
 |------|------|----------|  
-| <img src="screenshots/home.jpg" width="200"> | <img src="screenshots/cart.jpg" width="200"> | <img src="screenshots/checkout.jpg" width="200"> |  
+| <img src="screenshots/home.png" width="200"> | <img src="screenshots/cart.png" width="200"> | <img src="screenshots/checkout.png" width="200"> |  
 
 ## **Installation**  
 1. Clone the repo:  
