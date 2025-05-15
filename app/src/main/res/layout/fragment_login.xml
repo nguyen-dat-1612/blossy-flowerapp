@@ -9,6 +9,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/formContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/login_background"
@@ -127,6 +128,7 @@
             android:layout_height="wrap_content"
             android:text="@string/sign_up_text"
             android:textSize="14sp"
+            android:textColor="@color/black"
             android:fontFamily="@font/poppins_medium"
             android:layout_marginBottom="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -135,4 +137,9 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <include
+        layout="@layout/view_progress_overlay"
+        android:id="@+id/progressOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </FrameLayout>

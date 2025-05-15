@@ -16,6 +16,10 @@ import com.blossy.flowerstore.presentation.auth.viewmodel.LoginViewModel
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.common.collectState
 import com.blossy.flowerstore.presentation.common.MainActivity
+import com.blossy.flowerstore.utils.isValidEmail
+import com.blossy.flowerstore.utils.setChildrenEnabled
+import com.blossy.flowerstore.utils.setOnSingleClickListener
+import com.blossy.flowerstore.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,6 +27,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private lateinit var binding: FragmentLoginBinding
     private val viewModel: LoginViewModel by viewModels()
+
+    private val email get() = binding.emailText.text.toString().trim()
+    private val password get() = binding.passwordText.text.toString().trim()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,36 +46,26 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     }
 
-    fun observeState() {
+    private fun observeState() {
         collectState(viewModel.uiState) { state ->
             when (state) {
                 is UiState.Loading -> {
-//                    showLoading()
+                    setLoading(true)
                 }
-
-                is UiState.Success -> {
-                    val intent = Intent(requireContext(), MainActivity::class.java)
-                    startActivity(intent)
-                    requireActivity().finish()
-//                    showSuccess(state.data)
-                }
-
+                is UiState.Success -> startMainActivity()
                 is UiState.Error -> {
-                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    setLoading(false)
+                    requireContext().toast(state.message)
                     Log.d("LoginFragment", "observeState: ${state.message}")
-//                    showError(state.message)
                 }
-
-                UiState.Idle -> {
-                    // Do nothing
-                }
+                UiState.Idle -> Unit
             }
         }
     }
 
     private fun setOnClickListener() {
-        binding.loginButton.setOnClickListener {
-            viewModel.login(
+        binding.loginButton.setOnSingleClickListener {
+            if (validateInputs()) viewModel.login(
                 email = binding.emailText.text.toString(),
                 password = binding.passwordText.text.toString()
             )
@@ -81,6 +78,26 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
     }
 
-    companion object {
+
+    private fun setLoading(isLoading: Boolean) {
+        binding.progressOverlay.root.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.formContainer.setChildrenEnabled(!isLoading)
+    }
+
+    private fun validateInputs(): Boolean =  when {
+        email.isEmpty() -> showInvalid("Email is required")
+        password.isEmpty() -> showInvalid("Password is required")
+        !email.isValidEmail() -> showInvalid("Invalid email")
+        else -> true
+    }
+
+    private fun showInvalid(message: String): Boolean {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        return false
+    }
+
+    private fun startMainActivity() {
+        startActivity(Intent(requireContext(), MainActivity::class.java))
+        requireActivity().finish()
     }
 }
