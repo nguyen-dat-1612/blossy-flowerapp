@@ -72,9 +72,9 @@ implementation("com.github.momo-wallet:mobile-sdk:1.0.7")
 ```
 
 ## **Screenshots**  
-| Home | Cart | Checkout |  
-|------|------|----------|  
-| <img src="screenshots/home.png" width="200"> | <img src="screenshots/cart.png" width="200"> | <img src="screenshots/checkout.png" width="200"> |  
+| Home | Cart | Checkout | Search |  Account |   
+|------|------|----------|--------|----------|
+| <img src="screenshots/home.png" width="200"> | <img src="screenshots/cart.png" width="200"> | <img src="screenshots/checkout.png" width="200"> | <img src="screenshots/search.png" width="200">  | <img src="screenshots/account.png" width="200">
 
 ## **Installation**  
 1. Clone the repo:  
