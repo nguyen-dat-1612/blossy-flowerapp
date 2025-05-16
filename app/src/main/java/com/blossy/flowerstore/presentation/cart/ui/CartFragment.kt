@@ -7,10 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentCartBinding
@@ -21,6 +19,8 @@ import com.blossy.flowerstore.presentation.cart.adapter.PriceDetailAdapter
 import com.blossy.flowerstore.presentation.cart.viewmodel.CartViewModel
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.CurrencyFormatter
+import com.blossy.flowerstore.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.Currency
@@ -30,16 +30,18 @@ import java.util.Locale
 class CartFragment : Fragment() {
 
     private lateinit var binding: FragmentCartBinding
-    private lateinit var cartViewModel: CartViewModel
+    private val cartViewModel: CartViewModel by viewModels()
+
     private lateinit var cartAdapter: CartAdapter
     private lateinit var priceDetailAdapter: PriceDetailAdapter
     private var isPriceDetailsVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
         cartViewModel.getCart()
+        setUpAdapter()
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,58 +52,44 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpRecyclerView()
+        observeCart()
+        setOnClickListeners()
+    }
 
-        cartAdapter = CartAdapter(mutableListOf(),
+    private fun setUpAdapter() {
+        cartAdapter = CartAdapter(
             onDeleteClicked = { cartItem ->
                 cartViewModel.deleteCartItem(cartItem.product.id)
             },
             onQuantityChanged = { cartItem, newQuantity ->
                 cartViewModel.updateCartItemQuantity(cartItem.product.id, newQuantity)
-
-            })
-
-        binding.recyclerViewCartItem.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerViewCartItem.adapter = cartAdapter
-
-
+            }
+        )
         priceDetailAdapter = PriceDetailAdapter(emptyList())
-        binding.recyclerViewPriceDetail.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerViewPriceDetail.adapter = priceDetailAdapter
-        observeCart()
-        setOnClickListeners()
+    }
+
+    private fun setUpRecyclerView() = with(binding) {
+        recyclerViewCartItem.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = cartAdapter
+        }
+
+        recyclerViewPriceDetail.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = priceDetailAdapter
+        }
     }
 
     private fun observeCart() {
         collectState(cartViewModel.getCartUiState) { state ->
             when (state) {
-                is UiState.Loading -> {
-                    // binding.progressBar.visibility = View.VISIBLE
-                }
-
                 is UiState.Success -> {
-
-                    Log.d(TAG, "Data received: ${state.data.size} items")
+                    binding.progressBar.root.visibility = View.GONE
+                    if (state.data.isEmpty()) binding.emptyState.root.visibility = View.VISIBLE
+                    else binding.emptyState.root.visibility = View.GONE
                     cartAdapter.submitList(state.data)
-
-                    val priceDetails = state.data.map {
-                        PriceDetailItem(it.product.name, it.quantity, it.quantity * it.product.price)
-                    }
-                    priceDetailAdapter.updateList(priceDetails)
-
-                    val subTotalAmount = calculateSubtotal(state.data)
-                    val totalAmount = calculateTotal(subTotalAmount)
-
-                    val vnLocale = Locale("vi", "VN")
-                    val currencyFormat = NumberFormat.getCurrencyInstance(vnLocale)
-                    currencyFormat.maximumFractionDigits = 0
-                    currencyFormat.currency = Currency.getInstance("VND")
-
-                    val formattedSubTotal = currencyFormat.format(subTotalAmount)
-                    val formattedTotal = currencyFormat.format(totalAmount)
-
-                    binding.subTotal.text = formattedSubTotal
-                    binding.total.text = formattedTotal
-
+                    updatePriceSummary(state.data)
                 }
 
                 is UiState.Error -> {
@@ -116,11 +104,13 @@ class CartFragment : Fragment() {
         collectState(cartViewModel.updateCartUiState) { state ->
             when (state) {
                 is UiState.Success -> {
-                    cartViewModel.getCart()
+                    cartAdapter.updateItemQuantity(cartViewModel.lastUpdatedProductId, cartViewModel.lastUpdatedQuantity)
+                    updatePriceSummary(cartAdapter.currentList())
+                    showToast("Item updated successfully")
                 }
                 is UiState.Error -> {
-                    Log.e(TAG, "observeCart: ${state.message}")
-                    Toast.makeText(requireContext(), "Cập nhật thất bại: ${state.message}", Toast.LENGTH_SHORT).show()
+                    showError(state.message)
+                    showToast("Update failed: ${state.message}")
                 }
                 else -> {}
             }
@@ -129,41 +119,61 @@ class CartFragment : Fragment() {
         collectState(cartViewModel.removeCartUiState) { state ->
             when (state) {
                 is UiState.Success -> {
-                    cartViewModel.getCart()
+                    cartAdapter.removeItemByProductId(cartViewModel.lastRemovedProductId)
+                    updatePriceSummary(cartAdapter.currentList())
+                    showToast("Item removed successfully")
                 }
                 is UiState.Error -> {
-                    Log.e(TAG, "observeCart: ${state.message}")
-                    Toast.makeText(requireContext(), "Xóa thất bại: ${state.message}", Toast.LENGTH_SHORT).show()
+                    showError(state.message)
+                    showToast("Delete failed: ${state.message}")
                 }
                 else -> {}
             }
         }
     }
 
-    private fun setOnClickListeners() {
-        binding.checkOutButton.setOnClickListener {
-            requireActivity().findNavController(R.id.nav_host_main).navigate(
-                R.id.action_main_to_checkOutFragment
-            )
+    private fun setOnClickListeners() = with(binding){
+        checkOutButton.setOnClickListener { findNavController().navigate(R.id.action_main_to_checkOutFragment) }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            cartViewModel.getCart()
+            swipeRefreshLayout.isRefreshing = false
         }
-        // Toggle Price Details
-        binding.togglePriceDetails.setOnClickListener {
+
+        togglePriceDetails.setOnClickListener {
             isPriceDetailsVisible = !isPriceDetailsVisible
-            binding.priceDetailsContainer.visibility = if (isPriceDetailsVisible) View.VISIBLE else View.GONE
-            binding.togglePriceDetails.text = if (isPriceDetailsVisible) "Hide Price Details" else "View Price Details"
+            priceDetailsContainer.visibility = if (isPriceDetailsVisible) View.VISIBLE else View.GONE
+            togglePriceDetails.text = if (isPriceDetailsVisible) "Hide Price Details" else "View Price Details"
         }
-//        binding.btnBack.setOnClickListener {
-//            findNavController().navigate(R.id.homeFragment)
-//        }
     }
 
+    private fun updatePriceSummary(items: List<CartItem>) {
+        val priceDetails = items.map {
+            PriceDetailItem(it.product.name, it.quantity, it.quantity * it.product.price)
+        }
+        priceDetailAdapter.updateList(priceDetails)
 
-    private fun calculateTotal(subTotalAmount: Double): Double {
-        return subTotalAmount + 0.0f
+        val subTotalAmount = calculateTotal(items)
+        val totalAmount = subTotalAmount
+
+        binding.subTotal.text = CurrencyFormatter.formatVND(subTotalAmount)
+        binding.total.text = CurrencyFormatter.formatVND(totalAmount)
     }
-    private fun calculateSubtotal(items: List<CartItem>): Double {
+
+    private fun findNavController() = requireActivity().findNavController(R.id.nav_host_main)
+
+    private fun calculateTotal(items: List<CartItem>): Double {
         return items.sumOf { it.product.price * it.quantity }
     }
+
+    private fun showToast(message: String) {
+        requireContext().toast(message)
+    }
+
+    private fun showError(message: String) {
+        Log.e(TAG, "observeCart: Error occurred: $message")
+    }
+
     companion object {
         private const val TAG = "CartFragment"
     }

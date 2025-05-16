@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.databinding.ItemPriceDetailBinding
 import com.blossy.flowerstore.domain.model.PriceDetailItem
+import com.blossy.flowerstore.utils.CurrencyFormatter
 
 class PriceDetailAdapter(
     private var items: List<PriceDetailItem>
@@ -14,7 +15,7 @@ class PriceDetailAdapter(
         fun bind(item: PriceDetailItem) {
             binding.productName.text = item.name
             binding.quantity.text = "x ${item.quantity}"
-            binding.price.text = String.format("%.2f $", item.totalPrice)
+            binding.price.text = CurrencyFormatter.formatVND(item.totalPrice)
         }
     }
 

@@ -49,4 +49,6 @@
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
     <string name="error_toggle_favorite">Failed to update favorite</string>
+
+    <string name="empty_cart">Your cart is currently empty</string>
 </resources>
