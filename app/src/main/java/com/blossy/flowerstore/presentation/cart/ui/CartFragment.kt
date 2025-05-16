@@ -133,7 +133,14 @@ class CartFragment : Fragment() {
     }
 
     private fun setOnClickListeners() = with(binding){
-        checkOutButton.setOnClickListener { findNavController().navigate(R.id.action_main_to_checkOutFragment) }
+        checkOutButton.setOnClickListener {
+            if (cartAdapter.currentList().isEmpty()) {
+                showToast("Your cart is empty")
+                return@setOnClickListener
+            } else {
+                findNavController().navigate(R.id.action_main_to_checkOutFragment)
+            }
+        }
 
         swipeRefreshLayout.setOnRefreshListener {
             cartViewModel.getCart()
