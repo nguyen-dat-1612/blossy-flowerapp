@@ -9,6 +9,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/formContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/login_background"
@@ -134,12 +135,12 @@
             app:layout_constraintTop_toBottomOf="@+id/confirmPasswordTitle"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/loginButton"
+            android:id="@+id/registerButton"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:background="@drawable/bg_button_primary"
             style="@style/Widget.AppCompat.Button"
-            android:text="Sign In"
+            android:text="Register"
             android:fontFamily="@font/poppins_bold"
             android:textSize="18sp"
             android:textAllCaps="false"
@@ -160,11 +161,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
-
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        layout="@layout/view_progress_overlay"
+        android:id="@+id/progressOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 
 </FrameLayout>

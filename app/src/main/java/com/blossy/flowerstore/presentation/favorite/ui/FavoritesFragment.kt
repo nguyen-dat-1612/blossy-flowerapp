@@ -1,81 +1,116 @@
 package com.blossy.flowerstore.presentation.favorite.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentFavoritesBinding
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.common.collectState
 import com.blossy.flowerstore.presentation.favorite.adapter.FavoritesAdapter
 import com.blossy.flowerstore.presentation.favorite.viewmodel.FavoritesViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FavoritesFragment : Fragment() {
 
-    private lateinit var binding: FragmentFavoritesBinding
-    private lateinit var favoritesAdapter: FavoritesAdapter
-    private lateinit var favoritesViewModel: FavoritesViewModel
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        favoritesViewModel = ViewModelProvider(this).get(FavoritesViewModel::class.java)
-        favoritesViewModel.loadFavoriteProducts()
-        favoritesAdapter = FavoritesAdapter(
-            onFavoriteClicked = { product ->
-                favoritesViewModel.isFavorite(product.id)
-            }
-        )
+    private var _binding: FragmentFavoritesBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: FavoritesViewModel by viewModels()
+
+    private val favoritesAdapter  by lazy {
+        FavoritesAdapter { product ->
+            viewModel.toggleFavorite(product.id)
+            false
+        }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentFavoritesBinding.inflate(inflater, container, false)
-
-        binding.recyclerViewFavorites.adapter = favoritesAdapter
-        observe()
+    ): View {
+        _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    fun observe() {
-        collectState(favoritesViewModel.favoriteProducts) { state ->
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupUI()
+        observeStates()
+        viewModel.loadFavoriteProducts()
+    }
+
+    private fun setupUI() = with(binding) {
+        recyclerViewFavorites.apply {
+            adapter = this@FavoritesFragment.favoritesAdapter
+            setHasFixedSize(true)
+        }
+
+        swipeRefreshLayout.apply {
+            setOnRefreshListener { viewModel.loadFavoriteProducts() }
+            setColorSchemeResources(R.color.primary, R.color.pink_dark, R.color.grey_dark)
+        }
+    }
+
+    private fun observeStates() = with(binding) {
+        collectState(viewModel.favoriteProducts) { state ->
             when (state) {
-                is UiState.Loading -> {
-                    // Có thể show loading UI ở đây
-                }
+                is UiState.Loading -> progressBar.root.isVisible = !swipeRefreshLayout.isRefreshing
+
                 is UiState.Success -> {
-                    // Cập nhật dữ liệu cho adapter khi có dữ liệu thành công
+                    swipeRefreshLayout.isRefreshing = false
+                    progressBar.root.isVisible = false
+                    val isEmpty = state.data.isNullOrEmpty()
+                    recyclerViewFavorites.isVisible = !isEmpty
+                    emptyState.root.isVisible = isEmpty
                     favoritesAdapter.submitList(state.data)
                 }
+
                 is UiState.Error -> {
-                    // Xử lý lỗi nếu có
+                    recyclerViewFavorites.isVisible = false
+                    swipeRefreshLayout.isRefreshing = false
+                    progressBar.root.isVisible = false
+                    emptyState.root.isVisible = true
+                    showError(state.message)
                 }
-                else -> {
-                    // Trường hợp khác (nếu có)
-                }
+
+                else -> Unit
             }
         }
 
-        collectState(favoritesViewModel.isFavorite) { state ->
+        collectState(viewModel.toggleFavoriteState) { state ->
             when (state) {
-                is UiState.Loading -> {
-                    // Có thể show loading UI ở đây
-                }
                 is UiState.Success -> {
+                    val msgRes = R.string.removed_from_favorites
+                    showSnackbar(getString(msgRes))
+                }
 
-                }
-                is UiState.Error -> {
-                    // Xử lý lỗi nếu có
-                }
-                else -> {}
+                is UiState.Error -> showError(state.message)
+                else -> Unit
             }
         }
     }
-    companion object {
+
+    private fun showError(message: String?) {
+        binding.emptyState.apply {
+            root.isVisible = true
+            textView.text = message ?: getString(R.string.error_loading_data)
+        }
+    }
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.recyclerViewFavorites.adapter = null
+        _binding = null
     }
 }

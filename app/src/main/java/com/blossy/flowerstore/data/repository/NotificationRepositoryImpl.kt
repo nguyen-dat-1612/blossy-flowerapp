@@ -1,55 +1,31 @@
 package com.blossy.flowerstore.data.repository
 
-import androidx.lifecycle.ViewModel
 import com.blossy.flowerstore.data.mapper.toNotification
 import com.blossy.flowerstore.data.remote.api.NotificationApi
 import com.blossy.flowerstore.domain.model.Notification
 import com.blossy.flowerstore.domain.repository.NotificationRepository
 import javax.inject.Inject
 import com.blossy.flowerstore.domain.utils.Result
+import com.blossy.flowerstore.data.remote.utils.safeApiCall
+import com.blossy.flowerstore.data.remote.utils.toResult
+import kotlinx.coroutines.withTimeout
 
 class NotificationRepositoryImpl @Inject constructor(
     private val notificationApi: NotificationApi
 ): NotificationRepository {
-    override suspend fun getNotifications(): Result<List<Notification>> {
-        return try {
-            val response = notificationApi.getNotifications()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.success == true) {
-                    val notifications = body.data?.map { it.toNotification() } ?: emptyList()
-                    Result.Success(notifications)
-                } else {
-                    Result.Error(body?.message ?: "Unknown error occurred")
-                }
-            } else {
-                Result.Error(response.message())
+    override suspend fun getNotifications(): Result<List<Notification>> = withTimeout(TIMEOUT){
+        safeApiCall {
+            notificationApi.getNotifications().toResult { response ->
+                response.map { it.toNotification() }
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "Unknown error occurred")
         }
     }
 
-    override suspend fun deleteNotification(id: String): Result<Notification> {
-        return try {
-            val response = notificationApi.deleteNotification(id)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.success == true) {
-                    val notification = body.data?.toNotification()
-                    if (notification != null) {
-                        Result.Success(notification)
-                    } else {
-                        Result.Error("Notification not found")
-                    }
-                } else {
-                    Result.Error(body?.message ?: "Unknown error occurred")
-                }
-            } else {
-                Result.Error(response.message())
+    override suspend fun deleteNotification(id: String): Result<Notification> = withTimeout(TIMEOUT){
+        safeApiCall {
+            notificationApi.deleteNotification(id).toResult { response ->
+                response.toNotification()
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "Unknown error occurred")
         }
     }
 
@@ -58,26 +34,15 @@ class NotificationRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun readNotification(id: String): Result<Notification> {
-        return try {
-            val response = notificationApi.readNotification(id)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.success == true) {
-                    val notification = body.data?.toNotification()
-                    if (notification != null) {
-                        Result.Success(notification)
-                    } else {
-                        Result.Error("Notification not found")
-                    }
-                } else {
-                    Result.Error(body?.message ?: "Unknown error occurred")
-                }
-            } else {
-                Result.Error(response.message())
+    override suspend fun readNotification(id: String): Result<Notification> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            notificationApi.readNotification(id).toResult { response ->
+                response.toNotification()
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "Unknown error occurred")
         }
+    }
+
+    companion object {
+        private const val TIMEOUT = 5000L
     }
 }

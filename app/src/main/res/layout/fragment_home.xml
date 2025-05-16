@@ -7,287 +7,313 @@
     android:background="@color/white"
     tools:context=".presentation.home.ui.HomeFragment">
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:scrollbars="none">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="match_parent">
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="none">
 
-
-            <!-- Header: Avatar, Greeting, Notification -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/header"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="45dp"
-                android:padding="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/avatarCard"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:strokeColor="@color/pink_dark"
-                    app:strokeWidth="1dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/userAvatar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        tools:srcCompat="@tools:sample/avatars" />
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <TextView
-                    android:id="@+id/greetingText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Welcome"
-                    android:fontFamily="@font/poppins_regular"
-                    android:textColor="@color/grey_dark"
-                    android:textSize="14sp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintStart_toEndOf="@id/avatarCard"
-                    app:layout_constraintTop_toTopOf="@id/avatarCard"
-                    tools:ignore="HardcodedText" />
-
-                <TextView
-                    android:id="@+id/userName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nguyễn Thành Đạt"
-                    android:fontFamily="@font/poppins_bold"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintStart_toEndOf="@id/avatarCard"
-                    app:layout_constraintTop_toBottomOf="@id/greetingText"
-                    tools:ignore="HardcodedText" />
-
-                <TextView
-                    android:id="@+id/locationText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_regular"
-                    android:textColor="@color/grey_dark"
-                    android:textSize="12sp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintStart_toEndOf="@id/avatarCard"
-                    app:layout_constraintTop_toBottomOf="@id/userName"
-                    tools:ignore="HardcodedText" />
-
-                <ImageButton
-                    android:id="@+id/notificationBtn"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@drawable/ic_notification"
-                    android:background="@drawable/bg_circle_button"
-                    app:tint="?attr/colorPrimary"
-                    android:padding="12dp"
-                    android:scaleType="centerInside"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" /> />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/searchBar"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/header"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cardCornerRadius="5dp"
-                app:cardElevation="0dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white"
-                android:clickable="true"
-                android:focusable="true">
+                android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="45dp"
+                    android:padding="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_search"
-                        app:tint="@color/grey_dark" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/avatarCard"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/white"
+                        app:strokeColor="@color/pink_dark"
+                        app:strokeWidth="1dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/userAvatar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            tools:srcCompat="@tools:sample/avatars" />
+
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
-                        android:id="@+id/searchFakeInput"
-                        android:layout_width="match_parent"
+                        android:id="@+id/greetingText"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Looking for flower"
+                        android:text="Welcome"
                         android:fontFamily="@font/poppins_regular"
                         android:textColor="@color/grey_dark"
-                        android:paddingStart="12dp"
                         android:textSize="14sp"
-                        android:ellipsize="end"
-                        android:maxLines="1" />
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintStart_toEndOf="@id/avatarCard"
+                        app:layout_constraintTop_toTopOf="@id/avatarCard"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/userName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nguyễn Thành Đạt"
+                        android:fontFamily="@font/poppins_bold"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintStart_toEndOf="@id/avatarCard"
+                        app:layout_constraintTop_toBottomOf="@id/greetingText"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/locationText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_regular"
+                        android:textColor="@color/grey_dark"
+                        android:textSize="12sp"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintStart_toEndOf="@id/avatarCard"
+                        app:layout_constraintTop_toBottomOf="@id/userName"
+                        tools:ignore="HardcodedText" />
+
+                    <ImageButton
+                        android:id="@+id/notificationBtn"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:src="@drawable/ic_notification"
+                        android:background="@drawable/bg_circle_button"
+                        app:tint="?attr/colorPrimary"
+                        android:padding="12dp"
+                        android:scaleType="centerInside"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" /> />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/searchBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/header"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="5dp"
+                        app:cardElevation="0dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_search"
+                                app:tint="@color/grey_dark" />
+
+                            <TextView
+                                android:id="@+id/searchFakeInput"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Looking for flower"
+                                android:fontFamily="@font/poppins_regular"
+                                android:textColor="@color/grey_dark"
+                                android:paddingStart="12dp"
+                                android:textSize="14sp"
+                                android:ellipsize="end"
+                                android:maxLines="1" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                    <View
+                        android:id="@+id/searchClickOverlay"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:background="@android:color/transparent"
+                        app:layout_constraintTop_toTopOf="@id/searchBar"
+                        app:layout_constraintBottom_toBottomOf="@id/searchBar"
+                        app:layout_constraintStart_toStartOf="@id/searchBar"
+                        app:layout_constraintEnd_toEndOf="@id/searchBar" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/specialOffersTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Special Offers"
+                    android:fontFamily="@font/poppins_bold"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="20sp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="18dp"
+                    app:layout_constraintTop_toBottomOf="@id/searchBar"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/viewAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="See all"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:textStyle=""
+                    android:layout_marginEnd="18dp"
+                    app:layout_constraintTop_toTopOf="@id/specialOffersTitle"
+                    app:layout_constraintBottom_toBottomOf="@id/specialOffersTitle"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:layout_height="200dp"
+                    android:layout_marginStart="19dp"
+                    android:layout_marginEnd="19dp"
+                    app:layout_constraintTop_toBottomOf="@id/specialOffersTitle"/>
+
+                <LinearLayout
+                    android:id="@+id/headerCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginEnd="18dp"
+                    app:layout_constraintTop_toBottomOf="@id/viewPager">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Categories"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:gravity="center_vertical"/>
+
+                    <TextView
+                        android:id="@+id/seeAllCategories"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="See all"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:textColor="@color/primary"
+                        android:gravity="center_vertical"/>
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <View
-                android:id="@+id/searchClickOverlay"
-                android:layout_width="0dp"
-                android:layout_height="52dp"
-                android:background="@android:color/transparent"
-                app:layout_constraintTop_toTopOf="@id/searchBar"
-                app:layout_constraintBottom_toBottomOf="@id/searchBar"
-                app:layout_constraintStart_toStartOf="@id/searchBar"
-                app:layout_constraintEnd_toEndOf="@id/searchBar" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/specialOffersTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Special Offers"
-                android:fontFamily="@font/poppins_bold"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="20sp"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="18dp"
-                app:layout_constraintTop_toBottomOf="@id/searchBar"
-                app:layout_constraintStart_toStartOf="parent" />
+                <FrameLayout
+                    android:id="@+id/layoutCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/headerCategories"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp">
 
-            <TextView
-                android:id="@+id/viewAll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="See all"
-                android:fontFamily="@font/poppins_medium"
-                android:textColor="@color/primary"
-                android:textSize="14sp"
-                android:textStyle=""
-                android:layout_marginEnd="18dp"
-                app:layout_constraintTop_toTopOf="@id/specialOffersTitle"
-                app:layout_constraintBottom_toBottomOf="@id/specialOffersTitle"
-                app:layout_constraintEnd_toEndOf="parent" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewCategories"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
+                    <include
+                        layout="@layout/view_progress_overlay_white"
+                        android:id="@+id/progressOverlayCategories"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                </FrameLayout>
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewPager"
-                android:layout_width="match_parent"
-                android:layout_marginTop="12dp"
-                android:layout_height="200dp"
-                android:layout_marginStart="19dp"
-                android:layout_marginEnd="19dp"
-                app:layout_constraintTop_toBottomOf="@id/specialOffersTitle"/>
+                <LinearLayout
+                    android:id="@+id/layoutPopular"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginEnd="18dp"
+                    app:layout_constraintTop_toBottomOf="@id/layoutCategories">
 
-            <LinearLayout
-                android:id="@+id/layoutCategories"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="18dp"
-                android:layout_marginEnd="18dp"
-                app:layout_constraintTop_toBottomOf="@id/viewPager">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Trends &amp; Popular Now"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:gravity="center_vertical"/>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="Categories"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins_bold"
-                    android:textColor="?attr/colorPrimary"
-                    android:gravity="center_vertical"/>
+                    <TextView
+                        android:id="@+id/seeAllPopular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="See all"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:textColor="@color/primary"
+                        android:gravity="center_vertical"/>
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/seeAllCategories"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="See all"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:textColor="@color/primary"
-                    android:gravity="center_vertical"/>
-            </LinearLayout>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/layoutPopular"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp">
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewPopular"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewCategories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/layoutCategories"
-                android:layout_marginTop="12dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"/>
+                    <include
+                        layout="@layout/view_progress_overlay_white"
+                        android:id="@+id/progressOverlayPopular"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                </FrameLayout>
 
-            <LinearLayout
-                android:id="@+id/layoutPopular"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="18dp"
-                android:layout_marginEnd="18dp"
-                app:layout_constraintTop_toBottomOf="@id/recyclerViewCategories">
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="Trends &amp; Popular Now"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins_bold"
-                    android:textColor="?attr/colorPrimary"
-                    android:gravity="center_vertical"/>
-
-                <TextView
-                    android:id="@+id/seeAllPopular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="See all"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:textColor="@color/primary"
-                    android:gravity="center_vertical"/>
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewPopular"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/layoutPopular"
-                android:layout_marginTop="12dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-
-
-<!--    app:itemIconTint="@color/bottom_nav_item_color_state"-->
-<!--    app:itemTextColor="@color/bottom_nav_item_color_state"-->
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

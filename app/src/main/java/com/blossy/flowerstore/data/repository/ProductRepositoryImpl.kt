@@ -6,24 +6,16 @@ import com.blossy.flowerstore.domain.model.Product
 import com.blossy.flowerstore.domain.repository.ProductRepository
 import javax.inject.Inject
 import com.blossy.flowerstore.domain.utils.Result
+import com.blossy.flowerstore.data.remote.utils.safeApiCall
+import com.blossy.flowerstore.data.remote.utils.toResult
+import kotlinx.coroutines.withTimeout
+
 class ProductRepositoryImpl  @Inject constructor(
     private val productApi: ProductApi
 ): ProductRepository {
-    override suspend fun getTopProducts(): Result<List<Product>> {
-        return try {
-            val response = productApi.getTopProducts()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body?.success == true && body.data != null) {
-                    Result.Success(body.data)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-            } else {
-                Result.Error(response.message())
-            }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
+    override suspend fun getTopProducts(): Result<List<Product>> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            productApi.getTopProducts().toResult()
         }
     }
 
@@ -33,47 +25,28 @@ class ProductRepositoryImpl  @Inject constructor(
         minPrice: Int?,
         maxPrice: Int?,
         page: Int
-    ): Result<ProductResponse> {
-        return try {
-            val response = productApi.getProducts(
+    ): Result<ProductResponse> = withTimeout(TIMEOUT)  {
+        safeApiCall {
+            productApi.getProducts(
                 keyword = keyword,
                 category = categories.joinToString(",").takeIf { it.isNotEmpty() },
                 minPrice = minPrice,
                 maxPrice = maxPrice,
                 page = page
-            )
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body?.success == true && body.data != null) {
-                    Result.Success(body.data)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-            } else {
-                Result.Error(response.message())
-            }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
+            ).toResult()
         }
     }
 
 
-    override suspend fun getProductById(id: String): Result<Product> {
-        return try {
-            val response = productApi.getProductById(id)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body?.success == true && body.data != null) {
-                    Result.Success(body.data)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-            } else {
-                Result.Error(response.message())
-            }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
+    override suspend fun getProductById(id: String): Result<Product> = withTimeout(TIMEOUT)  {
+        safeApiCall {
+            productApi.getProductById(id).toResult()
         }
+    }
+
+
+    companion object {
+        private const val TIMEOUT = 5000L
     }
 
 }
