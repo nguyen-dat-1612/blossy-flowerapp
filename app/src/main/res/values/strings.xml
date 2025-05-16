@@ -42,4 +42,11 @@
     <!-- Format Strings -->
     <string name="price_format">$%1$.2f</string>
     <string name="discount_format">-%1$d%%</string>
+
+    <string name="favorites">Favorites</string>
+    <string name="no_favorites">No favorites yet</string>
+    <string name="browse_products">Browse Products</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="error_toggle_favorite">Failed to update favorite</string>
 </resources>

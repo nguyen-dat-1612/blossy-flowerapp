@@ -1,6 +1,5 @@
 package com.blossy.flowerstore.data.repository
 
-import android.util.Log
 import com.blossy.flowerstore.data.remote.api.AuthApi
 import com.blossy.flowerstore.data.remote.dto.LoginRequest
 import com.blossy.flowerstore.data.remote.dto.LoginResponse
@@ -10,6 +9,9 @@ import com.blossy.flowerstore.domain.repository.AuthRepository
 import javax.inject.Inject
 import com.blossy.flowerstore.domain.utils.Result
 import com.blossy.flowerstore.utils.SecureTokenManager
+import com.blossy.flowerstore.data.remote.utils.safeApiCall
+import com.blossy.flowerstore.data.remote.utils.toResult
+import kotlinx.coroutines.withTimeout
 
 class AuthRepositoryImpl @Inject constructor(
     private val api: AuthApi,
@@ -20,62 +22,31 @@ class AuthRepositoryImpl @Inject constructor(
         name: String,
         email: String,
         password: String
-    ): Result<LoginResponse> {
-        return try {
-            val response = api.register(RegisterRequest(name, email, password))
-            if (response.isSuccessful) {
-                val body = response.body()
-                Log.d("register", body.toString())
-                if (body != null && body.success && body.code == 200 && body.data != null) {
-                    secureTokenManager.saveAccessToken(body.data.token)
-                    Result.Success(body.data)
-                } else {
-                    Result.Error(body?.message ?: "Unknown server error")
-                }
-            } else {
-                Result.Error(response.errorBody()?.string() ?: "Network error")
+    ): Result<LoginResponse> = withTimeout(TIMEOUT){
+        safeApiCall {
+            api.register(RegisterRequest(name, email, password)).toResult { response ->
+                secureTokenManager.saveAccessToken(response.token)
+                response
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "Unknown exception")
         }
     }
 
-    override suspend fun login(email: String, password: String): Result<LoginResponse> {
-        return try {
-            val response = api.login(LoginRequest(email, password))
-            if (response.isSuccessful) {
-                val body = response.body()
-                Log.d("login", body.toString())
-                if (body != null && body.success && body.code == 200 && body.data != null) {
-                    secureTokenManager.saveAccessToken(body.data.token)
-                    Result.Success(body.data)
-                } else {
-                    Result.Error(body?.message ?: "Unknown server error")
-                }
+    override suspend fun login(email: String, password: String): Result<LoginResponse> = withTimeout(TIMEOUT){
+        safeApiCall {
+            api.login(LoginRequest(email, password)).toResult { response ->
+                secureTokenManager.saveAccessToken(response.token)
+                response
             }
-            else {
-                Result.Error(response.errorBody()?.string() ?: "Network error")
-            }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "Unknown exception")
         }
     }
 
-    override suspend fun updatePassword(oldPassword: String, newPassword: String): Result<Boolean> {
-        return try {
-            val response = api.updatePassword(UpdatePasswordRequest(oldPassword, newPassword))
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success) {
-                    Result.Success(true)
-                } else {
-                    Result.Error(body?.message ?: "Unknown server error")
-                }
-            } else {
-                Result.Error(response.errorBody()?.string() ?: "Network error")
-            }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "Unknown exception")
+    override suspend fun updatePassword(oldPassword: String, newPassword: String): Result<Boolean> = withTimeout(TIMEOUT){
+        safeApiCall {
+            api.updatePassword(UpdatePasswordRequest(oldPassword, newPassword)).toResult()
         }
+    }
+
+    companion object {
+        private const val TIMEOUT = 5000L
     }
 }

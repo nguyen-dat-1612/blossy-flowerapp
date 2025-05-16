@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.blossy.flowerstore.domain.utils.Result
+import kotlinx.coroutines.delay
+
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val getFavoriteUseCase: GetFavoriteUseCase,
@@ -22,15 +24,14 @@ class FavoritesViewModel @Inject constructor(
     private val _favoriteProducts = MutableStateFlow<UiState<List<Product>>>(UiState.Idle)
     val favoriteProducts: StateFlow<UiState<List<Product>>> = _favoriteProducts
 
-    private val _isFavorite = MutableStateFlow<UiState<Boolean>>(UiState.Idle)
-    val isFavorite: StateFlow<UiState<Boolean>> = _isFavorite
+    private val _toggleFavoriteState = MutableStateFlow<UiState<Boolean>>(UiState.Idle)
+    val toggleFavoriteState: StateFlow<UiState<Boolean>> = _toggleFavoriteState
 
     fun loadFavoriteProducts() {
         viewModelScope.launch (Dispatchers.IO){
             _favoriteProducts.value = UiState.Loading
             when (val result = getFavoriteUseCase()) {
                 is Result.Success -> {
-
                     _favoriteProducts.value = UiState.Success(result.data)
                 }
                 is Result.Error -> {
@@ -41,20 +42,26 @@ class FavoritesViewModel @Inject constructor(
         }
     }
 
-    fun isFavorite(productId: String) {
+    fun toggleFavorite(productId: String) {
         viewModelScope.launch (Dispatchers.IO){
-            _isFavorite.value = UiState.Loading
+            _toggleFavoriteState.value = UiState.Loading
             when (val result = removeFavoriteUseCase(productId)) {
                 is Result.Success -> {
                     updateLocalListAfterRemoval(productId)
-                    _isFavorite.value = UiState.Success(result.data)
+                    _toggleFavoriteState.value = UiState.Success(result.data)
                 }
                 is Result.Error -> {
-                    _isFavorite.value = UiState.Error(result.message)
+                    _toggleFavoriteState.value = UiState.Error(result.message)
                 }
                 else -> {}
             }
+            delay(500)
+            _toggleFavoriteState.value = UiState.Idle
         }
+    }
+
+    fun toggleFavoriteState(state: UiState<Boolean>) {
+        _toggleFavoriteState.value = state
     }
 
     private fun updateLocalListAfterRemoval(removedProductId: String) {

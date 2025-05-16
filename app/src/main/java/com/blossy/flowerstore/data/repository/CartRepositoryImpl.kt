@@ -6,104 +6,55 @@ import com.blossy.flowerstore.domain.model.CartItem
 import com.blossy.flowerstore.domain.repository.CartRepository
 import javax.inject.Inject
 import com.blossy.flowerstore.domain.utils.Result
+import com.blossy.flowerstore.data.remote.utils.safeApiCall
+import com.blossy.flowerstore.data.remote.utils.toResult
+import kotlinx.coroutines.withTimeout
+
 class CartRepositoryImpl @Inject constructor(
     private val cartApi: CartApi
 ): CartRepository {
-    override suspend fun getCart(): Result<List<CartItem>> {
-        return try {
-            val response = cartApi.getCart()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success) {
-                    val data = body.data
-                    if (data != null) {
-                        Result.Success(body.data.items)
-                    } else {
-                        Result.Empty
-                    }
-                } else {
-                    Result.Error("Failed to fetch cart items")
-                }
-            } else {
-                Result.Error("Failed to fetch cart items")
+    override suspend fun getCart(): Result<List<CartItem>> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            cartApi.getCart().toResult { response ->
+                response.items
             }
-        }
-        catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun addToCart(productId: String, quantity: Int): Result<List<CartItem>> {
-        return try {
-            val response = cartApi.addToCart(AddtoCartRequest(productId, quantity))
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success) {
-                    Result.Success(body.data!!.items)
-                } else {
-                    Result.Error("Failed to add product to cart")
-                }
-            } else {
-                Result.Error("Failed to add product to cart")
+    override suspend fun addToCart(productId: String, quantity: Int): Result<List<CartItem>> = withTimeout(TIMEOUT){
+        safeApiCall {
+            cartApi.addToCart(AddtoCartRequest(productId, quantity)).toResult { response ->
+                response.items
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun removeCart(productId: String): Result<Boolean> {
-        return try {
-            val response = cartApi.removeFromCart(productId)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success) {
-                    Result.Success(true)
-                } else {
-                    Result.Error("Failed to remove product from cart")
-                }
-            } else {
-                Result.Error("Failed to remove product from cart")
+    override suspend fun removeCart(productId: String): Result<Boolean> = withTimeout(TIMEOUT){
+        safeApiCall {
+            cartApi.removeFromCart(productId).toResult() {
+                true
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun updateCart(productId: String, quantity: Int): Result<Boolean> {
-        return try {
-            val response = cartApi.updateCart(AddtoCartRequest(productId, quantity))
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success) {
-                    Result.Success(true)
-                } else {
-                    Result.Error("Failed to update cart")
-                }
-            } else {
-                Result.Error("Failed to update cart")
+    override suspend fun updateCart(productId: String, quantity: Int): Result<Boolean> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            cartApi.updateCart(AddtoCartRequest(productId, quantity)).toResult() {
+                true
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun clearCart(): Result<Boolean> {
-        return try {
-            val response = cartApi.clearCart()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success) {
-                    Result.Success(true)
-                } else {
-                    Result.Error("Failed to clear cart")
-                }
-            } else {
-                Result.Error("Failed to clear cart")
+    override suspend fun clearCart(): Result<Boolean> = withTimeout(TIMEOUT){
+        safeApiCall {
+            cartApi.clearCart().toResult() {
+                true
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
+    companion object {
+        private const val TIMEOUT = 5000L
+    }
 
 }

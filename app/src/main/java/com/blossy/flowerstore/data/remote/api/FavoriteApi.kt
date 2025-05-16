@@ -18,7 +18,7 @@ interface FavoriteApi {
     suspend fun addFavoriteProduct(@Path("productId") productId: String): Response<BaseResponse<FavoriteResponse>>
 
     @DELETE("favorites/{productId}")
-    suspend fun removeFavoriteProduct(@Path("productId") productId: String): Response<BaseResponse<Unit>>
+    suspend fun removeFavoriteProduct(@Path("productId") productId: String): Response<BaseResponse<Boolean>>
 
     @GET("favorites/check/{productId}")
     suspend fun checkFavoriteProduct(@Path("productId") productId: String): Response<BaseResponse<Boolean>>

@@ -21,6 +21,6 @@ interface AuthApi {
     suspend fun login(@Body request: LoginRequest): Response<BaseResponse<LoginResponse>>
 
     @PUT("auth/update-password")
-    suspend fun updatePassword(@Body request: UpdatePasswordRequest): Response<BaseResponse<Any>>
+    suspend fun updatePassword(@Body request: UpdatePasswordRequest): Response<BaseResponse<Boolean>>
 
 }

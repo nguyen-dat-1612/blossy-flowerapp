@@ -8,144 +8,67 @@ import com.blossy.flowerstore.domain.model.Address
 import com.blossy.flowerstore.domain.model.User
 import com.blossy.flowerstore.domain.repository.UserRepository
 import com.blossy.flowerstore.domain.utils.Result
-import com.blossy.flowerstore.data.mapper.toAddress
 import com.blossy.flowerstore.data.remote.dto.PushRequest
 import com.blossy.flowerstore.data.remote.dto.UpdateUserRequest
+import com.blossy.flowerstore.data.remote.utils.safeApiCall
+import com.blossy.flowerstore.data.remote.utils.toResult
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val userApi: UserApi
 ): UserRepository {
-    override suspend fun getUserProfile(): Result<User> {
-        return try {
-            val response = userApi.getUserProfile()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success && body.data != null) {
-                    val user = body.data.toUser()
-                    Result.Success(user)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-            } else {
-                Result.Error(response.message())
+    override suspend fun getUserProfile(): Result<User>  = withTimeout(TIMEOUT) {
+        safeApiCall {
+            userApi.getUserProfile().toResult { response ->
+                response.toUser()
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun getUserAddresses(): Result<List<Address>> {
-        return try {
-            val response = userApi.getUserAddresses()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success && body.data != null) {
-                    val addresses = body.data.map { it.toAddress() }
-                    Result.Success(addresses)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-            } else {
-                Result.Error(response.message())
+    override suspend fun getUserAddresses(): Result<List<Address>> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            userApi.getUserAddresses().toResult { response ->
+                response.map { it.toAddress() }
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun getDefaultAddress(): Result<Address> {
-        return try {
-            val response = userApi.getDefaultAddress()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success && body.data != null) {
-                    val address = body.data.toAddress()
-                    Result.Success(address)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-            } else {
-                Result.Error(response.message())
+    override suspend fun getDefaultAddress(): Result<Address> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            userApi.getDefaultAddress().toResult { response ->
+                response.toAddress()
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun addAddress(address: AddressResponse): Result<List<Address>> {
-        return try {
-            val response = userApi.addAddress(address)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success ) {
-                    val addresses = body.data?.map { it.toAddress() } ?: emptyList()
-                    Result.Success(addresses)
-                    } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-            } else {
-                Result.Error(response.message())
+    override suspend fun addAddress(address: AddressResponse): Result<List<Address>> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            userApi.addAddress(address).toResult { response ->
+                response.map { it.toAddress() }
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun updateAddress(address: AddressResponse): Result<List<Address>> {
-        return try {
-            val response = userApi.updateAddress(address)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success && body.data != null) {
-                    val addresses = body.data?.map { it.toAddress() } ?: emptyList()
-                    Result.Success(addresses)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-            } else {
-                Result.Error(response.message())
+    override suspend fun updateAddress(address: AddressResponse): Result<List<Address>> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            userApi.updateAddress(address).toResult { response ->
+                response.map { it.toAddress() }
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun deleteAddress(addressId: String): Result<List<Address>> {
-        return try {
-            val response = userApi.deleteAddress(addressId)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success
-                    && body.data != null) {
-                    val addresses = body.data?.map { it.toAddress() } ?: emptyList()
-                    Result.Success(addresses)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                    }
-            } else {
-                Result.Error(response.message())
+    override suspend fun deleteAddress(addressId: String): Result<List<Address>> = withTimeout(TIMEOUT){
+        safeApiCall {
+            userApi.deleteAddress(addressId).toResult { response ->
+                response.map { it.toAddress() }
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
     }
 
-    override suspend fun updateFcmToken(token: String): Result<Boolean> {
-        return try {
-            val response = userApi.updateFcmToken(PushRequest(token))
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success) {
-                    Result.Success(body.success)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-                } else {
-                Result.Error(response.message())
-            }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
+    override suspend fun updateFcmToken(token: String): Result<Boolean> = withTimeout(TIMEOUT){
+        safeApiCall {
+            userApi.updateFcmToken(PushRequest(token)).toResult()
         }
     }
 
@@ -153,24 +76,17 @@ class UserRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateUserProfile(id: String, name: String, email: String): Result<User> {
-        return try {
-            val response = userApi.updateUser(id, UpdateUserRequest(name, email))
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.success
-                    && body.data != null) {
-                    val user = body.data.toUser()
-                    Result.Success(user)
-                } else {
-                    Result.Error(body?.message ?: "An error occurred")
-                }
-                } else {
-                Result.Error(response.message())
+    override suspend fun updateUserProfile(id: String, name: String, email: String): Result<User> = withTimeout(TIMEOUT){
+        safeApiCall {
+            userApi.updateUser(id, UpdateUserRequest(name, email)).toResult { response ->
+                response.toUser()
             }
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "An error occurred")
         }
+    }
+
+
+    companion object {
+        private const val TIMEOUT = 5000L
     }
 
 }
