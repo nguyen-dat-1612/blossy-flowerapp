@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.ItemSearchProductBinding
 import com.blossy.flowerstore.domain.model.Product
+import com.blossy.flowerstore.utils.CurrencyFormatter
 import com.bumptech.glide.Glide
 
 class FavoritesAdapter(
@@ -45,7 +46,7 @@ class FavoritesAdapter(
                 .into(binding.imageProduct)
 
             binding.nameProduct.text = product.name
-            binding.priceProduct.text = "$ ${product.price}"
+            binding.priceProduct.text = CurrencyFormatter.formatVND(product.price)
             binding.ratingProduct.text = product.rating.toString()
             binding.categoryProduct.text = product.category.name
             binding.stockStatus.text = if (product.stock > 0) "In Stock" else "Out of Stock"

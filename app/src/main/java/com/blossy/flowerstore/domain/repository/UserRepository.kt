@@ -16,16 +16,18 @@ interface UserRepository  {
 
     suspend fun getDefaultAddress(): Result<Address>
 
-    suspend fun addAddress(address: AddressResponse): Result<List<Address>>
+    suspend fun addAddress(address: AddressResponse): Result<Address>
 
-    suspend fun updateAddress(address: AddressResponse): Result<List<Address>>
+    suspend fun updateAddress(address: AddressResponse): Result<Address>
 
-    suspend fun deleteAddress(addressId: String): Result<List<Address>>
+    suspend fun deleteAddress(addressId: String): Result<Address>
 
     suspend fun updateFcmToken(token: String): Result<Boolean>
 
     suspend fun logout(): Result<Boolean>
 
     suspend fun updateUserProfile(id: String, name: String, email: String): Result<User>
+
+    suspend fun getAddressById(id: String): Result<Address>
 
 }

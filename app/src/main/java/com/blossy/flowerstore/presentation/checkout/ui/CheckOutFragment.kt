@@ -1,8 +1,11 @@
 package com.blossy.flowerstore.presentation.checkout.ui
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -10,39 +13,40 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blossy.flowerstore.R
+import com.blossy.flowerstore.data.remote.dto.CreateOrderRequest
+import com.blossy.flowerstore.data.remote.dto.OrderItemRequest
+import com.blossy.flowerstore.data.remote.utils.OrderResponseWrapper
 import com.blossy.flowerstore.databinding.FragmentCheckOutBinding
 import com.blossy.flowerstore.domain.model.Address
+import com.blossy.flowerstore.domain.model.CartItem
 import com.blossy.flowerstore.domain.model.ShippingAddress
 import com.blossy.flowerstore.presentation.checkout.adapter.OrderItemAdapter
 import com.blossy.flowerstore.presentation.checkout.viewmodel.CheckOutViewModel
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.common.collectState
-import com.blossy.flowerstore.presentation.shippingAddress.ui.ShippingAddressFragmentDirections
+import com.blossy.flowerstore.utils.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CheckOutFragment : Fragment() {
 
-    private lateinit var viewModel: CheckOutViewModel
-    private lateinit var orderItemAdapter: OrderItemAdapter
+    private val viewModel: CheckOutViewModel by viewModels()
+    private val orderItemAdapter by lazy { OrderItemAdapter(mutableListOf()) }
     private var _binding: FragmentCheckOutBinding? = null
     private val binding get() = _binding!!
-
-    private var selectedPaymentMethod = "MoMo"
-    private val REQUEST_CODE_MOMO = 1001
-    private val REQUEST_CODE_VNPAY = 1002
+    private var noAddressDialog: Dialog? = null
+    private var selectedPaymentMethod = PAYMENT_METHOD_MOMO
+    private var tempAddressId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[CheckOutViewModel::class.java]
         viewModel.getCart()
         viewModel.getDefaultAddress()
     }
@@ -50,18 +54,17 @@ class CheckOutFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCheckOutBinding.inflate(inflater, container, false)
         setupRecyclerView()
-        observeStates()
+        observeFragmentResults()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
-        observeAddressChangeFromShippingScreen()
+        observeStates()
     }
 
     private fun setupRecyclerView() {
-        orderItemAdapter = OrderItemAdapter(mutableListOf())
         binding.recyclerViewProducts.apply {
             adapter = orderItemAdapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -71,163 +74,200 @@ class CheckOutFragment : Fragment() {
     private fun observeStates() {
         collectState(viewModel.getCartUiState) { state ->
             when (state) {
-                is UiState.Success -> {
-                    orderItemAdapter.submitList(state.data)
-                    val subtotal = state.data.sumOf { it.product.price * it.quantity }
-                    binding.subtotalValue.text = "đ$subtotal"
-                    binding.shippingValue.text = "đ30,000"
-                    val total = subtotal + 30000
-                    binding.totalValue.text = "đ$total"
-                    binding.bottomTotalValue.text = "đ$total"
-                }
-                is UiState.Error -> showError(state.message)
+                is UiState.Success -> updateCartUI(state.data)
+                is UiState.Error -> showError(ErrorMessages.CART_NOT_READY)
                 else -> Unit
             }
         }
 
-        collectState(viewModel.getDefaultAddressUiState) { state ->
+        collectState(viewModel.getAddressUiState) { state ->
             handleAddressState(state)
         }
 
         collectState(viewModel.createOrderUiState) { state ->
             when (state) {
-                is UiState.Success -> {
-                    val paymentUrl = state.data.nextSteps?.paymentEndpoint
-                    val orderId = state.data.data?.id ?: return@collectState
-                    if (paymentUrl == "/api/payments/momo/create") {
-                        viewModel.createMomoPayment(orderId)
-                    } else {
-                        viewModel.createVNPAYPayment(orderId)
-                    }
-                }
-                is UiState.Error -> showError(state.message)
+                is UiState.Success -> handleOrderCreationSuccess(state.data)
+                is UiState.Error -> showError(ErrorMessages.ORDER_CREATION_FAILED)
                 else -> Unit
             }
         }
 
         collectState(viewModel.createMomoPaymentUiState) { state ->
             when (state) {
-                is UiState.Success -> openApp(state.data, "MoMo")
-                is UiState.Error -> showError(state.message)
+                is UiState.Success -> handlePayment(state.data, PAYMENT_METHOD_MOMO)
+                is UiState.Error -> showError(ErrorMessages.PAYMENT_CREATION_FAILED)
                 else -> Unit
             }
         }
 
         collectState(viewModel.createVNPAYPaymentUiState) { state ->
             when (state) {
-                is UiState.Success -> openApp(state.data, "VnPay")
-                is UiState.Error -> showError(state.message)
+                is UiState.Success -> handlePayment(state.data, PAYMENT_METHOD_VNPAY)
+                is UiState.Error -> showError(ErrorMessages.PAYMENT_CREATION_FAILED)
                 else -> Unit
             }
         }
     }
 
-    private fun handleAddressState(state: UiState<Address>) {
+    private fun updateCartUI(cartItems: List<CartItem>) {
+        orderItemAdapter.submitList(cartItems)
+        val subtotal = cartItems.sumOf { it.product.price * it.quantity }
+        val shippingFee = SHIPPING_FEE
+        val total = subtotal + shippingFee
+
+        with(binding) {
+            subtotalValue.text = CurrencyFormatter.formatVND(subtotal)
+            shippingValue.text = CurrencyFormatter.formatVND(shippingFee)
+            totalValue.text = CurrencyFormatter.formatVND(total)
+            bottomTotalValue.text = CurrencyFormatter.formatVND(total)
+        }
+    }
+
+    private fun handleOrderCreationSuccess(orderResponse: OrderResponseWrapper) {
+        val orderId = orderResponse.data?.id ?: return
+        val paymentEndpoint = orderResponse.nextSteps?.paymentEndpoint ?: return
+
+        when (paymentEndpoint) {
+            MOMO_PAYMENT_ENDPOINT -> viewModel.createMomoPayment(orderId)
+            else -> viewModel.createVNPAYPayment(orderId)
+        }
+    }
+
+    private fun handleAddressState(state: AddressUiState) {
+
         when (state) {
-            is UiState.Success -> {
-                if (viewModel.isAddressManuallySelected() == false) {
-                    binding.recipientName.text = state.data.name
-                    binding.recipientPhone.text = state.data.phone
-                    binding.recipientAddress.text = state.data.address
-                    Log.d("Status default", viewModel.isAddressManuallySelected().toString())
-                    Log.d(TAG, "Address: ${state.data}")
-                }
+            is AddressUiState.Success -> {
+                updateAddressUI(state.data.name, state.data.phone, state.data.address)
+                noAddressDialog?.dismiss()
             }
-            is UiState.Error -> showError(state.message)
+            is AddressUiState.NoAddress -> showNoAddressDialog()
+            is AddressUiState.Error -> {
+                showNoAddressDialog()
+            }
             else -> Unit
         }
     }
 
-    private fun observeAddressChangeFromShippingScreen() {
+    private fun updateAddressUI(name: String, phone: String, address: String)  {
+        with(binding) {
+            recipientName.text = name
+            recipientPhone.text = phone
+            recipientAddress.text = address
+        }
+    }
 
-        val selectedName = arguments?.getString("selectedName")
-        val selectedPhone = arguments?.getString("selectedPhone")
-        val selectedAddress = arguments?.getString("selectedAddress")
+    private fun showNoAddressDialog() {
+        if (noAddressDialog?.isShowing == true) return
 
-        if (!selectedName.isNullOrEmpty() && !selectedPhone.isNullOrEmpty() && !selectedAddress.isNullOrEmpty()) {
-            viewModel.setAddressManuallySelected(true)
-            binding.recipientName.text = selectedName
-            binding.recipientPhone.text = selectedPhone
-            binding.recipientAddress.text = selectedAddress
+        noAddressDialog = NoAddressDiaLog(
+            requireContext(),
+            onCancel = {
+                noAddressDialog?.dismiss()
+                findNavController().popBackStack()
+            },
+            onConfirm = {
+                noAddressDialog?.dismiss()
+                navigateToAddAddress()
+            }
+        ).apply { show() }
+    }
+
+    private fun navigateToAddAddress() {
+        val action = CheckOutFragmentDirections
+            .actionCheckOutFragmentToAddEditAddressFragment(action = "add", fromCheckout = true)
+        findNavController().navigate(action)
+    }
+
+    private fun observeFragmentResults() {
+
+        setFragmentResultListener("addressRequestKey") { _, bundle ->
+            tempAddressId = bundle.getString("selectedAddressId")
+        }
+
+        setFragmentResultListener("addAddressRequestKey") { _, bundle ->
+            tempAddressId = bundle.getString("newAddressId")
         }
     }
 
     private fun setupClickListeners() {
-        binding.momoPaymentOption.setOnClickListener {
-            selectedPaymentMethod = "MoMo"
-            binding.momoRadioButton.isChecked = true
-            binding.vnpayRadioButton.isChecked = false
-        }
-
-        binding.vnpayPaymentOption.setOnClickListener {
-            selectedPaymentMethod = "VNPAY"
-            binding.vnpayRadioButton.isChecked = true
-            binding.momoRadioButton.isChecked = false
-        }
-
-        binding.orderBtn.setOnClickListener {
-            val cartState = viewModel.getCartUiState.value
-            if (cartState !is UiState.Success) {
-                showError("Giỏ hàng chưa sẵn sàng")
-                return@setOnClickListener
+        with(binding) {
+            momoPaymentOption.setOnClickListener {
+                selectPaymentMethod(PAYMENT_METHOD_MOMO)
             }
 
-            if (!isAddressReady()) {
-                showError("Vui lòng nhập địa chỉ giao hàng")
-                return@setOnClickListener
+            vnpayPaymentOption.setOnClickListener {
+                selectPaymentMethod(PAYMENT_METHOD_VNPAY)
             }
 
-            val orderItems = cartState.data.map {
-                com.blossy.flowerstore.data.remote.dto.OrderItemRequest(
-                    productId = it.product.id,
-                    quantity = it.quantity
-                )
+            orderBtn.setOnClickListener {
+                processOrder()
             }
 
-            val shipping = ShippingAddress(
-                name = binding.recipientName.text.toString(),
-                phone = binding.recipientPhone.text.toString(),
-                address = binding.recipientAddress.text.toString(),
-                city = "Hồ Chí Minh",
-                postalCode = "100000",
-                country = "Việt Nam"
-            )
+            btnBack.setOnClickListener {
+                findNavController().navigate(R.id.action_checkOutFragment_to_mainFragment)
+                findNavController().popBackStack()
+            }
 
-            viewModel.createOrder(
-                com.blossy.flowerstore.data.remote.dto.CreateOrderRequest(
-                    orderItems = orderItems,
-                    shippingAddress = shipping,
-                    paymentMethod = selectedPaymentMethod
-                )
-            )
-        }
-
-        binding.btnBack.setOnClickListener {
-            findNavController().navigate(R.id.action_checkOutFragment_to_mainFragment)
-            findNavController().popBackStack()
-        }
-
-        binding.editAddressBtn.setOnClickListener {
-            val action = CheckOutFragmentDirections.actionCheckOutFragmentToShippingAddressFragment(
-                fromCheckout = true
-            )
-            findNavController().navigate(action)
+            editAddressBtn.setOnClickListener {
+                val action = CheckOutFragmentDirections.actionCheckOutFragmentToShippingAddressFragment(fromCheckout = true)
+                findNavController().navigate(action)
+            }
         }
     }
 
-    private fun openApp(paymentUrl: String, paymentMethod: String) {
+    private fun selectPaymentMethod(method: String) {
+        selectedPaymentMethod = method
+        binding.momoRadioButton.isChecked = method == PAYMENT_METHOD_MOMO
+        binding.vnpayRadioButton.isChecked = method == PAYMENT_METHOD_VNPAY
+    }
+
+    private fun processOrder() {
+        val cartState = viewModel.getCartUiState.value
+        if (cartState !is UiState.Success || cartState.data.isEmpty()) {
+            showError(ErrorMessages.EMPTY_CART)
+            return
+        }
+
+        val shippingAddress = getShippingAddress()
+        if (shippingAddress == null) {
+            showError(ErrorMessages.SHIPPING_ADDRESS_REQUIRED)
+            return
+        }
+
+        if (selectedPaymentMethod.isBlank()) {
+            showError(ErrorMessages.PAYMENT_METHOD_REQUIRED)
+            return
+        }
+
+        val orderItems = cartState.data.map {
+            OrderItemRequest(productId = it.product.id, quantity = it.quantity)
+        }
+
+        viewModel.createOrder(
+            CreateOrderRequest(
+                orderItems = orderItems,
+                shippingAddress = shippingAddress,
+                paymentMethod = selectedPaymentMethod
+            )
+        )
+    }
+
+    private fun getShippingAddress(): ShippingAddress? {
+        val name = binding.recipientName.text.toString()
+        val phone = binding.recipientPhone.text.toString()
+        val address = binding.recipientAddress.text.toString()
+        return if (name.isBlank() || phone.isBlank() || address.isBlank()) null
+        else ShippingAddress(name, phone, address, "Hồ Chí Minh", "100000", "Việt Nam")
+    }
+
+    private fun handlePayment(paymentUrl: String, paymentMethod: String) {
         try {
-            startActivityForResult(Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl)), REQUEST_CODE_MOMO)
+            val requestCode = if (paymentMethod == PAYMENT_METHOD_MOMO) REQUEST_CODE_MOMO else REQUEST_CODE_VNPAY
+            startActivityForResult(Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl)), requestCode)
         } catch (e: ActivityNotFoundException) {
-            val appName = if (paymentMethod == "MoMo") "MoMo" else "VNPay"
-            showError("Vui lòng cài đặt ứng dụng $appName")
+            val appName = if (paymentMethod == PAYMENT_METHOD_MOMO) "MoMo" else "VNPay"
+            showError(ErrorMessages.APP_NOT_INSTALLED.format(appName))
         }
-    }
-
-    private fun isAddressReady(): Boolean {
-        return binding.recipientName.text.isNotBlank() &&
-                binding.recipientPhone.text.isNotBlank() &&
-                binding.recipientAddress.text.isNotBlank()
     }
 
     private fun showError(message: String) {
@@ -237,10 +277,8 @@ class CheckOutFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_MOMO || requestCode == REQUEST_CODE_VNPAY) {
-            if (resultCode == Activity.RESULT_OK) {
-                // TODO: Gọi API kiểm tra trạng thái đơn hàng nếu cần
-            } else {
-                showError("Thanh toán bị hủy hoặc thất bại")
+            if (resultCode != Activity.RESULT_OK) {
+                showError(ErrorMessages.PAYMENT_FAILED)
             }
         }
     }
@@ -252,5 +290,22 @@ class CheckOutFragment : Fragment() {
 
     companion object {
         private const val TAG = "CheckOutFragment"
+        private const val REQUEST_CODE_MOMO = 1001
+        private const val REQUEST_CODE_VNPAY = 1002
+        private const val PAYMENT_METHOD_MOMO = "MoMo"
+        private const val PAYMENT_METHOD_VNPAY = "VNPAY"
+        private const val MOMO_PAYMENT_ENDPOINT = "/api/payments/momo/create"
+        private const val SHIPPING_FEE = 30000.0
+    }
+
+    private object ErrorMessages {
+        const val CART_NOT_READY = "Cart not ready"
+        const val EMPTY_CART = "Cart is empty"
+        const val SHIPPING_ADDRESS_REQUIRED = "Shipping address required"
+        const val PAYMENT_METHOD_REQUIRED = "Please select a payment method"
+        const val ORDER_CREATION_FAILED = "Unable to create order"
+        const val PAYMENT_CREATION_FAILED = "Unable to create payment"
+        const val PAYMENT_FAILED = "Payment failed"
+        const val APP_NOT_INSTALLED = "%s not installed"
     }
 }

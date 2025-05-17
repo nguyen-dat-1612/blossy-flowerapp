@@ -82,8 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_edittext_primary"
-                android:hint="Recipient name"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="4dp" />
 
@@ -102,9 +101,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_edittext_primary"
-                android:fontFamily="@font/poppins_regular"
                 android:inputType="phone"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="4dp" />
 
@@ -121,15 +119,11 @@
             <EditText
                 android:id="@+id/addressInput"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/bg_edittext_primary"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:fontFamily="@font/poppins_regular"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:minHeight="48dp"
-                android:minLines="1"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:textColor="@color/black"
                 android:layout_marginTop="4dp" />
 

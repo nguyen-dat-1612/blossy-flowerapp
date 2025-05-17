@@ -67,11 +67,11 @@ class CartViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     _updateCartUiState.value = UiState.Error(result.message)
-                    delay(500)
-                    _updateCartUiState.value = UiState.Idle
                 }
                 else -> {}
             }
+            delay(500)
+            _updateCartUiState.value = UiState.Idle
         }
     }
 
@@ -87,11 +87,12 @@ class CartViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     _removeCartUiState.value = UiState.Error(result.message)
-                    delay(500)
-                    _removeCartUiState.value = UiState.Idle
                 }
                 else -> {}
             }
+            delay(500)
+            _removeCartUiState.value = UiState.Idle
+
         }
     }
 }

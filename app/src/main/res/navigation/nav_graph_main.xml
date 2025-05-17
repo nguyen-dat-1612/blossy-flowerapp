@@ -174,13 +174,7 @@
         tools:layout="@layout/fragment_check_out" >
 
         <argument
-            android:name="selectedName"
-            app:argType="string" />
-        <argument
-            android:name="selectedPhone"
-            app:argType="string" />
-        <argument
-            android:name="selectedAddress"
+            android:name="addressId"
             app:argType="string" />
 
         <action
@@ -198,12 +192,36 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out"
             />
+        <action
+            android:id="@+id/action_checkOutFragment_to_addEditAddressFragment"
+            app:destination="@id/addEditAddressFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/paymentResultFragment"
         android:name="com.blossy.flowerstore.presentation.checkout.ui.PaymentResultFragment"
         android:label="fragment_payment_result"
-        tools:layout="@layout/fragment_payment_result" />
+        tools:layout="@layout/fragment_payment_result">
+
+        <argument
+            android:name="paymentStatus"
+            app:argType="string" />
+        <argument
+            android:name="orderId"
+            app:argType="string" />
+        <argument
+            android:name="amount"
+            app:argType="string" />
+        <argument
+            android:name="transactionId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_paymentResultFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
@@ -256,13 +274,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right">
             <argument
-                android:name="selectedName"
-                app:argType="string" />
-            <argument
-                android:name="selectedPhone"
-                app:argType="string" />
-            <argument
-                android:name="selectedAddress"
+                android:name="addressId"
                 app:argType="string" />
         </action>
         <action
@@ -290,6 +302,11 @@
         <argument
             android:name="action"
             app:argType="string" />
+
+        <argument
+            android:name="fromCheckout"
+            app:argType="boolean"
+            android:defaultValue= "false" />
 
         <argument
             android:name="address"

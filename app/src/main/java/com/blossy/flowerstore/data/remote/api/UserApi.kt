@@ -30,13 +30,13 @@ interface UserApi {
     suspend fun setDefaultAddress(@Path("id") id: String): Response<BaseResponse<AddressResponse>>
 
     @POST("users/address")
-    suspend fun addAddress(@Body address: AddressResponse):  Response<BaseResponse<List<AddressResponse>>>
+    suspend fun addAddress(@Body address: AddressResponse):  Response<BaseResponse<AddressResponse>>
 
     @DELETE("users/address")
-    suspend fun deleteAddress(@Query("addressId") addressId: String):  Response<BaseResponse<List<AddressResponse>>>
+    suspend fun deleteAddress(@Query("addressId") addressId: String):  Response<BaseResponse<AddressResponse>>
 
     @PUT("users/address")
-    suspend fun updateAddress(@Body address: AddressResponse):  Response<BaseResponse<List<AddressResponse>>>
+    suspend fun updateAddress(@Body address: AddressResponse):  Response<BaseResponse<AddressResponse>>
 
     @PUT("users/fcm")
     suspend fun updateFcmToken(@Body pushRequest: PushRequest): Response<BaseResponse<Boolean>>
@@ -47,4 +47,6 @@ interface UserApi {
     @PUT("users/{id}")
     suspend fun updateUser(@Path("id") id: String, @Body user: UpdateUserRequest): Response<BaseResponse<UserProfileResponse>>
 
+    @GET("users/address/{id}")
+    suspend fun getAddressById(@Path("id") id: String): Response<BaseResponse<AddressResponse>>
 }

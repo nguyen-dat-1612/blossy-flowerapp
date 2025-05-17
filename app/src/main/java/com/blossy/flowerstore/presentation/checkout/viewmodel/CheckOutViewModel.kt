@@ -10,8 +10,10 @@ import com.blossy.flowerstore.domain.usecase.cart.GetCartUseCase
 import com.blossy.flowerstore.domain.usecase.order.CreateOrderUseCase
 import com.blossy.flowerstore.domain.usecase.payment.CreateMomoPaymentUseCase
 import com.blossy.flowerstore.domain.usecase.payment.CreateVNPAYPaymentUseCase
+import com.blossy.flowerstore.domain.usecase.user.AddressByIdUseCase
 import com.blossy.flowerstore.domain.usecase.user.GetDefaultAddressUseCase
 import com.blossy.flowerstore.domain.utils.Result
+import com.blossy.flowerstore.presentation.checkout.ui.AddressUiState
 import com.blossy.flowerstore.presentation.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,17 +27,16 @@ class CheckOutViewModel @Inject constructor(
     private val getDefaultAddressUseCase: GetDefaultAddressUseCase,
     private val createOrderUseCase: CreateOrderUseCase,
     private val createMomoPaymentUseCase: CreateMomoPaymentUseCase,
-    private val createVNPAYPaymentUseCase: CreateVNPAYPaymentUseCase
+    private val createVNPAYPaymentUseCase: CreateVNPAYPaymentUseCase,
+    private val addressByIdUseCase: AddressByIdUseCase
 ): ViewModel() {
-
-    private var isAddressManuallySelected = false
 
 
     private val _getCartUiState = MutableStateFlow<UiState<List<CartItem>>>(UiState.Idle)
     var getCartUiState: StateFlow<UiState<List<CartItem>>> = _getCartUiState
 
-    private val _getDefaultAddressUiState = MutableStateFlow<UiState<Address>>(UiState.Idle)
-    var getDefaultAddressUiState: StateFlow<UiState<Address>> = _getDefaultAddressUiState
+    private val _getAddressUiState = MutableStateFlow<AddressUiState>(AddressUiState.Idle)
+    var getAddressUiState: StateFlow<AddressUiState> = _getAddressUiState
 
     private val _createOrderUiState = MutableStateFlow<UiState<OrderResponseWrapper>>(UiState.Idle)
     var createOrderUiState: StateFlow<UiState<OrderResponseWrapper>> = _createOrderUiState
@@ -45,6 +46,16 @@ class CheckOutViewModel @Inject constructor(
 
     private val _createVNPAYPaymentUiState = MutableStateFlow<UiState<String>>(UiState.Idle)
     var createVNPAYPaymentUiState: StateFlow<UiState<String>> = _createVNPAYPaymentUiState
+
+    private var selectedAddressId: String = ""
+
+    fun setSelectedAddressId(id: String) {
+        selectedAddressId = id
+    }
+
+    fun getSelectedAddressId(): String {
+        return selectedAddressId
+    }
 
     fun getCart() {
         viewModelScope.launch (Dispatchers.IO) {
@@ -63,17 +74,38 @@ class CheckOutViewModel @Inject constructor(
 
     fun getDefaultAddress() {
         viewModelScope.launch (Dispatchers.IO) {
-            _getDefaultAddressUiState.value = UiState.Loading
+            _getAddressUiState.value = AddressUiState.Loading
             when(val result = getDefaultAddressUseCase.invoke()) {
                 is Result.Success -> {
-                    _getDefaultAddressUiState.value = UiState.Success(result.data)
+                    _getAddressUiState.value = AddressUiState.Success(result.data)
+                    selectedAddressId = result.data.id.toString()
                 }
                 is Result.Error -> {
-                    _getDefaultAddressUiState.value = UiState.Error(result.message)
+                    _getAddressUiState.value = AddressUiState.NoAddress
+                }
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    fun getAddressById(id: String) {
+        viewModelScope.launch (Dispatchers.IO) {
+            _getAddressUiState.value = AddressUiState.Loading
+
+            when(val result = addressByIdUseCase.invoke(id)) {
+                is Result.Success -> {
+                    _getAddressUiState.value = AddressUiState.Success(result.data)
+                }
+                is Result.Error -> {
+                    _getAddressUiState.value = AddressUiState.Error(result.message)
                 }
                 else -> {}
             }
+
         }
+
     }
 
     fun createOrder(orderRequest: CreateOrderRequest) {
@@ -124,11 +156,6 @@ class CheckOutViewModel @Inject constructor(
                 else -> {}
             }
         }
-    }
-
-    fun isAddressManuallySelected(): Boolean = isAddressManuallySelected
-    fun setAddressManuallySelected(value: Boolean) {
-        isAddressManuallySelected = value
     }
 
 

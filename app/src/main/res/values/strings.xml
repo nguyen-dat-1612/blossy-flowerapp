@@ -51,4 +51,17 @@
     <string name="error_toggle_favorite">Failed to update favorite</string>
 
     <string name="empty_cart">Your cart is currently empty</string>
+
+    <string name="error_no_shipping_address">You don\'t have a shipping address yet, please add one.</string>
+    <string name="error_cart_not_ready">Cart is not ready yet</string>
+    <string name="error_select_payment_method">Please select a payment method</string>
+    <string name="error_empty_cart">Your cart is empty</string>
+    <string name="error_shipping_address_required">Please enter a shipping address</string>
+    <string name="error_install_app_format">Please install the %s app</string>
+    <string name="error_payment_failed">Payment was cancelled or failed</string>
+
+    <string name="dialog_no_address_title">No Shipping Address Found</string>
+    <string name="dialog_no_address_message">You need to add a shipping address before proceeding with checkout. Would you like to add one now?</string>
+    <string name="dialog_add_address">Add Address</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>
