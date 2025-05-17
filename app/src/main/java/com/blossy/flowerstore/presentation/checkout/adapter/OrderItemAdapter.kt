@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.databinding.ItemProductPaymentBinding
 import com.blossy.flowerstore.domain.model.CartItem
+import com.blossy.flowerstore.utils.CurrencyFormatter
 import com.bumptech.glide.Glide
 
 class OrderItemAdapter (
@@ -19,7 +20,7 @@ class OrderItemAdapter (
                     .into(binding.imageView)
                 nameText.text = cartItem.product.name
                 quantityText.text = "${cartItem.quantity}"
-                priceText.text = "đ" + cartItem.product.price.toString()
+                priceText.text = CurrencyFormatter.formatVND(cartItem.product.price)
 
             }
         }

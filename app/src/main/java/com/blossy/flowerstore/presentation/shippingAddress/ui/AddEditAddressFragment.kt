@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blossy.flowerstore.databinding.FragmentAddEditAddressBinding
 import android.widget.Toast
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.data.remote.dto.AddressResponse
@@ -30,6 +31,7 @@ class AddEditAddressFragment : Fragment() {
     private lateinit var viewModel: AddEditViewModel
     private lateinit var address: Address
     private lateinit var action: String
+    private var fromCheckout: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +52,7 @@ class AddEditAddressFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         action = args.action
-
+        fromCheckout = args.fromCheckout
         if (action == "edit" && args.address != null) {
             address = args.address!!
             binding.titleText.text = "Update Address"
@@ -106,8 +108,17 @@ class AddEditAddressFragment : Fragment() {
                     Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
                 }
                 is UiState.Success -> {
-                    findNavController().navigate(R.id.action_addEditAddressFragment_to_shippingAddressFragment)
-                    findNavController().popBackStack()
+                    if (fromCheckout) {
+                        val result = Bundle().apply {
+                            putString("newAddressId", state.data.id)
+                        }
+                        Log.d(TAG, "observe: ${state.data.id}")
+                        setFragmentResult("addAddressRequestKey", result)
+                        findNavController().popBackStack()
+                    } else {
+                        findNavController().navigate(R.id.action_addEditAddressFragment_to_shippingAddressFragment)
+                        findNavController().popBackStack()
+                    }
                 }
                 is UiState.Error -> {
                     Log.d(TAG, "Error: ${state.message}")

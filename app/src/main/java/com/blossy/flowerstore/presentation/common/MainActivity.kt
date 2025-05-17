@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
                 val transactionId = uri.getQueryParameter("transactionId") ?: ""
 
                 val navController = findNavController(R.id.nav_host_main)
+
                 val args = bundleOf(
                     "paymentStatus" to status,
                     "orderId" to orderId,
@@ -84,8 +85,8 @@ class MainActivity : AppCompatActivity() {
                     "transactionId" to transactionId
                 )
 
-//                navController.popBackStack(R.id.checkOutFragment, false)
-                navController.navigate(R.id.checkOutFragment, args)
+                // Điều hướng tới PaymentResultFragment
+                navController.navigate(R.id.paymentResultFragment, args)
             }
         }
     }

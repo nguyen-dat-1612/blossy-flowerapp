@@ -15,13 +15,13 @@ class SecureTokenManager @Inject constructor(
     }
 
     fun saveAccessToken(token: String) {
-        Log.d(TAG, "Original token: $token") // Log token gốc
+        Log.d(TAG, "Original token: $token")
 
         val encryptedToken = encryptionManager.encrypt(token)
-        Log.d(TAG, "Encrypted token: $encryptedToken") // Log token đã mã hóa
+        Log.d(TAG, "Encrypted token: $encryptedToken")
 
         sharedPreferences.edit().putString(KEY_ACCESS_TOKEN, encryptedToken).apply()
-        Log.d(TAG, "Token saved to SharedPreferences") // Xác nhận đã lưu
+        Log.d(TAG, "Token saved to SharedPreferences")
     }
 
     val accessToken: String?
@@ -30,7 +30,7 @@ class SecureTokenManager @Inject constructor(
             Log.d(
                 TAG,
                 "Retrieved encrypted token from SharedPreferences: $encryptedToken"
-            ) // Log token mã hóa từ SharedPreferences
+            )
 
             if (encryptedToken != null) {
                 val decryptedToken = encryptionManager.decrypt(encryptedToken)
@@ -50,11 +50,11 @@ class SecureTokenManager @Inject constructor(
         sharedPreferences.edit()
             .remove(KEY_ACCESS_TOKEN)
             .apply()
-        Log.d(TAG, "Tokens cleared") // Xác nhận đã xóa
+        Log.d(TAG, "Tokens cleared")
     }
 
     companion object {
-        private const val TAG = "SecureTokenManager" // Thêm TAG cho log
+        private const val TAG = "SecureTokenManager"
         private const val KEY_ACCESS_TOKEN = "access_token"
     }
 }

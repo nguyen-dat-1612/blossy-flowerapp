@@ -35,4 +35,10 @@
     
     <color name="beige_light">#FFF8E1</color>
 
+    <color name="colorPrimary">#FF4081</color>
+    <color name="colorPrimaryDark">#C60055</color>
+    <color name="colorAccent">#FF80AB</color>
+
+    <color name="divider">#EEEEEE</color>
+    <color name="background">#FFFFFF</color>
 </resources>

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -43,7 +44,6 @@ class ShippingAddressFragment : Fragment() {
     ): View? {
         binding = FragmentShippingAddressBinding.inflate(inflater, container, false)
         viewModel.getUserAddresses()
-
         fromCheckout = args.fromCheckout
 
         addressAdapter = AddressAdapter(fromCheckout,
@@ -69,7 +69,7 @@ class ShippingAddressFragment : Fragment() {
 
 
         binding.selectAddressButton.visibility = if (fromCheckout) View.VISIBLE else View.GONE
-        binding.selectAddressButton.isEnabled = false // Initially disabled until an address is selected
+        binding.selectAddressButton.isEnabled = false
 
 
         observeData()
@@ -95,15 +95,12 @@ class ShippingAddressFragment : Fragment() {
 
         selectAddressButton.setOnClickListener {
             val selectedAddress = addressAdapter.getSelectedAddress()
-            if (selectedAddress != null) {
-
-                Log.d("onViewCreated", "Selected Address: $selectedAddress")
-                val action = ShippingAddressFragmentDirections.actionShippingAddressFragmentToCheckOutFragment(
-                    selectedAddress.name,
-                    selectedAddress.phone,
-                    selectedAddress.address
-                )
-                findNavController().navigate(action)
+            if (selectedAddress?.id != null) {
+                val result = Bundle().apply {
+                    putString("selectedAddressId", selectedAddress.id)
+                }
+                setFragmentResult("addressRequestKey", result)
+                findNavController().popBackStack()
             } else {
                 Toast.makeText(context, "Please select an address", Toast.LENGTH_SHORT).show()
             }

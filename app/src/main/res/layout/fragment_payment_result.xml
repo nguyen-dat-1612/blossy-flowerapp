@@ -25,15 +25,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Tiêu đề căn giữa màn -->
         <TextView
-            android:id="@+id/titleTextView"
+            android:id="@+id/resultTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Your order is successfully purchased"
             android:textSize="18sp"
             android:textColor="@color/black"
             android:fontFamily="@font/poppins_bold"
+            android:gravity="center"
             app:layout_constraintTop_toBottomOf="@id/successAnimationView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -41,7 +41,7 @@
 
         <!-- Mô tả dưới tiêu đề -->
         <TextView
-            android:id="@+id/descTextView"
+            android:id="@+id/resultDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Your order is being prepared to be shipped to\nyou on time"
@@ -49,7 +49,7 @@
             android:fontFamily="@font/poppins_regular"
             android:textColor="@color/grey_dark"
             android:textAlignment="center"
-            app:layout_constraintTop_toBottomOf="@id/titleTextView"
+            app:layout_constraintTop_toBottomOf="@id/resultTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="12dp" />
@@ -63,16 +63,17 @@
             android:text="Continue Shopping"
             android:textAllCaps="false"
             android:textSize="16sp"
+            android:visibility="gone"
             android:fontFamily="@font/poppins_bold"
             android:textColor="@color/white"
             android:background="@drawable/bg_button_primary"
-            app:layout_constraintTop_toBottomOf="@id/descTextView"
+            app:layout_constraintTop_toBottomOf="@id/resultDescription"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Button Back to Home (Secondary) -->
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/backHomeBtn"
+            android:id="@+id/backToHomeBtn"
             android:layout_width="0dp"
             android:layout_height="54dp"
             android:layout_marginTop="16dp"

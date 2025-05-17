@@ -20,6 +20,7 @@ import com.blossy.flowerstore.presentation.productDetail.adapter.ProductImagePag
 import com.blossy.flowerstore.presentation.productDetail.viewmodel.ProductDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.blossy.flowerstore.R
+import com.blossy.flowerstore.utils.CurrencyFormatter
 import kotlinx.coroutines.selects.select
 import okhttp3.internal.wait
 
@@ -72,7 +73,7 @@ class ProductDetailFragment : Fragment() {
                         dotsIndicator.setViewPager2(binding.viewPager)
                         nameProduct.text = state.data.name
                         ratingBar.rating = state.data.rating.toFloat()
-                        priceProduct.text = "₫${state.data.price}"
+                        priceProduct.text = CurrencyFormatter.formatVND(state.data.price)
                         descriptionProduct.text = state.data.description
                         addToCartBtn.isEnabled = state.data.stock > 0
                         addToCartBtn.text =

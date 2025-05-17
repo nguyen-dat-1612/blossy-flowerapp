@@ -135,7 +135,6 @@
                                 android:id="@+id/recipientName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Nguyen Van A"
                                 android:fontFamily="@font/poppins_regular"
                                 android:textSize="14sp"
                                 android:textColor="@android:color/black"/>
@@ -152,7 +151,6 @@
                                 android:id="@+id/recipientPhone"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="0987654321"
                                 android:fontFamily="@font/poppins_regular"
                                 android:textSize="14sp"
                                 android:textColor="@android:color/black"/>
@@ -164,7 +162,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_regular"
-                            android:text="123 Đường ABC, Phường XYZ, Quận 1, TP.HCM"
                             android:textSize="14sp"
                             android:textColor="@android:color/darker_gray"/>
                     </LinearLayout>

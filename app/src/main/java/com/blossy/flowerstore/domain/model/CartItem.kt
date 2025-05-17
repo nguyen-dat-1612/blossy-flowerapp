@@ -6,5 +6,5 @@ data class CartItem(
     val product: Product,
     val quantity: Int,
     @SerializedName("_id")
-    val id: String
+    var id: String
 )

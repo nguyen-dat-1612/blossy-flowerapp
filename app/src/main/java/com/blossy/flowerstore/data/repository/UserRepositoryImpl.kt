@@ -42,26 +42,26 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addAddress(address: AddressResponse): Result<List<Address>> = withTimeout(TIMEOUT) {
+    override suspend fun addAddress(address: AddressResponse): Result<Address> = withTimeout(TIMEOUT) {
         safeApiCall {
             userApi.addAddress(address).toResult { response ->
-                response.map { it.toAddress() }
+                response.toAddress()
             }
         }
     }
 
-    override suspend fun updateAddress(address: AddressResponse): Result<List<Address>> = withTimeout(TIMEOUT) {
+    override suspend fun updateAddress(address: AddressResponse): Result<Address> = withTimeout(TIMEOUT) {
         safeApiCall {
-            userApi.updateAddress(address).toResult { response ->
-                response.map { it.toAddress() }
+            userApi.updateAddress(address).toResult() { response ->
+                response.toAddress()
             }
         }
     }
 
-    override suspend fun deleteAddress(addressId: String): Result<List<Address>> = withTimeout(TIMEOUT){
+    override suspend fun deleteAddress(addressId: String): Result<Address> = withTimeout(TIMEOUT){
         safeApiCall {
             userApi.deleteAddress(addressId).toResult { response ->
-                response.map { it.toAddress() }
+                response.toAddress()
             }
         }
     }
@@ -84,6 +84,13 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAddressById(id: String): Result<Address> = withTimeout(TIMEOUT) {
+        safeApiCall {
+            userApi.getAddressById(id).toResult { response ->
+                response.toAddress()
+            }
+        }
+    }
 
     companion object {
         private const val TIMEOUT = 5000L

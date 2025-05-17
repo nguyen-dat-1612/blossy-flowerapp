@@ -22,8 +22,8 @@ class AddEditViewModel @Inject constructor(
     private val deleteAddressUseCase: DeleteAddressUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState<List<Address>>>(UiState.Idle)
-    var uiState: MutableStateFlow<UiState<List<Address>>> = _uiState
+    private val _uiState = MutableStateFlow<UiState<Address>>(UiState.Idle)
+    var uiState: MutableStateFlow<UiState<Address>> = _uiState
 
 
     fun addAddress(address: AddressResponse) {
