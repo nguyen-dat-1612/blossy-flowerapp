@@ -6,18 +6,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.databinding.ItemAddressBinding
-import com.blossy.flowerstore.domain.model.Address
+import com.blossy.flowerstore.domain.model.AddressModel
 
 class AddressAdapter(
     private val fromCheckout: Boolean,
     private val onAddressSelected: (Int) -> Unit,
-    private val onEditClick: (Address) -> Unit
+    private val onEditClick: (AddressModel) -> Unit
 ) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
 
-    private var addresses: List<Address> = emptyList()
+    private var addresses: List<AddressModel> = emptyList()
     private var selectedPosition = -1
 
-    fun submitList(newAddresses: List<Address>) {
+    fun submitList(newAddresses: List<AddressModel>) {
         val diffResult = DiffUtil.calculateDiff(AddressDiffCallback(addresses, newAddresses))
         addresses = newAddresses
         diffResult.dispatchUpdatesTo(this)
@@ -25,7 +25,7 @@ class AddressAdapter(
 
 
     inner class AddressViewHolder(val binding: ItemAddressBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(address: Address, position: Int) {
+        fun bind(address: AddressModel, position: Int) {
             binding.nameTextView.text = address.name
             binding.phoneTextView.text = address.phone
             binding.addressTextView.text = address.address
@@ -61,13 +61,13 @@ class AddressAdapter(
 
     override fun getItemCount(): Int = addresses.size
 
-    fun getSelectedAddress(): Address? {
+    fun getSelectedAddress(): AddressModel? {
         return if (selectedPosition != -1) addresses[selectedPosition] else null
     }
 
     class AddressDiffCallback(
-        private val oldList: List<Address>,
-        private val newList: List<Address>
+        private val oldList: List<AddressModel>,
+        private val newList: List<AddressModel>
     ) : DiffUtil.Callback() {
 
         override fun getOldListSize(): Int = oldList.size

@@ -1,14 +1,14 @@
 package com.blossy.flowerstore.presentation.home.viewmodel
 
+import android.content.Context
+import android.location.Address
+import android.location.Geocoder
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blossy.flowerstore.domain.model.Category
-import com.blossy.flowerstore.domain.model.Product
-import com.blossy.flowerstore.domain.model.User
 import com.blossy.flowerstore.domain.usecase.category.GetCategoriesUseCase
 import com.blossy.flowerstore.domain.usecase.product.GetTopProductsUseCase
 import com.blossy.flowerstore.domain.usecase.user.GetUseProfileUseCase
-import com.blossy.flowerstore.presentation.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,8 +16,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.blossy.flowerstore.domain.utils.Result
+import com.blossy.flowerstore.presentation.home.state.HomeUiState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.util.Locale
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -26,43 +32,86 @@ class HomeViewModel @Inject constructor(
     private val getUseProfileUseCase: GetUseProfileUseCase
 ) : ViewModel() {
 
-    private val _categoryUiState = MutableStateFlow<UiState<List<Category>>>(UiState.Idle)
-    val categoryUiState: StateFlow<UiState<List<Category>>> = _categoryUiState
+    private val _homeUiState = MutableStateFlow(HomeUiState())
+    val homeUiState: StateFlow<HomeUiState> = _homeUiState
 
-    private val _productUiState = MutableStateFlow<UiState<List<Product>>>(UiState.Idle)
-    val productUiState: StateFlow<UiState<List<Product>>> = _productUiState
-
-    private val _userProfileUiState = MutableStateFlow<UiState<User>>(UiState.Idle)
-    val userProfileUiState: StateFlow<UiState<User>> = _userProfileUiState
 
     fun loadHomeData() {
-        viewModelScope.launch(Dispatchers.IO) {
-
-            _categoryUiState.value = UiState.Loading
-            _productUiState.value = UiState.Loading
-            _userProfileUiState.value = UiState.Loading
+        _homeUiState.value  = HomeUiState(isLoading = true)
+        viewModelScope.launch {
 
             supervisorScope {
-                val catDeferred = async { getCategoriesUseCase() }
-                val prodDeferred = async { getTopProductsUseCase() }
-                val userDeferred = async { getUseProfileUseCase() }
+                val catDeferred = async {withContext(Dispatchers.IO) { getCategoriesUseCase()}}
+                val prodDeferred = async {withContext(Dispatchers.IO) {getTopProductsUseCase()}}
+                val userDeferred = async {withContext(Dispatchers.IO) {getUseProfileUseCase()}}
 
-                when (val catRes = catDeferred.await()) {
-                    is Result.Success -> _categoryUiState.value = UiState.Success(catRes.data)
-                    is Result.Error -> _categoryUiState.value = UiState.Error(catRes.message)
-                    is Result.Empty -> _categoryUiState.value = UiState.Success(emptyList())
+                val carResult = catDeferred.await()
+                val prodResult = prodDeferred.await()
+                val userResult = userDeferred.await()
+
+                val newState = _homeUiState.value.copy(
+                    isLoading = false,
+                    categories = when(carResult) {
+                        is Result.Success -> carResult.data
+                        is Result.Error -> {
+                            setError(carResult.message)
+                            emptyList()
+                        } else -> emptyList()
+                    },
+                    products = when(prodResult) {
+                        is Result.Success -> prodResult.data
+                        is Result.Error -> {
+                            setError(prodResult.message)
+                            emptyList()
+                        }
+                        else -> emptyList()
+                    },
+                    user = when(userResult) {
+                        is Result.Success -> userResult.data
+                        is Result.Error -> {
+                            setError(userResult.message)
+                            null
+                        }
+                        else -> null
+                    }
+                )
+                _homeUiState.value = newState
+            }
+        }
+    }
+    fun updateLocationText(context: Context, lat: Double, lng: Double) {
+        val geocoder = Geocoder(context, Locale.getDefault())
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            geocoder.getFromLocation(lat, lng, 1) { addresses ->
+                val locationText = addresses?.firstOrNull()?.toLocationText() ?: "Unknown"
+                _homeUiState.update { it.copy(locationText = locationText) }
+            }
+        } else {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    val address = geocoder.getFromLocation(lat, lng, 1)?.firstOrNull()
+                    val locationText = address?.toLocationText() ?: "Unknown"
+                    _homeUiState.update { it.copy(locationText = locationText) }
                 }
-                when (val prodRes = prodDeferred.await()) {
-                    is Result.Success -> _productUiState.value = UiState.Success(prodRes.data)
-                    is Result.Error -> _productUiState.value = UiState.Error(prodRes.message)
-                    is Result.Empty -> _productUiState.value = UiState.Success(emptyList())
-                }
-                when (val userRes = userDeferred.await()) {
-                    is Result.Success -> _userProfileUiState.value = UiState.Success(userRes.data)
-                    is Result.Error -> _userProfileUiState.value = UiState.Error(userRes.message)
-                    else -> _userProfileUiState.value = UiState.Error("No data")
+                catch (e: CancellationException) {
+                    _homeUiState.update { it.copy(locationText = "Location error") }
+                } catch (e: IOException) {
+                    _homeUiState.update { it.copy(locationText = "Location error") }
                 }
             }
+        }
+    }
+
+    private fun Address.toLocationText(): String {
+        return listOfNotNull(subAdminArea, adminArea, countryName).joinToString(", ")
+    }
+
+    private fun setError(message: String) {
+        if (message.isNotBlank()) {
+            _homeUiState.value = _homeUiState.value.copy(
+                error = message
+            )
         }
     }
 }

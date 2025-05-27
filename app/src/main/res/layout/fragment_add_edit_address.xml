@@ -183,5 +183,11 @@
             android:fontFamily="@font/poppins_bold" />
     </LinearLayout>
 
+    <include
+        layout="@layout/view_progress_overlay"
+        android:id="@+id/progressBar"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

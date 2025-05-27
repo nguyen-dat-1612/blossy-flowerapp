@@ -64,4 +64,6 @@
     <string name="dialog_no_address_message">You need to add a shipping address before proceeding with checkout. Would you like to add one now?</string>
     <string name="dialog_add_address">Add Address</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="update_address">Update Address</string>
+    <string name="add_new_address">Add New Address</string>
 </resources>

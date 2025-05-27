@@ -10,9 +10,6 @@
         android:name="com.blossy.flowerstore.presentation.common.MainFragment"
         android:label="Main" >
 
-        <!-- Deep Links cho các trường hợp đặc biệt -->
-        <deepLink app:uri="app://main/{tab}" />
-
         <argument
             android:name="selectedTab"
             android:defaultValue="home"
@@ -70,7 +67,7 @@
 
             <argument
                 android:name="category"
-                app:argType="com.blossy.flowerstore.domain.model.Category"
+                app:argType="com.blossy.flowerstore.domain.model.CategoryModel"
                 />
 
         </action>
@@ -199,6 +196,15 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out"/>
+        <action
+            android:id="@+id/action_checkOutFragment_to_paymentResultFragment"
+            app:destination="@id/paymentResultFragment"
+            app:popUpTo="@id/nav_graph_main"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
     </fragment>
     <fragment
         android:id="@+id/paymentResultFragment"
@@ -212,15 +218,15 @@
         <argument
             android:name="orderId"
             app:argType="string" />
-        <argument
-            android:name="amount"
-            app:argType="string" />
-        <argument
-            android:name="transactionId"
-            app:argType="string" />
         <action
             android:id="@+id/action_paymentResultFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/nav_graph_main"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"/>
     </fragment>
 
     <fragment
@@ -310,7 +316,7 @@
 
         <argument
             android:name="address"
-            app:argType="com.blossy.flowerstore.domain.model.Address"
+            app:argType="com.blossy.flowerstore.domain.model.AddressModel"
             android:defaultValue="@null"
             app:nullable="true"/>
 
@@ -331,7 +337,7 @@
 
         <argument
             android:name="category"
-            app:argType="com.blossy.flowerstore.domain.model.Category" />
+            app:argType="com.blossy.flowerstore.domain.model.CategoryModel" />
 
         <action
             android:id="@+id/action_categoryProductFragment_to_mainFragment"
@@ -414,6 +420,19 @@
             app:popUpToInclusive="false"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_popularFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out">
+            <argument
+                android:name="productId"
+                app:argType="string" />
+        </action>
+
+
     </fragment>
     <fragment
         android:id="@+id/categoryListFragment"
@@ -436,8 +455,7 @@
             app:popExitAnim="@anim/fade_out">
             <argument
                 android:name="category"
-                app:argType="com.blossy.flowerstore.domain.model.Category"
-                />
+                app:argType="com.blossy.flowerstore.domain.model.CategoryModel" />
         </action>
     </fragment>
     <fragment

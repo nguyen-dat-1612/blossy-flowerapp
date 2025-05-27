@@ -12,14 +12,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentMainBinding
 import com.blossy.flowerstore.databinding.FragmentProfileBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainFragment : Fragment() {
     private lateinit var navController: NavController
     private lateinit var binding: FragmentMainBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,10 +27,7 @@ class MainFragment : Fragment() {
         val navHostFragment = childFragmentManager
             .findFragmentById(R.id.nav_host_tabs) as NavHostFragment
         navController = navHostFragment.navController
-
         binding.bottomNavigation.setupWithNavController(navController)
-
-
         return binding.root
 
     }

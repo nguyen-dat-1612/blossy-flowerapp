@@ -109,6 +109,7 @@
                         android:background="@drawable/edittext_no_underline"
                         android:textColor="@color/grey_dark"
                         android:paddingStart="12dp"
+                        android:textColorHint="@color/grey_dark"
                         android:imeOptions="actionSearch"
                         android:inputType="text"
                         android:textSize="14sp"

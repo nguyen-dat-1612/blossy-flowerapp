@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.presentation.notification.ui.NotificationUiItem
 import com.blossy.flowerstore.R
-import com.blossy.flowerstore.domain.model.Notification
+import com.blossy.flowerstore.domain.model.NotificationModel
 
 class NotificationAdapter(
     private val onMarkAllAsReadClick: (String) -> Unit
@@ -83,7 +83,7 @@ class NotificationAdapter(
         private val tvMessage = itemView.findViewById<TextView>(R.id.notificationMessage)
         private val container = itemView.findViewById<LinearLayout>(R.id.notificationItem)
 
-        fun bind(notification: Notification) {
+        fun bind(notification: NotificationModel) {
             tvTitle.text = notification.title
             tvMessage.text = notification.message
 

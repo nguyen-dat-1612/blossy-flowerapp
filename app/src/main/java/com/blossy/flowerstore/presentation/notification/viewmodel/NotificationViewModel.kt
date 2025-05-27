@@ -2,7 +2,7 @@ package com.blossy.flowerstore.presentation.notification.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blossy.flowerstore.domain.model.Notification
+import com.blossy.flowerstore.domain.model.NotificationModel
 import com.blossy.flowerstore.domain.usecase.notification.GetNotificationsUseCase
 import com.blossy.flowerstore.presentation.common.UiState
 import com.blossy.flowerstore.presentation.notification.ui.NotificationUiItem
@@ -41,9 +41,9 @@ class NotificationViewModel @Inject constructor(
         }
     }
 
-    private fun groupNotifications(notifications: List<Notification>): List<NotificationUiItem> {
+    private fun groupNotifications(notifications: List<NotificationModel>): List<NotificationUiItem> {
         val now = LocalDate.now()
-        val grouped = linkedMapOf<String, MutableList<Notification>>()
+        val grouped = linkedMapOf<String, MutableList<NotificationModel>>()
 
         for (notification in notifications) {
             val date = notification.createdAt.toLocalDate()

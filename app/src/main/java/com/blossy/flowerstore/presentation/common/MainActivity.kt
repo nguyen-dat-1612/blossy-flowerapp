@@ -2,29 +2,23 @@ package com.blossy.flowerstore.presentation.common
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.ActivityMainBinding
-import com.blossy.flowerstore.presentation.shippingAddress.ui.AddEditAddressFragment.Companion.TAG
-import com.google.firebase.FirebaseApp
-import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -84,14 +78,25 @@ class MainActivity : AppCompatActivity() {
                     "amount" to amount,
                     "transactionId" to transactionId
                 )
+                Log.d(TAG, "handleDeepLink: $args")
 
-                // Điều hướng tới PaymentResultFragment
-                navController.navigate(R.id.paymentResultFragment, args)
+                navController.currentBackStackEntry?.savedStateHandle?.set("payment_result", args)
+//                navController.navigate(
+//                    R.id.paymentResultFragment,
+//                    args,
+//                    NavOptions.Builder()
+//                        .setPopUpTo(R.id.checkOutFragment, true)
+//                        .build()
+//                )
             }
         }
     }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }

@@ -2,7 +2,7 @@ package com.blossy.flowerstore.presentation.order.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blossy.flowerstore.domain.model.Order
+import com.blossy.flowerstore.domain.model.OrderModel
 import com.blossy.flowerstore.domain.usecase.order.CancelOrderUseCase
 import com.blossy.flowerstore.domain.usecase.order.ConfirmOrderUseCase
 import com.blossy.flowerstore.domain.usecase.order.MyOrdersUseCase
@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.blossy.flowerstore.domain.utils.Result
+import kotlinx.coroutines.withContext
 
 
 @HiltViewModel
@@ -23,14 +24,14 @@ class OrderHistoryViewModel @Inject constructor(
     private val confirmOrderUseCase: ConfirmOrderUseCase
 ) : ViewModel(){
 
-    private val _orderHistory = MutableStateFlow<UiState<List<Order>>>(UiState.Idle)
-    val orderHistory: StateFlow<UiState<List<Order>>> = _orderHistory
+    private val _orderHistory = MutableStateFlow<UiState<List<OrderModel>>>(UiState.Idle)
+    val orderHistory: StateFlow<UiState<List<OrderModel>>> = _orderHistory
 
-    private val _cancelOrder = MutableStateFlow<UiState<Order>>(UiState.Idle)
-    val cancelOrder: StateFlow<UiState<Order>> = _cancelOrder
+    private val _cancelOrder = MutableStateFlow<UiState<OrderModel>>(UiState.Idle)
+    val cancelOrder: StateFlow<UiState<OrderModel>> = _cancelOrder
 
-    private val _confirmOrder = MutableStateFlow<UiState<Order>>(UiState.Idle)
-    val confirmOrder: StateFlow<UiState<Order>> = _confirmOrder
+    private val _confirmOrder = MutableStateFlow<UiState<OrderModel>>(UiState.Idle)
+    val confirmOrder: StateFlow<UiState<OrderModel>> = _confirmOrder
 
     fun fetchOrderHistory(
         status: String,
@@ -39,16 +40,14 @@ class OrderHistoryViewModel @Inject constructor(
         isPaid: Boolean,
         sort: String
     ) {
-        viewModelScope.launch (Dispatchers.IO) {
-            _orderHistory.value = UiState.Loading
+        _orderHistory.value = UiState.Loading
+        viewModelScope.launch {
+            when(val response = withContext(Dispatchers.IO) {
+                myOrdersUseCase.invoke(
 
-            when(val response  = myOrdersUseCase.invoke(
-                status,
-                page,
-                limit,
-                isPaid,
-                sort
-            )) {
+                    status, page, limit, isPaid, sort
+                )
+            }){
                 is Result.Success -> {
                     _orderHistory.value = UiState.Success(response.data)
                 }

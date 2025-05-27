@@ -30,6 +30,8 @@
         </service>
 
         <activity android:name=".presentation.common.MainActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTop"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -43,6 +45,7 @@
         </activity>
         <activity
             android:name=".presentation.auth.ui.AuthActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

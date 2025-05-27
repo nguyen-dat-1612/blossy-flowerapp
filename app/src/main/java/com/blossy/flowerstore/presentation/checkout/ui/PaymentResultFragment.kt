@@ -32,21 +32,17 @@ class PaymentResultFragment : Fragment() {
 
         val status = args.paymentStatus
         val orderId = args.orderId
-        val amount = args.amount
-
-        val transactionId = args.transactionId
 
         binding.resultTitle.text = if (status == "success") "Your order is successfully purchased" else "Your order is failed purchased"
         binding.resultDescription.text =
             "Your order is being prepared to be shipped to\nyou on time\n\n" +
-                    "Order code: $orderId\nAmount: $amount\nTransaction code: $transactionId"
+                    "Order code: $orderId"
 
         binding.backToHomeBtn.setOnClickListener {
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.nav_host_main, true)
-                .build()
+            findNavController().navigate(
+                R.id.action_paymentResultFragment_to_mainFragment,
+            )
 
-            findNavController().navigate(R.id.mainFragment, null, navOptions)
         }
     }
 

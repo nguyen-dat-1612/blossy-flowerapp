@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.ItemFilterCategoryBinding
-import com.blossy.flowerstore.domain.model.Category
+import com.blossy.flowerstore.domain.model.CategoryModel
 
 class CategoryFilterAdapter(
-    private val categories: List<Category>,
+    private val categories: List<CategoryModel>,
     private val selectedCategories: Set<String>,
     private val onCategorySelected: (String) -> Unit
 ) : RecyclerView.Adapter<CategoryFilterAdapter.ViewHolder>() {
@@ -17,7 +17,7 @@ class CategoryFilterAdapter(
     inner class ViewHolder(private val binding: ItemFilterCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(category: Category) {
+        fun bind(category: CategoryModel) {
             val isSelected = selectedCategories.contains(category.id)
             binding.categoryButton.text = category.name
 

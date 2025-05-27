@@ -6,25 +6,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentCartBinding
-import com.blossy.flowerstore.domain.model.CartItem
-import com.blossy.flowerstore.domain.model.PriceDetailItem
+import com.blossy.flowerstore.domain.model.PriceDetailItemModel
+import com.blossy.flowerstore.domain.model.CartItemModel
 import com.blossy.flowerstore.presentation.cart.adapter.CartAdapter
 import com.blossy.flowerstore.presentation.cart.adapter.PriceDetailAdapter
 import com.blossy.flowerstore.presentation.cart.viewmodel.CartViewModel
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.utils.CurrencyFormatter
 import com.blossy.flowerstore.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
 
 @AndroidEntryPoint
 class CartFragment : Fragment() {
@@ -82,59 +78,53 @@ class CartFragment : Fragment() {
     }
 
     private fun observeCart() {
-        collectState(cartViewModel.getCartUiState) { state ->
-            when (state) {
-                is UiState.Success -> {
-                    binding.progressBar.root.visibility = View.GONE
-                    if (state.data.isEmpty()) binding.emptyState.root.visibility = View.VISIBLE
-                    else binding.emptyState.root.visibility = View.GONE
-                    cartAdapter.submitList(state.data)
-                    updatePriceSummary(state.data)
-                }
+        collectState(cartViewModel.cartUiState) { state ->
+            binding.progressBar.root.visibility = if (state.isLoadingCart) View.VISIBLE else View.GONE
 
-                is UiState.Error -> {
-                    Log.e(TAG, "observeCart: ${state.message}")
-                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    Log.w(TAG, "Received empty or null state")
-                }
+            if (state.cartItems.isEmpty()) {
+                binding.emptyState.root.visibility = View.VISIBLE
+            } else {
+                binding.emptyState.root.visibility = View.GONE
+                cartAdapter.submitList(state.cartItems)
+                updatePriceSummary(state.cartItems)
             }
-        }
-        collectState(cartViewModel.updateCartUiState) { state ->
-            when (state) {
+
+            when (val updateState = state.updateCartState) {
                 is UiState.Success -> {
-                    cartAdapter.updateItemQuantity(cartViewModel.lastUpdatedProductId, cartViewModel.lastUpdatedQuantity)
-                    updatePriceSummary(cartAdapter.currentList())
                     showToast("Item updated successfully")
                 }
+
                 is UiState.Error -> {
-                    showError(state.message)
-                    showToast("Update failed: ${state.message}")
+                    showError(updateState.message)
+                    showToast("Update failed: ${updateState.message}")
                 }
+
                 else -> {}
             }
-        }
 
-        collectState(cartViewModel.removeCartUiState) { state ->
-            when (state) {
+            when (val removeState = state.removeCartState) {
                 is UiState.Success -> {
-                    cartAdapter.removeItemByProductId(cartViewModel.lastRemovedProductId)
-                    updatePriceSummary(cartAdapter.currentList())
                     showToast("Item removed successfully")
                 }
+
                 is UiState.Error -> {
-                    showError(state.message)
-                    showToast("Delete failed: ${state.message}")
+                    showError(removeState.message)
+                    showToast("Delete failed: ${removeState.message}")
                 }
+
                 else -> {}
+            }
+
+            state.errorMessage?.let {
+                showToast("Error: $it")
+                Log.e(TAG, "CartUiState error: $it")
             }
         }
     }
 
     private fun setOnClickListeners() = with(binding){
         checkOutButton.setOnClickListener {
-            if (cartAdapter.currentList().isEmpty()) {
+            if (cartAdapter.currentList.isEmpty()) {
                 showToast("Your cart is empty")
                 return@setOnClickListener
             } else {
@@ -154,9 +144,9 @@ class CartFragment : Fragment() {
         }
     }
 
-    private fun updatePriceSummary(items: List<CartItem>) {
+    private fun updatePriceSummary(items: List<CartItemModel>) {
         val priceDetails = items.map {
-            PriceDetailItem(it.product.name, it.quantity, it.quantity * it.product.price)
+            PriceDetailItemModel(it.product.name, it.quantity, it.quantity * it.product.price)
         }
         priceDetailAdapter.updateList(priceDetails)
 
@@ -169,7 +159,7 @@ class CartFragment : Fragment() {
 
     private fun findNavController() = requireActivity().findNavController(R.id.nav_host_main)
 
-    private fun calculateTotal(items: List<CartItem>): Double {
+    private fun calculateTotal(items: List<CartItemModel>): Double {
         return items.sumOf { it.product.price * it.quantity }
     }
 

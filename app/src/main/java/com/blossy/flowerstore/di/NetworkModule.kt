@@ -9,8 +9,8 @@ import com.blossy.flowerstore.data.remote.api.OrderApi
 import com.blossy.flowerstore.data.remote.api.PaymentApi
 import com.blossy.flowerstore.data.remote.api.ProductApi
 import com.blossy.flowerstore.data.remote.api.UserApi
-import com.blossy.flowerstore.utils.AuthInterceptor
-import com.blossy.flowerstore.utils.SecureTokenManager
+import com.blossy.flowerstore.network.AuthInterceptor
+import com.blossy.flowerstore.utils.manager.SecureTokenManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +25,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "http://192.168.1.107:5000/api/"
+    private const val BASE_URL = "http://192.168.1.118:5000/api/"
 
     @Provides
     @Singleton

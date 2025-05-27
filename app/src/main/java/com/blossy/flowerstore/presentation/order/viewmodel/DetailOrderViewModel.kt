@@ -2,7 +2,7 @@ package com.blossy.flowerstore.presentation.order.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blossy.flowerstore.domain.model.Order
+import com.blossy.flowerstore.domain.model.OrderModel
 import com.blossy.flowerstore.domain.usecase.order.GetOrderByIdUseCase
 import com.blossy.flowerstore.presentation.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +18,8 @@ import com.blossy.flowerstore.domain.utils.Result
 class DetailOrderViewModel @Inject constructor(
     private val getOrderByIdUseCase: GetOrderByIdUseCase
 ) : ViewModel(){
-    private val _order = MutableStateFlow<UiState<Order>>(UiState.Idle)
-    val order: StateFlow<UiState<Order>> = _order
+    private val _order = MutableStateFlow<UiState<OrderModel>>(UiState.Idle)
+    val order: StateFlow<UiState<OrderModel>> = _order
 
     fun getOrderById(id: String) {
         viewModelScope.launch (Dispatchers.IO){

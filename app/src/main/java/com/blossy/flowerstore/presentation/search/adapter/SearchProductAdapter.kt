@@ -5,15 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.blossy.flowerstore.domain.model.Product
 import com.blossy.flowerstore.databinding.ItemSearchProductBinding
 import com.blossy.flowerstore.databinding.ItemLoadingBinding
+import com.blossy.flowerstore.domain.model.ProductModel
 import com.blossy.flowerstore.utils.CurrencyFormatter
-import com.bumptech.glide.Glide
+import com.blossy.flowerstore.utils.loadImage
 
 class SearchProductAdapter(
-    private val onItemClick: (Product) -> Unit
-) : ListAdapter<Product, RecyclerView.ViewHolder>(DiffCallback()) {
+    private val onItemClick: (ProductModel) -> Unit
+) : ListAdapter<ProductModel, RecyclerView.ViewHolder>(DiffCallback()) {
 
     companion object {
         private const val ITEM_VIEW_TYPE = 0
@@ -65,7 +65,6 @@ class SearchProductAdapter(
                 holder.bind(product)
             }
             is LoadingViewHolder -> {
-                // Không cần làm gì với loading view holder
             }
         }
     }
@@ -77,21 +76,16 @@ class SearchProductAdapter(
     inner class ProductViewHolder(private val binding: ItemSearchProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: Product) {
-            Glide.with(binding.imageProduct.context)
-                .load(product.images.firstOrNull())
-                .into(binding.imageProduct)
-
-            binding.nameProduct.text = product.name
-            binding.priceProduct.text = CurrencyFormatter.formatVND(product.price)
-            binding.ratingProduct.text = product.rating.toString()
-            binding.categoryProduct.text = product.category.name
-            binding.stockStatus.text = if (product.stock > 0) "In Stock" else "Out of Stock"
-            binding.ratingBar.rating = product.rating.toFloat()
-            binding.ratingBar.setIsIndicator(true)
-
-
-            binding.root.setOnClickListener {
+        fun bind(product: ProductModel) = with(binding) {
+            imageProduct.loadImage(product.images.firstOrNull())
+            nameProduct.text = product.name
+            priceProduct.text = CurrencyFormatter.formatVND(product.price)
+            ratingProduct.text = product.rating.toString()
+            categoryProduct.text = product.category.name
+            stockStatus.text = if (product.stock > 0) "In Stock" else "Out of Stock"
+            ratingBar.rating = product.rating.toFloat()
+            ratingBar.setIsIndicator(true)
+            root.setOnClickListener {
                 onItemClick(product)
             }
         }
@@ -100,12 +94,12 @@ class SearchProductAdapter(
     class LoadingViewHolder(binding: ItemLoadingBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    class DiffCallback : DiffUtil.ItemCallback<Product>() {
-        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+    class DiffCallback : DiffUtil.ItemCallback<ProductModel>() {
+        override fun areItemsTheSame(oldItem: ProductModel, newItem: ProductModel): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+        override fun areContentsTheSame(oldItem: ProductModel, newItem: ProductModel): Boolean {
             return oldItem == newItem
         }
     }

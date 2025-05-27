@@ -5,7 +5,7 @@
     <data>
         <variable
             name="product"
-            type="com.blossy.flowerstore.domain.model.Product" />
+            type="com.blossy.flowerstore.domain.model.ProductModel" />
     </data>
 
     <FrameLayout
@@ -169,10 +169,10 @@
                             android:progressTint="@android:color/holo_orange_light"
                             style="@style/Widget.AppCompat.RatingBar.Small"
                             app:layout_constraintTop_toTopOf="@id/priceProduct"
-                            app:layout_constraintEnd_toStartOf="@id/reviews" />
+                            app:layout_constraintEnd_toStartOf="@id/reviewsText" />
 
                         <TextView
-                            android:id="@+id/reviews"
+                            android:id="@+id/reviewsText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/grey_dark"
@@ -437,7 +437,12 @@
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <include
+            layout="@layout/view_progress_overlay_white"
+            android:id="@+id/progressOverlay"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
     </FrameLayout>
 </layout>

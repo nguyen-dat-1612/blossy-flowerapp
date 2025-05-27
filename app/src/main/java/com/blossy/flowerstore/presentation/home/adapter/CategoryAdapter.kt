@@ -1,21 +1,20 @@
 package com.blossy.flowerstore.presentation.home.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.databinding.ItemCategoryBinding
-import com.blossy.flowerstore.domain.model.Category
+import com.blossy.flowerstore.domain.model.CategoryModel
 import com.bumptech.glide.Glide
 
 class CategoryAdapter(
-    private val onItemClick: (Category) -> Unit
+    private val onItemClick: (CategoryModel) -> Unit
 ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>(){
 
-    private var categoryList = mutableListOf<Category>()
+    private var categoryList = mutableListOf<CategoryModel>()
 
     inner class CategoryViewHolder(private val binding: ItemCategoryBinding) : RecyclerView.ViewHolder(binding.root){
-        fun bind(category: Category){
+        fun bind(category: CategoryModel){
             binding.categoryName.text = category.name
             Glide.with(binding.categoryImage.context)
                 .load(category.image)
@@ -39,7 +38,7 @@ class CategoryAdapter(
         holder.bind(categoryList[position])
     }
 
-    fun submitList(categories: List<Category>) {
+    fun submitList(categories: List<CategoryModel>) {
         categoryList = categories.toMutableList()
         notifyDataSetChanged()
     }

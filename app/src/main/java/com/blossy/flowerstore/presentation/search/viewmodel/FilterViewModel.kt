@@ -2,7 +2,7 @@ package com.blossy.flowerstore.presentation.search.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blossy.flowerstore.domain.model.Category
+import com.blossy.flowerstore.domain.model.CategoryModel
 import com.blossy.flowerstore.domain.usecase.category.GetCategoriesUseCase
 import com.blossy.flowerstore.domain.utils.Result
 import com.blossy.flowerstore.presentation.common.UiState
@@ -17,13 +17,13 @@ class FilterViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
 
-    private val _categoryUiState = MutableStateFlow<UiState<List<Category>>>(UiState.Idle)
-    val categoryUiState: StateFlow<UiState<List<Category>>> = _categoryUiState
+    private val _categoryUiState = MutableStateFlow<UiState<List<CategoryModel>>>(UiState.Idle)
+    val categoryUiState: StateFlow<UiState<List<CategoryModel>>> = _categoryUiState
 
     private val _selectedCategories = MutableStateFlow<Set<String>>(emptySet())
     val selectedCategories: StateFlow<Set<String>> = _selectedCategories
 
-    private val _priceRange = MutableStateFlow<Pair<Int, Int>>(0 to 1000000) // Giá trị mặc định
+    private val _priceRange = MutableStateFlow<Pair<Int, Int>>(0 to 1000000)
     val priceRange: StateFlow<Pair<Int, Int>> = _priceRange
 
     init {

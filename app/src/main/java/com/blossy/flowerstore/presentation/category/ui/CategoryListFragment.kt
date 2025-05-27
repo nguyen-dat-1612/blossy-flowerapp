@@ -5,67 +5,63 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentCategoryListBinding
+import com.blossy.flowerstore.databinding.FragmentFavoritesBinding
 import com.blossy.flowerstore.presentation.category.adapter.CategoryListAdapter
 import com.blossy.flowerstore.presentation.category.viewmodel.CategoryViewModel
-import com.blossy.flowerstore.presentation.common.MainFragmentDirections
-import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
-import com.blossy.flowerstore.presentation.home.adapter.CategoryAdapter
+import com.blossy.flowerstore.utils.collectState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CategoryListFragment : Fragment() {
 
-    private lateinit var binding: FragmentCategoryListBinding
-    private lateinit var categoryViewModel: CategoryViewModel
+    private var _binding: FragmentCategoryListBinding? = null
+    private val binding get() = _binding!!
+    private  val categoryViewModel: CategoryViewModel by activityViewModels()
     private lateinit var categoryAdapter: CategoryListAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        categoryViewModel = ViewModelProvider(this).get(CategoryViewModel::class.java)
-        categoryViewModel.loadCategories()
-
-        categoryAdapter = CategoryListAdapter { category ->
-            val action = CategoryListFragmentDirections.actionCategoryListFragmentToCategoryProductFragment(category)
-            findNavController().navigate(action)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentCategoryListBinding.inflate(inflater, container, false)
-        observe()
+        _binding = FragmentCategoryListBinding.inflate(inflater, container, false)
+        setUpRecyclerView()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observe()
         setOnClickListeners()
     }
 
+
+    private fun setUpRecyclerView() {
+        categoryAdapter = CategoryListAdapter { category ->
+            val action = CategoryListFragmentDirections.actionCategoryListFragmentToCategoryProductFragment(category)
+            findNavController().navigate(action)
+        }
+        binding.recyclerViewCategories.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = categoryAdapter
+        }
+    }
+
     private fun observe() {
-        collectState(categoryViewModel.categoryUiState) {
-            when (it) {
-                is UiState.Loading -> {
-                    // Show loading state
-                }
-                is UiState.Success -> {
-                    categoryAdapter.submitList(it.data)
-                    binding.recyclerViewCategories.adapter = categoryAdapter
-                }
-                is UiState.Error -> {
-                    // Show error state
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-                }
-                else -> {}
+        collectState(categoryViewModel.categoryUiState) { state ->
+            binding.progressBar.root.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+            if (state.categories.isEmpty()) {
+                binding.emptyState.root.visibility = View.VISIBLE
+            } else {
+                binding.emptyState.root.visibility = View.GONE
+                categoryAdapter.submitList(state.categories)
+                binding.recyclerViewCategories.adapter = categoryAdapter
             }
         }
     }
@@ -77,6 +73,11 @@ class CategoryListFragment : Fragment() {
                 popBackStack()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

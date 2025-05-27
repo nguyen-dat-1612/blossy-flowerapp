@@ -6,14 +6,14 @@ import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.EditText
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentRegisterBinding
 import com.blossy.flowerstore.presentation.auth.viewmodel.RegisterViewModel
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.common.MainActivity
 import com.blossy.flowerstore.utils.isValidEmail
 import com.blossy.flowerstore.utils.setChildrenEnabled
@@ -45,9 +45,9 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observeRegister()
         setOnClickListener()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
 
     }
-
     private fun observeRegister() {
         collectState(viewModel.uiState) { state ->
             when (state) {

@@ -1,8 +1,7 @@
 package com.blossy.flowerstore.presentation.account.ui
 
 import android.Manifest
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -10,30 +9,32 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentAccountBinding
+import com.blossy.flowerstore.databinding.FragmentHomeBinding
 import com.blossy.flowerstore.presentation.account.viewmodel.AccountViewModel
+import com.blossy.flowerstore.presentation.auth.ui.AuthActivity
 import com.blossy.flowerstore.presentation.common.MainFragmentDirections
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
-import com.blossy.flowerstore.utils.FcmManager
+import com.blossy.flowerstore.utils.collectState
+import com.blossy.flowerstore.utils.manager.FcmManager
 import com.blossy.flowerstore.utils.LocationHelper
-import com.blossy.flowerstore.utils.SettingsManager
-import com.google.android.gms.location.LocationServices
+import com.blossy.flowerstore.utils.manager.SettingsManager
+import com.blossy.flowerstore.utils.toast
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
 class AccountFragment : Fragment() {
-    private lateinit var binding: FragmentAccountBinding
+    private var _binding: FragmentAccountBinding? = null
+    private val binding get() = _binding!!
+
     private val viewModel: AccountViewModel by viewModels()
 
     private lateinit var navController: NavController
@@ -46,7 +47,7 @@ class AccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentAccountBinding.inflate(inflater, container, false)
+        _binding = FragmentAccountBinding.inflate(inflater, container, false)
 
         settingsManager = SettingsManager(requireContext())
         fcmManager = FcmManager(FirebaseMessaging.getInstance())
@@ -111,7 +112,7 @@ class AccountFragment : Fragment() {
                     == PackageManager.PERMISSION_GRANTED) {
                     locationHelper.getLastLocation(
                         onSuccess = { location ->
-                            // Xử lý vị trí hiện tại nếu cần
+
                         },
                         onError = { exception ->
                             Log.e("Location", "Error getting location: ${exception.message}")
@@ -124,8 +125,7 @@ class AccountFragment : Fragment() {
             showToast("Location services ${if (isChecked) "enabled" else "disabled"}")
         }
 
-        // Dark Mode Switch
-        binding.darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
             settingsManager.isDarkMode = isChecked
 
             AppCompatDelegate.setDefaultNightMode(
@@ -134,10 +134,17 @@ class AccountFragment : Fragment() {
             )
             requireActivity().recreate()
         }
+
+        logoutAccount.setOnClickListener {
+            viewModel.logout()
+            val intent = Intent(requireActivity(), AuthActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        requireContext().toast(message)
     }
 
     private fun handleFcmError(exception: Exception?) {
@@ -150,6 +157,13 @@ class AccountFragment : Fragment() {
 
     private fun observe() {
         collectState(viewModel.updateFcm) {
+            when(it) {
+                is UiState.Success ->  Log.d(TAG, "observe: ${it.data}")
+                is UiState.Error -> Log.d(TAG, "observe: ${it.message}")
+                else -> {}
+            }
+        }
+        collectState(viewModel.logout) {
             when(it) {
                 is UiState.Success ->  Log.d(TAG, "observe: ${it.data}")
                 is UiState.Error -> Log.d(TAG, "observe: ${it.message}")
@@ -171,6 +185,11 @@ class AccountFragment : Fragment() {
             binding.locationServicesSwitch.isChecked = false
             showToast("Location permission denied")
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

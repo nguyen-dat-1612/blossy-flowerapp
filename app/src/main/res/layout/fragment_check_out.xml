@@ -163,7 +163,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_regular"
                             android:textSize="14sp"
-                            android:textColor="@android:color/darker_gray"/>
+                            android:textColor="@color/grey_dark"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -245,7 +245,7 @@
                                 android:fontFamily="@font/poppins_regular"
                                 android:text="Merchandise Subtotal"
                                 android:textSize="14sp"
-                                android:textColor="@android:color/darker_gray"/>
+                                android:textColor="@color/grey_dark"/>
 
                             <TextView
                                 android:id="@+id/subtotalValue"
@@ -270,7 +270,7 @@
                                 android:text="Shipping Fee"
                                 android:fontFamily="@font/poppins_regular"
                                 android:textSize="14sp"
-                                android:textColor="@android:color/darker_gray"/>
+                                android:textColor="@color/grey_dark"/>
 
                             <TextView
                                 android:id="@+id/shippingValue"
@@ -475,7 +475,7 @@
                     android:text="Total Payment"
                     android:fontFamily="@font/poppins_regular"
                     android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"/>
+                    android:textColor="@color/grey_dark"/>
 
                 <TextView
                     android:id="@+id/bottomTotalValue"
@@ -509,4 +509,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <include
+        layout="@layout/view_progress_overlay"
+        android:id="@+id/progressOverlay"/>
 </FrameLayout>

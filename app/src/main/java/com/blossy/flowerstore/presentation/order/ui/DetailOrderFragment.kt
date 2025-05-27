@@ -10,13 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentDetailOrderBinding
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.order.adapter.OrderItemsAdapter
 import com.blossy.flowerstore.presentation.order.viewmodel.DetailOrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,12 +50,8 @@ class DetailOrderFragment : Fragment() {
         collectState(viewModel.order) { state ->
             when (state) {
                 is UiState.Loading -> {
-//                    binding.progressBar.visibility = View.VISIBLE
-//                    binding.emptyText.visibility = View.GONE
                 }
                 is UiState.Success -> {
-//                    binding.progressBar.visibility = View.GONE
-//                    binding.emptyText.visibility = View.GONE
                     val order = state.data
                     binding.apply {
                         recipientName.text = order.shippingAddress.name + " (+84) " + order.shippingAddress.phone
@@ -72,6 +66,48 @@ class DetailOrderFragment : Fragment() {
                         orderTime.text = order.createdAt
 //                        shippingTime.text = order.shippingTime
 //                        completionTime.text = order.
+//                        if (order.isCompleted) {
+//                            completionTime.text = order.completionTime
+//                        } else {
+//                            completionTime.visibility = View.GONE
+//                        }
+
+                        if (order.isPaid) {
+                            paymentTime.text = order.paymentResult?.updateTime
+                        } else {
+                            paymentTime.visibility = View.GONE
+                        }
+
+//                        if (order.isShipped) {
+//                            shippingTime.text = order.shippingTime
+//                        } else {
+//                            shippingTime.visibility = View.GONE
+//                        }
+
+//                        if (order.isDelivered) {
+//                            completionTime.text = order.completionTime
+//                        } else {
+//                            completionTime.visibility = View.GONE
+//                        }
+
+                        if (order.status == "canceled") {
+                            actionButtons.visibility = View.GONE
+                        } else {
+                            actionButtons.visibility = View.VISIBLE
+                        }
+                        if (order.status == "pending" || order.status == "processing") {
+                            cancelOrderButton.visibility = View.VISIBLE
+                            cancelOrderButton.setOnClickListener {
+//                                viewModel.cancelOrder(order.id)
+                            }
+                        }
+                        if (order.status == "shipped") {
+                            trackButton.visibility = View.VISIBLE
+                        }
+
+                        if (order.status == "delivered") {
+                            trackButton.visibility = View.VISIBLE
+                        }
 
                     }
                 }
@@ -87,7 +123,7 @@ class DetailOrderFragment : Fragment() {
 
     fun setOnClickListeners() {
         binding.btnBack.setOnClickListener {
-            findNavController().navigate(R.id.action_detailOrderFragment_to_orderHistoryFragment)
+//            findNavController().navigate(R.id.action_detailOrderFragment_to_orderHistoryFragment)
             findNavController().popBackStack()
         }
         binding.copyButton.setOnClickListener {

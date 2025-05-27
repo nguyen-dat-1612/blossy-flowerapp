@@ -1,12 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
-    id("androidx.navigation.safeargs.kotlin")
-    id("kotlin-parcelize")
-    id("com.google.gms.google-services")
-    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.navigation)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.secrets)
+    alias(libs.plugins.parcelize)
 }
 
 android {
@@ -32,6 +32,7 @@ android {
             )
         }
     }
+
     buildFeatures {
         viewBinding = true
         dataBinding = true

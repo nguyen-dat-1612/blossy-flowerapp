@@ -14,7 +14,7 @@ import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentLoginBinding
 import com.blossy.flowerstore.presentation.auth.viewmodel.LoginViewModel
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.common.MainActivity
 import com.blossy.flowerstore.utils.isValidEmail
 import com.blossy.flowerstore.utils.setChildrenEnabled

@@ -7,27 +7,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentProfileBinding
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.profile.viewmodel.ProfileViewModel
+import com.blossy.flowerstore.utils.loadImage
+import com.blossy.flowerstore.utils.toast
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
-    private lateinit var binding: FragmentProfileBinding
-    private lateinit var viewModel: ProfileViewModel
+    private var _binding: FragmentProfileBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         viewModel.getUserProfile()
 
     }
@@ -36,13 +38,13 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentProfileBinding.inflate(inflater, container, false);
-        observeData()
+        _binding = FragmentProfileBinding.inflate(inflater, container, false);
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observeData()
         setOnClickListener()
     }
 
@@ -68,72 +70,41 @@ class ProfileFragment : Fragment() {
             editProfileImage.visibility = View.VISIBLE
             editBtn.visibility = View.VISIBLE
             viewModel.updateUserProfile(
-                id = (viewModel.userProfileUiState.value as UiState.Success).data.id,
+                id = (viewModel.profileUiState.value.user)!!.id,
                 name = fullNameInput.text.toString(),
                 email = emailInput.text.toString()
             )
         }
     }
 
-    private fun observeData() {
-        collectState(viewModel.userProfileUiState) { state ->
-            when (state) {
+    private fun observeData() = with(binding){
+        collectState(viewModel.profileUiState) { state ->
 
-                is UiState.Loading -> {}
-                is UiState.Success -> {
-                    Log.d("HomeFragment", "Success: ${state.data}")
-                    // Handle success state
-                    Glide.with(binding.profileImage.context)
-                        .load(state.data.avatar)
-                        .into(binding.profileImage)
+            progressOverlay.root.visibility = if (state.isLoading) View.VISIBLE else View.GONE
 
-                    binding.apply {
-                        userName.text = state.data.name
-                        fullNameInput.setText(state.data.name)
-                        emailInput.setText(state.data.email)
-                    }
-
-                }
-
-                is UiState.Error -> {
-                    Log.e("HomeFragment", "Error: ${state.message}")
-                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                    // Handle error state
-                }
-                is UiState.Idle -> {
-                    // Handle idle state
-                }
+            if (state.errorMessage.isNotBlank()) {
+                requireContext().toast(state.errorMessage)
             }
-        }
 
-        collectState(viewModel.updateProfileUiState) {
-            when (it) {
-                is UiState.Loading -> {}
+            if (state.user != null){
+                profileImage.loadImage(state.user.avatar)
+                userName.text = state.user.name
+                fullNameInput.setText(state.user.name)
+                emailInput.setText(state.user.email)
+            }
 
+            when(state.updateProfileState) {
                 is UiState.Success -> {
-                    Toast.makeText(requireContext(), "Update Success", Toast.LENGTH_SHORT).show()
-                    Log.d("HomeFragment", "Success: ${it.data}")
-                    // Handle success state
-                    Glide.with(binding.profileImage.context)
-                        .load(it.data.avatar)
-                        .into(binding.profileImage)
-                    binding.apply {
-                        userName.text = it.data.name
-                        fullNameInput.setText(it.data.name)
-                        emailInput.setText(it.data.email)
-                    }
+                    requireContext().toast("Update Success")
                 }
                 is UiState.Error -> {
-                    Log.e("HomeFragment", "Error: ${it.message}")
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-                    // Handle error state
+                    requireContext().toast("Update Failed")
                 }
                 else -> {}
             }
         }
+
     }
-
-
     companion object {
 
     }

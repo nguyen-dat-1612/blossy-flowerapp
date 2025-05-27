@@ -1,9 +1,7 @@
 package com.blossy.flowerstore.presentation.account.ui
 
 import android.os.Bundle
-import android.text.InputType
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,32 +15,33 @@ import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentChangePasswordBinding
 import com.blossy.flowerstore.presentation.account.viewmodel.ChangePasswordViewModel
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.clearError
+import com.blossy.flowerstore.utils.collectState
+import com.blossy.flowerstore.utils.hasMinLength
+import com.blossy.flowerstore.utils.isNotEmptyOrShowError
+import com.blossy.flowerstore.utils.matches
+import com.blossy.flowerstore.utils.toast
+import com.blossy.flowerstore.utils.validateChangePasswordInputs
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ChangePasswordFragment : Fragment() {
 
-    private lateinit var binding: FragmentChangePasswordBinding
+    private var _binding: FragmentChangePasswordBinding?= null
+    private val binding: FragmentChangePasswordBinding get() = _binding!!
     private val viewModel: ChangePasswordViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        binding = FragmentChangePasswordBinding.inflate(inflater, container, false)
-        observe()
+        _binding = FragmentChangePasswordBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observe()
         setOnClickListener()
     }
     private fun setOnClickListener() = with(binding) {
@@ -52,64 +51,18 @@ class ChangePasswordFragment : Fragment() {
                 popBackStack()
             }
         }
-        // Toggle visibility for Current Password
-        setupPasswordToggle(
-            binding.currentPasswordInput,
-            binding.currentPasswordToggle
-        )
-
-        // Toggle visibility for New Password
-        setupPasswordToggle(
-            binding.newPasswordInput,
-            binding.newPasswordToggle
-        )
-
-        // Toggle visibility for Re-Type New Password
-        setupPasswordToggle(
-            binding.reNewPasswordInput,
-            binding.reNewPasswordToggle
-        )
+        setupPasswordToggle(currentPasswordInput, currentPasswordToggle)
+        setupPasswordToggle(newPasswordInput, newPasswordToggle)
+        setupPasswordToggle(reNewPasswordInput, reNewPasswordToggle)
 
         changePasswordButton.setOnClickListener {
-            val currentPassword = currentPasswordInput.text.toString().trim()
-            val newPassword = newPasswordInput.text.toString().trim()
-            val reNewPassword = reNewPasswordInput.text.toString().trim()
-
-            // Clear errors
-            currentPasswordInput.error = null
-            newPasswordInput.error = null
-            reNewPasswordInput.error = null
-
-            var hasError = false
-
-            if (currentPassword.isEmpty()) {
-                currentPasswordInput.error = "Please enter your current password"
-                hasError = true
-            }
-
-            if (newPassword.isEmpty()) {
-                newPasswordInput.error = "Please enter a new password"
-                hasError = true
-            } else if (newPassword.length < 6) {
-                newPasswordInput.error = "Please confirm your new password"
-                hasError = true
-            }
-
-            if (reNewPassword.isEmpty()) {
-                reNewPasswordInput.error = "Passwords do not match"
-                hasError = true
-            } else if (newPassword != reNewPassword) {
-                reNewPasswordInput.error = "Mật khẩu không khớp"
-                hasError = true
-            }
-
-            if (currentPassword == newPassword && currentPassword.isNotEmpty()) {
-                newPasswordInput.error = "New password must be different from the current password"
-                hasError = true
-            }
-
-            if (!hasError) {
-                viewModel.changePassword(currentPassword, newPassword)
+            if(validateChangePasswordInputs(currentPasswordInput, newPasswordInput, reNewPasswordInput)) {
+                val currentPassword = currentPasswordInput.text.toString().trim()
+                val newPassword = newPasswordInput.text.toString().trim()
+                viewModel.changePassword(
+                    currentPassword,
+                    newPassword
+                )
             }
         }
 
@@ -129,28 +82,29 @@ class ChangePasswordFragment : Fragment() {
         }
     }
 
-    private fun observe() {
+    private fun observe() = with(binding) {
         collectState(viewModel.updatePassword) {
             when (it) {
-                is UiState.Loading -> {
-
-                }
+                is UiState.Loading -> { progressOverlay.root.visibility = View.VISIBLE }
                 is UiState.Success -> {
-                    Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
+                    requireContext().toast("Password changed successfully")
                     findNavController().apply {
                         navigate(R.id.action_changePasswordFragment_to_mainFragment)
                         popBackStack()
                     }
                 }
                 is UiState.Error -> {
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    progressOverlay.root.visibility = View.VISIBLE
+                    requireContext().toast(it.message)
                 }
                 else -> {}
             }
         }
     }
 
-    companion object {
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

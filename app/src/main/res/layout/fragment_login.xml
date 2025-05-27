@@ -63,6 +63,9 @@
             android:text="nguyendatpvdpqn@gmail.com"
             android:textColor="@color/black"
             android:textSize="16sp"
+            android:maxLines="1"
+            android:inputType="textEmailAddress"
+            android:imeOptions="actionNext"
             app:layout_constraintTop_toBottomOf="@+id/emailTitle"
             tools:layout_editor_absoluteX="0dp" />
 
@@ -84,12 +87,15 @@
             android:layout_height="@dimen/edit_text_size"
             android:layout_marginTop="12dp"
             android:hint="Password"
-            android:text="12345678"
+            android:text="123456"
+            android:inputType="textPassword"
             android:background="@drawable/bg_edittext_primary"
             android:textSize="16sp"
             android:textColor="@color/black"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
+            android:maxLines="1"
+            android:imeOptions="actionNext"
             app:layout_constraintTop_toBottomOf="@+id/passwordTitle"/>
         
         <TextView

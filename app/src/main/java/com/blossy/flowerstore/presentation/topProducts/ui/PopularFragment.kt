@@ -7,27 +7,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentPopularBinding
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.search.adapter.SearchProductAdapter
 import com.blossy.flowerstore.presentation.topProducts.viewmodel.PopularViewModel
+import com.blossy.flowerstore.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PopularFragment : Fragment() {
 
-    private lateinit var binding: FragmentPopularBinding
-    private lateinit var viewModel: PopularViewModel
+    private var _binding: FragmentPopularBinding ?= null
+    private val binding get() = _binding!!
+    private val viewModel: PopularViewModel by viewModels()
     private lateinit var searchProductAdapter: SearchProductAdapter
+
+    private fun findNavController() = requireActivity().findNavController(R.id.nav_host_main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(PopularViewModel::class.java)
         viewModel.fetchPopularProducts()
     }
 
@@ -35,49 +40,40 @@ class PopularFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        binding = FragmentPopularBinding.inflate(inflater, container, false)
-        searchProductAdapter = SearchProductAdapter() { product ->
-//                        val navController = requireActivity().findNavController(R.id.nav_host_main)
-//                        val action = MainFragmentDirections.actionMainFragmentToProductDetailFragment(product.id, "home")
-//                        navController.navigate(action)
-        }
-        binding.recyclerViewProduct.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = searchProductAdapter
-        }
-        observeTopProducts()
-        setOnClickListener()
+        _binding = FragmentPopularBinding.inflate(inflater, container, false)
+        setUpUI()
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        observeTopProducts()
+        setOnClickListener()
+    }
+
+    private fun setUpUI() = with(binding) {
+        searchProductAdapter = SearchProductAdapter { product ->
+            val action = PopularFragmentDirections.actionPopularFragmentToProductDetailFragment(product.id, "home")
+            findNavController().navigate(action)
+        }
+        recyclerViewProduct.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2)
+            adapter = searchProductAdapter
+        }
+    }
+
     private fun observeTopProducts() {
-        collectState(viewModel.productUiState) { state ->
-            when (state) {
-                is UiState.Loading -> {
-//                    binding.progressBar.visibility = View.VISIBLE
-                }
-
-                is UiState.Success -> {
-                    Log.d("HomeFragment", "Success: ${state.data}")
-//                    binding.progressBar.visibility = View.GONE
-                    searchProductAdapter.submitList(state.data)
-                }
-
-                is UiState.Error -> {
-                    Log.e("HomeFragment", "Error: ${state.message}")
-//                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                    // Handle error state
-                }
-
-                is UiState.Idle -> {
-                    // Handle idle state
-                }
+        collectState(viewModel.popularUiState) { state ->
+            binding.progressOverlay.root.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+            searchProductAdapter.submitList(state.productItems)
+            if (state.error.isNotBlank())  {
+                requireContext().toast(message = state.error)
+                Log.d(TAG, "observeTopProducts: ${state.error}")
             }
         }
 
     }
+
 
     fun setOnClickListener() {
         binding.backBtn.setOnClickListener {
@@ -86,7 +82,12 @@ class PopularFragment : Fragment() {
         }
     }
 
-    companion object {
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
 
+    companion object {
+        private const val TAG = "PopularFragment"
     }
 }

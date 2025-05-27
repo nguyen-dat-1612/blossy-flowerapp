@@ -1,12 +1,10 @@
 package com.blossy.flowerstore.data.remote.api
 
-import androidx.room.Update
-import com.blossy.flowerstore.data.remote.dto.AddressResponse
-import com.blossy.flowerstore.data.remote.dto.PushRequest
-import com.blossy.flowerstore.data.remote.dto.UpdateUserRequest
-import com.blossy.flowerstore.data.remote.dto.UserProfileResponse
+import com.blossy.flowerstore.data.remote.dto.AddressDTO
+import com.blossy.flowerstore.data.remote.dto.PushFCMTO
+import com.blossy.flowerstore.data.remote.dto.UpdateUserDTO
+import com.blossy.flowerstore.data.remote.dto.UserDTO
 import com.blossy.flowerstore.data.remote.utils.BaseResponse
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -18,35 +16,35 @@ import retrofit2.http.Query
 interface UserApi {
 
     @GET("users/address")
-    suspend fun getUserAddresses(): Response<BaseResponse<List<AddressResponse>>>
+    suspend fun getUserAddresses(): BaseResponse<List<AddressDTO>>
 
     @GET("users/address/default")
-    suspend fun getDefaultAddress(): Response<BaseResponse<AddressResponse>>
+    suspend fun getDefaultAddress(): BaseResponse<AddressDTO>
 
     @GET("users/me")
-    suspend fun getUserProfile(): Response<BaseResponse<UserProfileResponse>>
+    suspend fun getUserProfile(): BaseResponse<UserDTO>
 
     @POST("users/address/default/{id}")
-    suspend fun setDefaultAddress(@Path("id") id: String): Response<BaseResponse<AddressResponse>>
+    suspend fun setDefaultAddress(@Path("id") id: String): BaseResponse<AddressDTO>
 
     @POST("users/address")
-    suspend fun addAddress(@Body address: AddressResponse):  Response<BaseResponse<AddressResponse>>
+    suspend fun addAddress(@Body address: AddressDTO):  BaseResponse<AddressDTO>
 
     @DELETE("users/address")
-    suspend fun deleteAddress(@Query("addressId") addressId: String):  Response<BaseResponse<AddressResponse>>
+    suspend fun deleteAddress(@Query("addressId") addressId: String): BaseResponse<AddressDTO>
 
     @PUT("users/address")
-    suspend fun updateAddress(@Body address: AddressResponse):  Response<BaseResponse<AddressResponse>>
+    suspend fun updateAddress(@Body address: AddressDTO): BaseResponse<AddressDTO>
 
     @PUT("users/fcm")
-    suspend fun updateFcmToken(@Body pushRequest: PushRequest): Response<BaseResponse<Boolean>>
+    suspend fun updateFcmToken(@Body pushRequest: PushFCMTO): BaseResponse<Boolean>
 
     @POST("users/logout")
-    suspend fun logout(): Response<BaseResponse<Boolean>>
+    suspend fun logout(): BaseResponse<Boolean>
 
     @PUT("users/{id}")
-    suspend fun updateUser(@Path("id") id: String, @Body user: UpdateUserRequest): Response<BaseResponse<UserProfileResponse>>
+    suspend fun updateUser(@Path("id") id: String, @Body user: UpdateUserDTO): BaseResponse<UserDTO>
 
     @GET("users/address/{id}")
-    suspend fun getAddressById(@Path("id") id: String): Response<BaseResponse<AddressResponse>>
+    suspend fun getAddressById(@Path("id") id: String): BaseResponse<AddressDTO>
 }

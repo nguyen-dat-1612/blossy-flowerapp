@@ -1,26 +1,20 @@
 package com.blossy.flowerstore.presentation.order.ui
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
-import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentOrderStatusBinding
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.order.adapter.OrderHistoryAdapter
 import com.blossy.flowerstore.presentation.order.viewmodel.OrderHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.internal.wait
 
 @AndroidEntryPoint
 class OrderListFragment : Fragment() {

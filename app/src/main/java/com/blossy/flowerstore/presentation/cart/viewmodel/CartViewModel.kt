@@ -2,18 +2,21 @@ package com.blossy.flowerstore.presentation.cart.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blossy.flowerstore.domain.model.CartItem
+import com.blossy.flowerstore.domain.model.request.UpdateCartModel
 import com.blossy.flowerstore.domain.usecase.cart.GetCartUseCase
 import com.blossy.flowerstore.domain.usecase.cart.RemoveCartUseCase
 import com.blossy.flowerstore.domain.usecase.cart.UpdateCartUseCase
 import com.blossy.flowerstore.domain.utils.Result
+import com.blossy.flowerstore.presentation.cart.state.CartUiState
 import com.blossy.flowerstore.presentation.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,30 +26,45 @@ class CartViewModel @Inject constructor(
     private val removeCartUseCase: RemoveCartUseCase
 ) : ViewModel() {
 
-    private val _getCartUiState = MutableStateFlow<UiState<List<CartItem>>>(UiState.Idle)
-    val getCartUiState: StateFlow<UiState<List<CartItem>>> = _getCartUiState
-
-    private val _updateCartUiState = MutableStateFlow<UiState<Boolean>>(UiState.Idle)
-    val updateCartUiState: StateFlow<UiState<Boolean>> = _updateCartUiState
-
-    private val _removeCartUiState = MutableStateFlow<UiState<Boolean>>(UiState.Idle)
-    val removeCartUiState: StateFlow<UiState<Boolean>> = _removeCartUiState
-
-    var lastUpdatedProductId: String = ""
-    var lastUpdatedQuantity: Int = 0
-    var lastRemovedProductId: String = ""
+    private val _cartUiState = MutableStateFlow(CartUiState())
+    val cartUiState: StateFlow<CartUiState> = _cartUiState
 
     fun getCart() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _getCartUiState.value = UiState.Loading
-            when(val result = getCartUseCase.invoke()) {
+        _cartUiState.update { it.copy(isLoadingCart = true, errorMessage = null) }
+
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                getCartUseCase()
+            }
+            when (result) {
                 is Result.Success -> {
-                    _getCartUiState.value = UiState.Success(result.data)
+                    _cartUiState.update {
+                        it.copy(
+                            isLoadingCart = false,
+                            cartItems = result.data,
+                            errorMessage = null
+                        )
+                    }
                 }
+
                 is Result.Error -> {
-                    _getCartUiState.value = UiState.Error(result.message)
+                    _cartUiState.update {
+                        it.copy(
+                            isLoadingCart = false,
+                            errorMessage = result.message
+                        )
+                    }
                 }
-                else -> {}
+
+                else -> {
+                    _cartUiState.update {
+                        it.copy(
+                            isLoadingCart = false,
+                            cartItems = emptyList(),
+                            errorMessage = "Unknown error occurred"
+                        )
+                    }
+                }
             }
         }
     }
@@ -55,44 +73,80 @@ class CartViewModel @Inject constructor(
         productId: String,
         quantity: Int
     ) {
-        lastUpdatedProductId = productId
-        lastUpdatedQuantity = quantity
-
-        viewModelScope.launch(Dispatchers.IO) {
-            _updateCartUiState.value = UiState.Loading
-            when(val result = updateCartUseCase.invoke(productId, quantity)) {
-                is Result.Success -> {
-                    _updateCartUiState.value = UiState.Success(true)
-                    getCart()
-                }
-                is Result.Error -> {
-                    _updateCartUiState.value = UiState.Error(result.message)
-                }
-                else -> {}
+        _cartUiState.update { it.copy(updateCartState = UiState.Loading) }
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                updateCartUseCase(UpdateCartModel(productId, quantity))
             }
+            when(result) {
+                is Result.Success -> {
+                    val updatedItems = _cartUiState.value.cartItems.map { cartItem ->
+                        if (cartItem.product.id == productId) {
+                            cartItem.copy(quantity = quantity)
+                        } else {
+                            cartItem
+                        }
+                    }
+
+                    _cartUiState.update {
+                        it.copy(
+                            updateCartState = UiState.Success(result.data),
+                            cartItems = updatedItems
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    _cartUiState.update {
+                        it.copy(updateCartState = UiState.Error(result.message))
+                    }
+                }
+
+                else -> Unit
+            }
+
             delay(500)
-            _updateCartUiState.value = UiState.Idle
+            _cartUiState.update { it.copy(updateCartState = UiState.Idle) }
         }
     }
 
+
     fun deleteCartItem(productId: String) {
-        lastRemovedProductId = productId
-
-        viewModelScope.launch(Dispatchers.IO) {
-            _removeCartUiState.value = UiState.Loading
-            when(val result = removeCartUseCase.invoke(productId)) {
-                is Result.Success -> {
-                    _removeCartUiState.value = UiState.Success(true)
-                    getCart()
-                }
-                is Result.Error -> {
-                    _removeCartUiState.value = UiState.Error(result.message)
-                }
-                else -> {}
+        _cartUiState.update { it.copy(removeCartState = UiState.Loading) }
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                removeCartUseCase(productId)
             }
-            delay(500)
-            _removeCartUiState.value = UiState.Idle
 
+            when(result) {
+                is Result.Success -> {
+                    val filteredItems = _cartUiState.value.cartItems.filter {
+                        it.product.id != productId
+                    }
+
+                    _cartUiState.update {
+                        it.copy(
+                            removeCartState = UiState.Success(true),
+                            cartItems = filteredItems
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    _cartUiState.update {
+                        it.copy(removeCartState = UiState.Error(result.message))
+                    }
+                }
+
+                else -> Unit
+            }
+
+            delay(500)
+            _cartUiState.update { it.copy(removeCartState = UiState.Idle) }
         }
+    }
+
+    companion object {
+        private const val TAG = "CartViewModel"
     }
 }

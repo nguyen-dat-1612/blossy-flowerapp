@@ -4,17 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.databinding.ItemProductBinding
-import com.blossy.flowerstore.domain.model.Product
+import com.blossy.flowerstore.domain.model.ProductModel
+import com.blossy.flowerstore.utils.CurrencyFormatter
 import com.bumptech.glide.Glide
 
 class ProductAdapter (
-    private val onClickListener: (Product) -> Unit
+    private val onClickListener: (ProductModel) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
-    private var productList = mutableListOf<Product>()
+    private var productList = mutableListOf<ProductModel>()
 
     inner class ViewHolder (private val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(product: Product) {
+        fun bind(product: ProductModel) {
             Glide.with(binding.imageProduct.context)
                 .load(product.images[0])
                 .into(binding.imageProduct)
@@ -24,7 +25,7 @@ class ProductAdapter (
                 ratingBar.rating = product.rating.toFloat()
                 numReviews.text = "(${product.numReviews})"
                 stockStatus.text = if (product.stock > 0) "In Stock" else "Out of Stock"
-                priceProduct.text = "đ${String.format("%.2f", product.price)}"
+                priceProduct.text = CurrencyFormatter.formatVND(product.price)
             }
             binding.root.setOnClickListener {
                 onClickListener(product)
@@ -45,7 +46,7 @@ class ProductAdapter (
         holder.bind(productList[position])
     }
 
-    fun submitList(products: List<Product>) {
+    fun submitList(products: List<ProductModel>) {
         productList = products.toMutableList()
         notifyDataSetChanged()
     }

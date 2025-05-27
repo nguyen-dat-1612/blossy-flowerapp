@@ -1,14 +1,11 @@
 package com.blossy.flowerstore.presentation.order.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager2.widget.ViewPager2
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentOrderHistoryBinding
 import com.blossy.flowerstore.presentation.order.adapter.OrderPagerAdapter
@@ -23,9 +20,7 @@ class OrderHistoryFragment : Fragment() {
 
     private lateinit var adapter: OrderPagerAdapter
     private val tabTitles = arrayOf("Pending", "Processing", "Shipped", "Delivered", "Cancelled")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

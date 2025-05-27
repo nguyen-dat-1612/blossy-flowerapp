@@ -4,16 +4,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.databinding.ItemProductPaymentBinding
-import com.blossy.flowerstore.domain.model.CartItem
+import com.blossy.flowerstore.domain.model.CartItemModel
 import com.blossy.flowerstore.utils.CurrencyFormatter
 import com.bumptech.glide.Glide
 
 class OrderItemAdapter (
-    private var cartItems: MutableList<CartItem>,
+    private var cartItems: MutableList<CartItemModel>,
 ) : RecyclerView.Adapter<OrderItemAdapter.ViewHolder>() {
 
     inner class ViewHolder (private val binding: ItemProductPaymentBinding) : RecyclerView.ViewHolder(binding.root){
-        fun bind(cartItem: CartItem) {
+        fun bind(cartItem: CartItemModel) {
             binding.apply {
                 Glide.with(binding.imageView.context)
                     .load(cartItem.product.images[0])
@@ -39,7 +39,7 @@ class OrderItemAdapter (
         holder.bind(cartItems[position])
     }
 
-    fun submitList(data: List<CartItem>) {
+    fun submitList(data: List<CartItemModel>) {
         this.cartItems = data.toMutableList()
         notifyDataSetChanged()
     }

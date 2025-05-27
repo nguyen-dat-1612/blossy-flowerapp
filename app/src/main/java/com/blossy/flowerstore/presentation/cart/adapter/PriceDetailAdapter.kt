@@ -4,15 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.databinding.ItemPriceDetailBinding
-import com.blossy.flowerstore.domain.model.PriceDetailItem
+import com.blossy.flowerstore.domain.model.PriceDetailItemModel
 import com.blossy.flowerstore.utils.CurrencyFormatter
 
 class PriceDetailAdapter(
-    private var items: List<PriceDetailItem>
+    private var items: List<PriceDetailItemModel>
 ) : RecyclerView.Adapter<PriceDetailAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemPriceDetailBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: PriceDetailItem) {
+        fun bind(item: PriceDetailItemModel) {
             binding.productName.text = item.name
             binding.quantity.text = "x ${item.quantity}"
             binding.price.text = CurrencyFormatter.formatVND(item.totalPrice)
@@ -32,7 +32,7 @@ class PriceDetailAdapter(
         holder.bind(items[position])
     }
 
-    fun updateList(newItems: List<PriceDetailItem>) {
+    fun updateList(newItems: List<PriceDetailItemModel>) {
         items = newItems
         notifyDataSetChanged()
     }

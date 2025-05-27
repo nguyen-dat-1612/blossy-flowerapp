@@ -6,19 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.blossy.flowerstore.databinding.FragmentFilterBottomSheetBinding
-import com.blossy.flowerstore.domain.model.Category
+import com.blossy.flowerstore.domain.model.CategoryModel
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.search.adapter.CategoryFilterAdapter
 import com.blossy.flowerstore.presentation.search.viewmodel.FilterViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.yazantarifi.slider.RangeSliderListener
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.observeOn
 
 @AndroidEntryPoint
 class FilterBottomSheetFragment : BottomSheetDialogFragment() {
@@ -51,7 +48,6 @@ class FilterBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun initViews() {
-//        binding.recyclerViewCategories.layoutManager = LinearLayoutManager(requireContext())
 
         binding.slider.onAddRangeListener(object : RangeSliderListener {
             override fun onRangeProgress(fromValue: Float, toValue: Float, isFromUser: Boolean) {
@@ -68,7 +64,7 @@ class FilterBottomSheetFragment : BottomSheetDialogFragment() {
         binding.resetButton.setOnClickListener {
             viewModel.resetFilters()
             resetSliderToDefault()
-            binding.recyclerViewCategories.adapter?.notifyDataSetChanged() // Cập nhật lại UI
+            binding.recyclerViewCategories.adapter?.notifyDataSetChanged()
         }
         binding.applyButton.setOnClickListener {
             val selectedCategories = viewModel.selectedCategories.value
@@ -104,7 +100,7 @@ class FilterBottomSheetFragment : BottomSheetDialogFragment() {
         // Hiển thị loading indicator nếu cần
     }
 
-    private fun setupCategories(categories: List<Category>) {
+    private fun setupCategories(categories: List<CategoryModel>) {
         val adapter = CategoryFilterAdapter(
             categories = categories,
             selectedCategories = viewModel.selectedCategories.value,

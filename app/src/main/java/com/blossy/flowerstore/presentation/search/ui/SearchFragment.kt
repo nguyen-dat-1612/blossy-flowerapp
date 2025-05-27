@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -20,10 +21,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentSearchBinding
+import com.blossy.flowerstore.domain.model.response.ProductListModel
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.search.adapter.SearchHistoryAdapter
 import com.blossy.flowerstore.presentation.search.adapter.SearchProductAdapter
+import com.blossy.flowerstore.presentation.search.state.SearchUiState
 import com.blossy.flowerstore.presentation.search.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -31,29 +34,15 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
-    private lateinit var searchViewModel: SearchViewModel
+    private val searchViewModel: SearchViewModel by viewModels()
     private lateinit var binding: FragmentSearchBinding
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
     private lateinit var searchProductAdapter: SearchProductAdapter
-    private var isSearching = false
-    private var lastSearchQuery: String = ""
-    private var isLoading = false
+
+    private var isProgrammaticTextChange = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: savedInstanceState is ${if (savedInstanceState == null) "null" else "not null"}")
-        searchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
-
-        if (!isSearching) {
-            Log.d(TAG, "Loading search history (not in search mode)")
-            searchViewModel.loadSearchHistory()
-        }
-
-        isSearching = searchViewModel.isInSearchMode()
-        lastSearchQuery = searchViewModel.getLastSearchQuery()
-        Log.d(TAG, "Retrieved state from ViewModel: isSearching=$isSearching, query='$lastSearchQuery'")
-        Log.d(TAG, "Search history state: ${searchViewModel.searchHistory.value}")
-
         requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 navigateBackToMain()
@@ -71,14 +60,7 @@ class SearchFragment : Fragment() {
         setupSearchInput()
         setupScrollListener()
         setupListeners()
-        observeSearchUiState()
-
-        if (isSearching && lastSearchQuery.isNotEmpty()) {
-            binding.searchInput.setText(lastSearchQuery)
-            setupSearchResultsView()
-        } else {
-            setupHistoryView()
-        }
+        observeUiState()
 
         return binding.root
     }
@@ -99,11 +81,9 @@ class SearchFragment : Fragment() {
                 .actionSearchFragmentToProductDetailFragment("search", product.id)
             findNavController().navigate(action)
         }
-
     }
 
     private fun setupSearchInput() {
-
         binding.apply {
             searchInput.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -112,16 +92,15 @@ class SearchFragment : Fragment() {
                     true
                 } else false
             }
+
             searchInput.addTextChangedListener {
                 val newText = it?.toString()
-                if (newText.isNullOrEmpty() && isSearching) {
-                    setupHistoryView()
+                if (!isProgrammaticTextChange && newText.isNullOrEmpty() && searchViewModel.isInSearchMode) {
+                    resetToHistoryView()
                 }
-                searchViewModel.loadSearchHistory()
             }
         }
     }
-
 
     private fun setupListeners() {
         binding.apply {
@@ -138,52 +117,19 @@ class SearchFragment : Fragment() {
     }
 
     private fun performSearch(query: String) {
-        Log.d(TAG, "performSearch: query='$query'")
-        isSearching = true
-        lastSearchQuery = query
-
-        searchViewModel.setSearchMode(true)
-        searchViewModel.setLastSearchQuery(query)
+        searchViewModel.setSearchMode(true, query)
         searchViewModel.saveSearchQuery(query)
-        setupSearchResultsView()
-//        binding.progress.root.visibility = View.VISIBLE
-        binding.recyclerViewHistory.visibility = View.GONE
         searchViewModel.searchProducts(keyword = query)
     }
 
-
-    private fun setupSearchResultsView() {
-        binding.apply {
-            searchHistoryTitle.text = "Results"
-            clearAll.visibility = View.GONE
-            if (recyclerViewHistory.adapter != searchProductAdapter) {
-                recyclerViewHistory.adapter = searchProductAdapter
-                recyclerViewHistory.layoutManager = GridLayoutManager(requireContext(), 2)
-            }
+    private fun resetToHistoryView() {
+        isProgrammaticTextChange = true
+        try {
+            binding.searchInput.setText("")
+            searchViewModel.resetToHistoryMode()
+        } finally {
+            isProgrammaticTextChange = false
         }
-    }
-
-    private fun setupHistoryView() {
-        isSearching = false
-        lastSearchQuery = ""
-
-        searchViewModel.apply {
-            setSearchMode(false)
-            setLastSearchQuery("")
-        }
-        binding.apply {
-            searchInput.setText("")
-            progress.root.visibility = View.GONE
-            recyclerViewHistory.visibility = View.VISIBLE
-            clearAll.visibility = View.VISIBLE
-            searchHistoryTitle.text = "Search History"
-
-            recyclerViewHistory.adapter = searchHistoryAdapter
-            recyclerViewHistory.layoutManager = LinearLayoutManager(requireContext())
-
-            searchViewModel.loadSearchHistory()
-        }
-
     }
 
     private fun showFilterDialog() {
@@ -205,60 +151,103 @@ class SearchFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if (isSearching && recyclerView.layoutManager is GridLayoutManager) {
+                val uiState = searchViewModel.uiState.value
+                if (uiState.isInSearchMode && recyclerView.layoutManager is GridLayoutManager) {
                     val layoutManager = recyclerView.layoutManager as GridLayoutManager
 
                     val visibleItemCount = layoutManager.childCount
                     val totalItemCount = layoutManager.itemCount
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
-                    if (!isLoading && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                        && firstVisibleItemPosition >= 0
-                        && totalItemCount >= 10) {
+                    val isNearBottom = (lastVisibleItemPosition >= totalItemCount - 5)
+                    val hasMinimumItems = totalItemCount >= 1
+
+                    if (uiState.canLoadMore && !uiState.isLoading && hasMinimumItems && isNearBottom) {
                         searchViewModel.loadMoreProducts()
                     }
                 }
             }
         })
     }
-    private fun observeSearchUiState() {
+    private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                searchViewModel.productsUiState.collect { state ->
-                    when (state) {
-                        is UiState.Loading -> {
-                            isLoading = true
-//                            binding.progress.root.visibility = View.VISIBLE
-                        }
-                        is UiState.Success -> {
-                            isLoading = false
-                            binding.progress.root.visibility = View.GONE
-                            binding.recyclerViewHistory.visibility = View.VISIBLE
-
-                            if (isSearching) {
-                                searchProductAdapter.submitList(state.data.products)
-                            }
-                        }
-                        is UiState.Error -> {
-                            isLoading = false
-                            binding.progress.root.visibility = View.GONE
-                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                        }
-                        UiState.Idle -> {
-                            isLoading = false
-                            binding.progress.root.visibility = View.GONE
-                        }
-                    }
+                searchViewModel.uiState.collect { state ->
+                    updateUI(state)
                 }
             }
         }
-        collectState(searchViewModel.searchHistory) {
-            when (it) {
-                is UiState.Success -> {
-                    searchHistoryAdapter.submitList(it.data)
-                }
-                else -> {}
+    }
+
+    private fun updateUI(state: SearchUiState) {
+        // Update search input
+        if (binding.searchInput.text.toString() != state.lastSearchQuery) {
+            binding.searchInput.setText(state.lastSearchQuery)
+        }
+
+        // Update view mode
+        if (state.isInSearchMode) {
+            setupSearchResultsView()
+            handleProductsState(state.products)
+        } else {
+            setupHistoryView()
+            handleHistoryState(state.searchHistory)
+        }
+
+        // Update loading state
+        binding.progress.root.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun setupSearchResultsView() {
+        binding.apply {
+            searchHistoryTitle.text = "Results"
+            clearAll.visibility = View.GONE
+            if (recyclerViewHistory.adapter != searchProductAdapter) {
+                recyclerViewHistory.adapter = searchProductAdapter
+                recyclerViewHistory.layoutManager = GridLayoutManager(requireContext(), 2)
             }
+        }
+    }
+
+    private fun setupHistoryView() {
+        binding.apply {
+            progress.root.visibility = View.GONE
+            recyclerViewHistory.visibility = View.VISIBLE
+            clearAll.visibility = View.VISIBLE
+            searchHistoryTitle.text = "Search History"
+
+            recyclerViewHistory.adapter = searchHistoryAdapter
+            recyclerViewHistory.layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun handleProductsState(productsState: UiState<ProductListModel>) {
+        when (productsState) {
+            is UiState.Loading -> {
+                binding.progress.root.visibility = View.VISIBLE
+            }
+            is UiState.Success -> {
+                binding.progress.root.visibility = View.GONE
+                binding.recyclerViewHistory.visibility = View.VISIBLE
+                searchProductAdapter.submitList(productsState.data.products)
+            }
+            is UiState.Error -> {
+                binding.progress.root.visibility = View.GONE
+                binding.recyclerViewHistory.visibility = View.VISIBLE
+                Toast.makeText(requireContext(), productsState.message, Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Log.d("SearchFragment", "Product state: ${productsState::class.simpleName}")
+            }
+        }
+    }
+    private fun handleHistoryState(historyState: UiState<List<String>>) {
+        when (historyState) {
+            is UiState.Success -> {
+                searchHistoryAdapter.submitList(historyState.data)
+            }
+            else -> {}
         }
     }
 

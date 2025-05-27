@@ -109,4 +109,8 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <include
+        layout="@layout/view_progress_overlay_white"
+        android:id="@+id/progressOverlay"/>
+
 </FrameLayout>

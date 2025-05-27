@@ -1,15 +1,18 @@
 package com.blossy.flowerstore.data.repository
 
+import com.blossy.flowerstore.data.mapper.toOrder
+import com.blossy.flowerstore.data.mapper.toRequest
 import com.blossy.flowerstore.data.remote.api.OrderApi
-import com.blossy.flowerstore.data.remote.dto.CancelOrderRequest
-import com.blossy.flowerstore.data.remote.dto.CreateOrderRequest
+import com.blossy.flowerstore.data.remote.dto.CancelOrderDTO
+import com.blossy.flowerstore.data.remote.dto.CreateOrderDTO
 import com.blossy.flowerstore.data.remote.utils.OrderResponseWrapper
-import com.blossy.flowerstore.domain.model.Order
+import com.blossy.flowerstore.domain.model.OrderModel
 import com.blossy.flowerstore.domain.repository.OrderRepository
 import com.blossy.flowerstore.domain.utils.Result
 import com.blossy.flowerstore.data.remote.utils.safeApiCall
 import com.blossy.flowerstore.data.remote.utils.toResult
 import com.blossy.flowerstore.data.remote.utils.toWrappedResult
+import com.blossy.flowerstore.domain.model.request.CreateOrderModel
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
@@ -17,10 +20,10 @@ class OrderRepositoryImpl @Inject constructor(
     private val orderApi: OrderApi
 ) : OrderRepository{
 
-    override suspend fun createOrder(orderRequest: CreateOrderRequest): Result<OrderResponseWrapper> =
-        withTimeout(TIMEOUT) {
-            safeApiCall {
-                orderApi.createOrder(orderRequest).toWrappedResult { response ->
+    override suspend fun createOrder(orderRequest: CreateOrderModel): Result<OrderResponseWrapper> {
+        return safeApiCall {
+                val request = orderRequest.toRequest()
+                orderApi.createOrder(request).toWrappedResult { response ->
                     response
                 }
             }
@@ -32,33 +35,36 @@ class OrderRepositoryImpl @Inject constructor(
         limit: Int,
         isPaid: Boolean,
         sort: String
-    ): Result<List<Order>> = withTimeout(TIMEOUT){
-        safeApiCall {
-            orderApi.myOrders(status, page, limit, isPaid, sort).toResult { response ->
-                response.orders
+    ): Result<List<OrderModel>> {
+        return safeApiCall {
+            orderApi.myOrders(status, page, limit, isPaid, sort).toResult {
+                it.orders.map {
+                    it.toOrder()
+                }
             }
         }
     }
 
-    override suspend fun getOrderById(id: String): Result<Order> = withTimeout(TIMEOUT) {
-        safeApiCall {
-            orderApi.getOrderById(id).toResult()
+    override suspend fun getOrderById(id: String): Result<OrderModel> {
+        return safeApiCall {
+            orderApi.getOrderById(id).toResult {
+                it.toOrder()
+            }
         }
     }
 
-    override suspend fun cancelOrder(id: String, reason: String): Result<Order> = withTimeout(TIMEOUT) {
-        safeApiCall {
-            orderApi.cancelOrder(id, CancelOrderRequest(reason)).toResult()
+    override suspend fun cancelOrder(id: String, reason: String): Result<OrderModel>  {
+        return safeApiCall {
+            orderApi.cancelOrder(id, CancelOrderDTO(reason))
+                .toResult { it.toOrder() }
         }
     }
 
-    override suspend fun confirmOrder(id: String): Result<Order> = withTimeout(TIMEOUT){
-        safeApiCall {
-            orderApi.confirmOrder(id).toResult()
+    override suspend fun confirmOrder(id: String): Result<OrderModel> {
+        return safeApiCall {
+            orderApi.confirmOrder(id).toResult {
+                it.toOrder()
+            }
         }
-    }
-
-    companion object {
-        private const val TIMEOUT = 5000L
     }
 }

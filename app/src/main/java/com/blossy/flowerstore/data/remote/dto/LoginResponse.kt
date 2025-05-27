@@ -1,8 +1,10 @@
 package com.blossy.flowerstore.data.remote.dto
 
-import com.blossy.flowerstore.domain.model.User
+import com.google.gson.annotations.SerializedName
 
 data class LoginResponse (
+    @SerializedName("token")
     val token: String,
-    val user: User
+    @SerializedName("user")
+    val user: UserDTO
 )

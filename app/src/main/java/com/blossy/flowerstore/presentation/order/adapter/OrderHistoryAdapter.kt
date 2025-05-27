@@ -5,49 +5,40 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.blossy.flowerstore.databinding.ItemOrderHistoryBinding
-import com.blossy.flowerstore.domain.model.Order
+import com.blossy.flowerstore.domain.model.OrderModel
 import com.bumptech.glide.Glide
 import com.blossy.flowerstore.R
-import com.blossy.flowerstore.domain.model.OrderItem
+import com.blossy.flowerstore.domain.model.OrderItemModel
+import com.blossy.flowerstore.utils.CurrencyFormatter
 
 class OrderHistoryAdapter (
-    private val onItemClicked: (Order) -> Unit,
-    private val onCancelClicked: (Order) -> Unit,
-    private val onConfirmClicked: (Order) -> Unit
+    private val onItemClicked: (OrderModel) -> Unit,
+    private val onCancelClicked: (OrderModel) -> Unit,
+    private val onConfirmClicked: (OrderModel) -> Unit
 ): RecyclerView.Adapter<OrderHistoryAdapter.ViewHolder>() {
 
-    private var orderHistory: List<Order> = emptyList()
+    private var orderHistory: List<OrderModel> = emptyList()
     private var isExpanded = false
 
     inner class ViewHolder(private val binding: ItemOrderHistoryBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(order: Order) {
+        fun bind(order: OrderModel) {
             binding.apply {
 
                 orderId.text = order.id
                 orderStatus.text = "${order.status.uppercase()}"
-//                val statusColor = when (order.status.lowercase()) {
-//                    "pending" -> R.color.orange_light
-//                    "processing" -> R.color.beige_light
-//                    "shipped" -> R.color.pink_primary
-//                    "delivered" -> R.color.grey_dark
-//                    "cancelled" -> R.color.red_dark
-//                    else -> R.color.grey_dark
-//                }
-//                orderStatus.setTextColor(ContextCompat.getColor(itemView.context, statusColor))
-
                 val firstItem = order.orderItems[0]
                 Glide.with(itemView.context)
                     .load(firstItem.image)
                     .into(imageView)
                 nameText.text = firstItem.name
                 quantityText.text = "${firstItem.quantity}"
-                priceText.text = "đ${firstItem.price}"
 
-                totalPrice.text = "Total (${order.orderItems.size} items): $${order.totalPrice}"
+                priceText.text = CurrencyFormatter.formatVND(firstItem.price);
+
+                totalPrice.text = "Total (${order.orderItems.size} items): ${CurrencyFormatter.formatVND(order.totalPrice)}"
 
                 cancelButton.visibility =
                     if (order.status in listOf("pending", "processing")) View.VISIBLE else View.GONE
@@ -88,7 +79,7 @@ class OrderHistoryAdapter (
             }
         }
 
-        private fun populateOtherItems(otherItems: List<OrderItem>) {
+        private fun populateOtherItems(otherItems: List<OrderItemModel>) {
             binding.otherItemsContainer.removeAllViews()
             otherItems.forEach { item ->
                 val itemView = LayoutInflater.from(itemView.context)
@@ -104,7 +95,7 @@ class OrderHistoryAdapter (
         }
     }
 
-    fun submitList(newList: List<Order>) {
+    fun submitList(newList: List<OrderModel>) {
         val diffResult = DiffUtil.calculateDiff(OrderHistoryCallback(orderHistory, newList))
         orderHistory = newList
         diffResult.dispatchUpdatesTo(this)
@@ -126,8 +117,8 @@ class OrderHistoryAdapter (
     }
 
     class OrderHistoryCallback(
-        private val oldList: List<Order>,
-        private val newList: List<Order>
+        private val oldList: List<OrderModel>,
+        private val newList: List<OrderModel>
     ) : DiffUtil.Callback() {
         override fun getOldListSize(): Int =  oldList.size
 

@@ -1,24 +1,28 @@
 package com.blossy.flowerstore.data.remote.utils
-import com.blossy.flowerstore.domain.utils.Result
-import retrofit2.Response
 
-inline fun <T, R> Response<BaseResponse<T>>.toResult(
-    mapper: (T) -> R
-): Result<R> {
-    return if (isSuccessful) {
-        val body = body()
-        if (body != null && body.success && body.data != null) {
-            try {
-                Result.Success(mapper(body.data))
-            } catch (e: Exception) {
-                Result.Error(e.message ?: "Data mapping failed")
-            }
-        } else {
-            Result.Error(body?.message ?: "API returned failure")
+import android.util.Log
+import com.blossy.flowerstore.domain.utils.Result
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.withTimeout
+import retrofit2.HttpException
+import retrofit2.Response
+import java.io.IOException
+
+inline fun <T, R> BaseResponse<T>.toResult(mapper: (T) -> R): Result<R> {
+    return if (success && data != null) {
+        try {
+            Result.Success(mapper(data))
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Data mapping failed")
         }
     } else {
-        Result.Error(message() ?: "API call failed")
+        Result.Error(message)
     }
+}
+
+inline fun <T> BaseResponse<T>.toResult(): Result<T> {
+    return this.toResult { it }
 }
 
 inline fun  <T, R> Response<T>.toWrappedResult(mapper: (T) -> R): Result<R> {
@@ -38,14 +42,29 @@ inline fun  <T, R> Response<T>.toWrappedResult(mapper: (T) -> R): Result<R> {
     }
 }
 
-inline fun <T> Response<BaseResponse<T>>.toResult(): Result<T> {
-    return this.toResult { it }
-}
-
-inline fun <T> safeApiCall(apiCall: () -> Result<T>): Result<T> {
+inline suspend fun <T> safeApiCall(
+    timeoutMillis: Long = 5000,
+    crossinline apiCall: suspend () -> Result<T>
+): Result<T> {
     return try {
-        apiCall()
+        withTimeout(timeoutMillis) {
+            apiCall()
+        }
+    } catch (e: TimeoutCancellationException) {
+        Log.e("safeApiCall", "TimeoutCancellationException: ${e.message}")
+        Result.Error("Yêu cầu quá thời gian, vui lòng thử lại")
+    } catch (e: CancellationException) {
+        Log.e("safeApiCall", "CancellationException: ${e.message}")
+        Result.Error("Yêu cầu đã bị huỷ")
+    } catch (e: IOException) {
+        Log.e("safeApiCall", "IOException: ${e.message}")
+        Result.Error("Lỗi mạng: ${e.message}")
+    } catch (e: HttpException) {
+        val errorBody = e.response()?.errorBody()?.string()
+        Log.e("safeApiCall", "HttpException: $errorBody")
+        Result.Error("Lỗi HTTP ${e.code()}: ${errorBody ?: e.message()}")
     } catch (e: Exception) {
-        Result.Error(e.message ?: "Unexpected error occurred")
+        Log.e("safeApiCall", "Exception: ${e.message}")
+        Result.Error("Lỗi không xác định: ${e.message}")
     }
 }

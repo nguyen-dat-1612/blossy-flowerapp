@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentNotificationBinding
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.notification.adapter.NotificationAdapter
 import com.blossy.flowerstore.presentation.notification.viewmodel.NotificationViewModel
 import dagger.hilt.android.AndroidEntryPoint

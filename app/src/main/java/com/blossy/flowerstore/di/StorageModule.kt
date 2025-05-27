@@ -2,9 +2,9 @@ package com.blossy.flowerstore.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.blossy.flowerstore.utils.EncryptionManager
-import com.blossy.flowerstore.utils.SecureTokenManager
-import com.blossy.flowerstore.utils.SettingsManager
+import com.blossy.flowerstore.utils.manager.EncryptionManager
+import com.blossy.flowerstore.utils.manager.SecureTokenManager
+import com.blossy.flowerstore.utils.manager.SettingsManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,7 +45,7 @@ object StorageModule {
     @Provides
     @Singleton
     fun provideSettingsManager(
-        context: Context
+        @ApplicationContext context: Context
     ) : SettingsManager {
         return SettingsManager(context)
     }

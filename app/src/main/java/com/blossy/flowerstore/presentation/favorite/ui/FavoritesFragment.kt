@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import com.blossy.flowerstore.R
 import com.blossy.flowerstore.databinding.FragmentFavoritesBinding
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
+import com.blossy.flowerstore.utils.collectState
 import com.blossy.flowerstore.presentation.favorite.adapter.FavoritesAdapter
 import com.blossy.flowerstore.presentation.favorite.viewmodel.FavoritesViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -23,7 +23,7 @@ class FavoritesFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: FavoritesViewModel by viewModels()
 
-    private val favoritesAdapter  by lazy {
+    private val favoritesAdapter by lazy {
         FavoritesAdapter { product ->
             viewModel.toggleFavorite(product.id)
             false
@@ -46,52 +46,35 @@ class FavoritesFragment : Fragment() {
         viewModel.loadFavoriteProducts()
     }
 
-    private fun setupUI() = with(binding) {
-        recyclerViewFavorites.apply {
-            adapter = this@FavoritesFragment.favoritesAdapter
-            setHasFixedSize(true)
-        }
+        private fun setupUI() = with(binding) {
+            recyclerViewFavorites.apply {
+                adapter = this@FavoritesFragment.favoritesAdapter
+                setHasFixedSize(true)
+            }
 
-        swipeRefreshLayout.apply {
-            setOnRefreshListener { viewModel.loadFavoriteProducts() }
-            setColorSchemeResources(R.color.primary, R.color.pink_dark, R.color.grey_dark)
-        }
-    }
-
-    private fun observeStates() = with(binding) {
-        collectState(viewModel.favoriteProducts) { state ->
-            when (state) {
-                is UiState.Loading -> progressBar.root.isVisible = !swipeRefreshLayout.isRefreshing
-
-                is UiState.Success -> {
-                    swipeRefreshLayout.isRefreshing = false
-                    progressBar.root.isVisible = false
-                    val isEmpty = state.data.isNullOrEmpty()
-                    recyclerViewFavorites.isVisible = !isEmpty
-                    emptyState.root.isVisible = isEmpty
-                    favoritesAdapter.submitList(state.data)
-                }
-
-                is UiState.Error -> {
-                    recyclerViewFavorites.isVisible = false
-                    swipeRefreshLayout.isRefreshing = false
-                    progressBar.root.isVisible = false
-                    emptyState.root.isVisible = true
-                    showError(state.message)
-                }
-
-                else -> Unit
+            swipeRefreshLayout.apply {
+                setOnRefreshListener { viewModel.loadFavoriteProducts() }
+                setColorSchemeResources(R.color.primary, R.color.pink_dark, R.color.grey_dark)
             }
         }
 
-        collectState(viewModel.toggleFavoriteState) { state ->
-            when (state) {
-                is UiState.Success -> {
-                    val msgRes = R.string.removed_from_favorites
-                    showSnackbar(getString(msgRes))
-                }
+    private fun observeStates() = with(binding) {
+        collectState(viewModel.favoriteUiState) { state ->
+            swipeRefreshLayout.isRefreshing = false
+            progressBar.root.isVisible = state.isLoading
 
-                is UiState.Error -> showError(state.message)
+            if (state.errorMessage != null) {
+                showError(state.errorMessage)
+            }
+
+            val isEmpty = state.productItems.isEmpty()
+            recyclerViewFavorites.isVisible = !isEmpty
+            emptyState.root.isVisible = isEmpty
+            favoritesAdapter.submitList(state.productItems)
+
+            when (val toggleState = state.toggleFavoriteState) {
+                is UiState.Success -> showSnackBar(getString(R.string.removed_from_favorites))
+                is UiState.Error -> showError(toggleState.message)
                 else -> Unit
             }
         }
@@ -104,13 +87,13 @@ class FavoritesFragment : Fragment() {
         }
     }
 
-    private fun showSnackbar(message: String) {
+    private fun showSnackBar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         binding.recyclerViewFavorites.adapter = null
         _binding = null
+        super.onDestroyView()
     }
 }

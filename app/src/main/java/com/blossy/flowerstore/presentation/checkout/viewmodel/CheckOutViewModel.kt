@@ -1,11 +1,9 @@
 package com.blossy.flowerstore.presentation.checkout.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blossy.flowerstore.data.remote.dto.CreateOrderRequest
-import com.blossy.flowerstore.data.remote.utils.OrderResponseWrapper
-import com.blossy.flowerstore.domain.model.Address
-import com.blossy.flowerstore.domain.model.CartItem
+import com.blossy.flowerstore.domain.model.request.CreateOrderModel
 import com.blossy.flowerstore.domain.usecase.cart.GetCartUseCase
 import com.blossy.flowerstore.domain.usecase.order.CreateOrderUseCase
 import com.blossy.flowerstore.domain.usecase.payment.CreateMomoPaymentUseCase
@@ -13,13 +11,16 @@ import com.blossy.flowerstore.domain.usecase.payment.CreateVNPAYPaymentUseCase
 import com.blossy.flowerstore.domain.usecase.user.AddressByIdUseCase
 import com.blossy.flowerstore.domain.usecase.user.GetDefaultAddressUseCase
 import com.blossy.flowerstore.domain.utils.Result
-import com.blossy.flowerstore.presentation.checkout.ui.AddressUiState
-import com.blossy.flowerstore.presentation.common.UiState
+import com.blossy.flowerstore.presentation.checkout.state.CheckOutUiState
+import com.blossy.flowerstore.utils.safeUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @HiltViewModel
 class CheckOutViewModel @Inject constructor(
@@ -31,94 +32,93 @@ class CheckOutViewModel @Inject constructor(
     private val addressByIdUseCase: AddressByIdUseCase
 ): ViewModel() {
 
+    private val _uiState = MutableStateFlow(CheckOutUiState())
+    val uiState: StateFlow<CheckOutUiState> = _uiState
 
-    private val _getCartUiState = MutableStateFlow<UiState<List<CartItem>>>(UiState.Idle)
-    var getCartUiState: StateFlow<UiState<List<CartItem>>> = _getCartUiState
 
-    private val _getAddressUiState = MutableStateFlow<AddressUiState>(AddressUiState.Idle)
-    var getAddressUiState: StateFlow<AddressUiState> = _getAddressUiState
-
-    private val _createOrderUiState = MutableStateFlow<UiState<OrderResponseWrapper>>(UiState.Idle)
-    var createOrderUiState: StateFlow<UiState<OrderResponseWrapper>> = _createOrderUiState
-
-    private val _createMomoPaymentUiState = MutableStateFlow<UiState<String>>(UiState.Idle)
-    var createMomoPaymentUiState: StateFlow<UiState<String>> = _createMomoPaymentUiState
-
-    private val _createVNPAYPaymentUiState = MutableStateFlow<UiState<String>>(UiState.Idle)
-    var createVNPAYPaymentUiState: StateFlow<UiState<String>> = _createVNPAYPaymentUiState
-
-    private var selectedAddressId: String = ""
-
-    fun setSelectedAddressId(id: String) {
-        selectedAddressId = id
+    private var check = false
+    fun setCheck(value: Boolean) {
+        check= value
     }
+    fun getCheck() = check
 
-    fun getSelectedAddressId(): String {
-        return selectedAddressId
+    private var payment = false
+    fun setPayment(value: Boolean) {
+        payment= value
     }
+    fun getPayment() = payment
 
-    fun getCart() {
-        viewModelScope.launch (Dispatchers.IO) {
-            _getCartUiState.value = UiState.Loading
-            when(val result = getCartUseCase.invoke()) {
-                is Result.Success -> {
-                    _getCartUiState.value = UiState.Success(result.data)
+    fun getCheckOut() {
+        _uiState.safeUpdate { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            try {
+                val (cartResult, addressResult) = coroutineScope {
+                    val cartDeferred = async { withContext(Dispatchers.IO) { getCartUseCase() } }
+                    val addressDeferred = async { withContext(Dispatchers.IO) { getDefaultAddressUseCase() } }
+                    cartDeferred.await() to addressDeferred.await()
                 }
-                is Result.Error -> {
-                    _getCartUiState.value = UiState.Error(result.message)
-                }
-                else -> {}
-            }
-        }
-    }
 
-    fun getDefaultAddress() {
-        viewModelScope.launch (Dispatchers.IO) {
-            _getAddressUiState.value = AddressUiState.Loading
-            when(val result = getDefaultAddressUseCase.invoke()) {
-                is Result.Success -> {
-                    _getAddressUiState.value = AddressUiState.Success(result.data)
-                    selectedAddressId = result.data.id.toString()
+                when (addressResult) {
+                    is Result.Success -> {
+                        _uiState.safeUpdate { it.copy(selectedAddress = addressResult.data, isLoading = false) }
+                    }
+                    is Result.Error -> {
+                        _uiState.safeUpdate { it.copy(error = addressResult.message, isLoading = false) }
+                    }
+                    else -> {}
                 }
-                is Result.Error -> {
-                    _getAddressUiState.value = AddressUiState.NoAddress
-                }
-                else -> {
 
+                when (cartResult) {
+                    is Result.Success -> {
+                        _uiState.safeUpdate { it.copy(cartState = cartResult.data, isLoading = false) }
+                    }
+                    is Result.Error -> {
+                        _uiState.safeUpdate { it.copy(error = cartResult.message, isLoading = false) }
+                    }
+                    else -> {}
+                }
+
+            } catch (e: Exception) {
+                _uiState.safeUpdate {
+                    it.copy(error = "Error unknown: ${e.message}", isLoading = false)
                 }
             }
         }
     }
 
     fun getAddressById(id: String) {
-        viewModelScope.launch (Dispatchers.IO) {
-            _getAddressUiState.value = AddressUiState.Loading
-
-            when(val result = addressByIdUseCase.invoke(id)) {
+        _uiState.safeUpdate { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            when(val result = withContext(Dispatchers.IO) {
+                addressByIdUseCase(id)
+            }) {
                 is Result.Success -> {
-                    _getAddressUiState.value = AddressUiState.Success(result.data)
+                    _uiState.safeUpdate { it.copy(selectedAddress = result.data, isLoading = false) }
                 }
                 is Result.Error -> {
-                    _getAddressUiState.value = AddressUiState.Error(result.message)
+                    _uiState.safeUpdate { it.copy(error = result.message, isLoading = false) }
                 }
                 else -> {}
             }
 
         }
-
     }
 
-    fun createOrder(orderRequest: CreateOrderRequest) {
-        viewModelScope.launch (Dispatchers.IO) {
-            _createOrderUiState.value = UiState.Loading
-
-            when(val result = createOrderUseCase.invoke(orderRequest)) {
+    fun createOrder(orderRequest: CreateOrderModel) {
+        Log.d("Alo alo alo:" , "createOrder:")
+        viewModelScope.launch {
+            when(val result = withContext(Dispatchers.IO) {
+                createOrderUseCase(orderRequest)
+            }) {
                 is Result.Success -> {
-                    _createOrderUiState.value = UiState.Success(result.data)
+                    _uiState.safeUpdate { it.copy(orderResponse = result.data) }
+                    if (result.data.data?.paymentMethod == "VNPAY") {
+                        createVNPAYPayment(result.data.data.id)
+                    }
                 }
                 is Result.Error -> {
-                    _createOrderUiState.value = UiState.Error(result.message)
-                    }
+                    _uiState.safeUpdate { it.copy(error = result.message) }
+                }
                 else -> {}
             }
 
@@ -126,14 +126,17 @@ class CheckOutViewModel @Inject constructor(
     }
 
     fun createMomoPayment(orderId: String) {
-        viewModelScope.launch (Dispatchers.IO) {
-            _createMomoPaymentUiState.value = UiState.Loading
-            when(val result = createMomoPaymentUseCase.invoke(orderId)) {
+        _uiState.safeUpdate { it.copy(isLoading = true) }
+
+        viewModelScope.launch {
+            when(val result = withContext(Dispatchers.IO) {
+                createMomoPaymentUseCase(orderId)
+            }) {
                 is Result.Success -> {
-                    _createMomoPaymentUiState.value = UiState.Success(result.data.paymentUrl)
+                    _uiState.safeUpdate { it.copy(paymentUrl = result.data.paymentUrl) }
                 }
                 is Result.Error -> {
-                    _createMomoPaymentUiState.value = UiState.Error(result.message)
+                    _uiState.safeUpdate { it.copy(error = result.message)}
                 }
                 else -> {}
             }
@@ -142,21 +145,23 @@ class CheckOutViewModel @Inject constructor(
     }
 
     fun createVNPAYPayment(orderId: String) {
-        viewModelScope.launch (Dispatchers.IO) {
-            _createVNPAYPaymentUiState.value = UiState.Loading
-            when (val result = createVNPAYPaymentUseCase.invoke(orderId)) {
+        Log.d("Alo alo alo:" , "createVNPAYPayment:")
+        _uiState.safeUpdate { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            when (val result = withContext(Dispatchers.IO) {
+                createVNPAYPaymentUseCase(orderId)
+            }) {
                 is Result.Success -> {
-                    _createVNPAYPaymentUiState.value = UiState.Success(result.data.paymentUrl)
+                    _uiState.safeUpdate { it.copy(paymentUrl = result.data.paymentUrl, isLoading = false) }
                 }
 
                 is Result.Error -> {
-                    _createVNPAYPaymentUiState.value = UiState.Error(result.message)
+                    _uiState.safeUpdate { it.copy(error = result.message) }
                 }
 
                 else -> {}
             }
         }
     }
-
 
 }

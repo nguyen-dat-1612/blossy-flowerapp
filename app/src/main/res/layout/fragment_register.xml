@@ -60,7 +60,11 @@
             android:layout_height="@dimen/edit_text_size"
             android:layout_marginTop="12dp"
             android:hint="Enter your name"
+            android:textColorHint="@color/grey_dark"
             android:textSize="16sp"
+            android:maxLines="1"
+            android:inputType="textPersonName"
+            android:imeOptions="actionNext"
             android:textColor="@color/black"
             android:background="@drawable/bg_edittext_primary"
             app:layout_constraintTop_toBottomOf="@+id/fullNameTitle"/>
@@ -83,7 +87,11 @@
             android:layout_height="@dimen/edit_text_size"
             android:layout_marginTop="12dp"
             android:hint="Enter your email"
+            android:textColorHint="@color/grey_dark"
             android:textSize="16sp"
+            android:maxLines="1"
+            android:inputType="textEmailAddress"
+            android:imeOptions="actionNext"
             android:textColor="@color/black"
             android:background="@drawable/bg_edittext_primary"
             app:layout_constraintTop_toBottomOf="@+id/emailTitle"/>
@@ -100,16 +108,21 @@
             app:layout_constraintTop_toBottomOf="@id/emailText"
             app:layout_constraintStart_toStartOf="parent"/>
 
-        <androidx.appcompat.widget.AppCompatEditText
+        <EditText
             android:id="@+id/passwordText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text_size"
-            android:layout_marginTop="12dp"
-            android:hint="Enter your password"
-            android:textSize="16sp"
-            android:textColor="@color/black"
+            android:layout_marginTop="16dp"
             android:background="@drawable/bg_edittext_primary"
-            app:layout_constraintTop_toBottomOf="@+id/passwordTitle"/>
+            android:hint="Enter your password"
+            android:imeOptions="actionNext"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:textColorHint="@color/grey_dark"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/passwordTitle"
+            tools:layout_editor_absoluteX="0dp" />
 
         <TextView
             android:id="@+id/confirmPasswordTitle"
@@ -123,14 +136,18 @@
             app:layout_constraintTop_toBottomOf="@id/passwordText"
             app:layout_constraintStart_toStartOf="parent"/>
 
-        <androidx.appcompat.widget.AppCompatEditText
+        <EditText
             android:id="@+id/confirmPasswordText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text_size"
             android:layout_marginTop="12dp"
             android:hint="Confirm Password"
+            android:textColorHint="@color/grey_dark"
             android:textSize="16sp"
+            android:maxLines="1"
+            android:inputType="textPassword"
             android:textColor="@color/black"
+            android:imeOptions="actionNext"
             android:background="@drawable/bg_edittext_primary"
             app:layout_constraintTop_toBottomOf="@+id/confirmPasswordTitle"/>
 
@@ -156,6 +173,7 @@
             android:layout_height="wrap_content"
             android:text="@string/sign_in_text"
             android:textSize="14sp"
+            android:textColor="@color/black"
             android:fontFamily="@font/poppins_medium"
             android:layout_marginBottom="32dp"
             app:layout_constraintBottom_toBottomOf="parent"

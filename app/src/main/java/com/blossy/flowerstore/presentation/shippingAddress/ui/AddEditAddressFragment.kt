@@ -1,25 +1,24 @@
 package com.blossy.flowerstore.presentation.shippingAddress.ui
 
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.blossy.flowerstore.databinding.FragmentAddEditAddressBinding
-import android.widget.Toast
-import androidx.fragment.app.setFragmentResult
-import androidx.lifecycle.ViewModelProvider
 import com.blossy.flowerstore.R
-import com.blossy.flowerstore.data.remote.dto.AddressResponse
-import com.blossy.flowerstore.domain.model.Address
+import com.blossy.flowerstore.data.remote.dto.AddressDTO
+import com.blossy.flowerstore.databinding.FragmentAddEditAddressBinding
+import com.blossy.flowerstore.domain.model.AddressModel
 import com.blossy.flowerstore.presentation.common.UiState
-import com.blossy.flowerstore.presentation.common.collectState
-import com.blossy.flowerstore.presentation.shippingAddress.viewmodel.AddEditViewModel
+import com.blossy.flowerstore.presentation.shippingAddress.viewmodel.ShippingAddressViewModel
+import com.blossy.flowerstore.utils.collectState
+import com.blossy.flowerstore.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,24 +26,21 @@ class AddEditAddressFragment : Fragment() {
 
     private var _binding: FragmentAddEditAddressBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: ShippingAddressViewModel by viewModels(
+        ownerProducer = { requireActivity() }
+    )
+
     private val args: AddEditAddressFragmentArgs by navArgs()
-    private lateinit var viewModel: AddEditViewModel
-    private lateinit var address: Address
-    private lateinit var action: String
     private var fromCheckout: Boolean = false
+    private var action: String = "add"
+    private var addressId: String? = null
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(AddEditViewModel::class.java)
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddEditAddressBinding.inflate(inflater, container, false)
-        setOnClickListener()
-        observe()
         return binding.root
     }
 
@@ -53,82 +49,168 @@ class AddEditAddressFragment : Fragment() {
 
         action = args.action
         fromCheckout = args.fromCheckout
+
+        setupUI()
+        setupListeners()
+        observeViewModel()
+    }
+
+    private fun setupUI() {
         if (action == "edit" && args.address != null) {
-            address = args.address!!
-            binding.titleText.text = "Update Address"
-            binding.nameInput.setText(address.name)
-            binding.phoneInput.setText(address.phone)
-            binding.addressInput.setText(address.address)
-            if (address.isDefault) {
-                binding.isDefaultCheckbox.visibility = GONE
-            }
-            binding.deleteButton.visibility = VISIBLE
-        } else {
-            binding.titleText.text = "Add New Address"
-            binding.deleteButton.visibility = GONE
-        }
+            val address = args.address!!
+            addressId = address.id
 
-    }
+            binding.apply {
+                titleText.text = getString(R.string.update_address)
+                nameInput.setText(address.name)
+                phoneInput.setText(address.phone)
+                addressInput.setText(address.address)
 
-    fun setOnClickListener() {
-        binding.btnBack.setOnClickListener {
-            findNavController().navigate(R.id.action_addEditAddressFragment_to_shippingAddressFragment)
-            findNavController().popBackStack()
-        }
-
-        binding.saveButton.setOnClickListener {
-            val name = binding.nameInput.text.toString()
-            val phone = binding.phoneInput.text.toString()
-            val addressText = binding.addressInput.text.toString()
-            val isDefault = binding.isDefaultCheckbox.isChecked
-
-            if (name.isEmpty() || phone.isEmpty() || addressText.isEmpty()) {
-                Toast.makeText(context, "Please fill in all information", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (action.equals("add")) {
-                val newAddress = AddressResponse(null, name, phone, addressText, isDefault)
-                viewModel.addAddress(newAddress)
-            } else {
-                val newAddress = AddressResponse(address.id, name, phone, addressText, isDefault)
-                viewModel.updateAddress(newAddress)
-            }
-        }
-
-        binding.deleteButton.setOnClickListener {
-            viewModel.deleteAddress(address.id!!)
-        }
-    }
-
-    private fun observe() {
-        collectState(viewModel.uiState) {state ->
-            when(state) {
-                is UiState.Loading -> {
-                    Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
+                if (address.isDefault) {
+                    isDefaultCheckbox.visibility = View.GONE
+                    isDefaultCheckbox.isChecked = true
                 }
+
+                deleteButton.visibility = View.VISIBLE
+            }
+        } else {
+            binding.apply {
+                titleText.text = getString(R.string.add_new_address)
+                deleteButton.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun setupListeners() {
+        binding.apply {
+            btnBack.setOnClickListener {
+                findNavController().popBackStack()
+            }
+
+            saveButton.setOnClickListener {
+                if (validateInputs()) {
+                    saveAddress()
+                }
+            }
+
+            deleteButton.setOnClickListener {
+                addressId?.let { id ->
+                    viewModel.deleteAddress(id)
+                }
+            }
+        }
+    }
+
+    private fun validateInputs(): Boolean {
+        val name = binding.nameInput.text.toString().trim()
+        val phone = binding.phoneInput.text.toString().trim()
+        val addressText = binding.addressInput.text.toString().trim()
+
+        var isValid = true
+
+        if (name.isEmpty()) {
+            binding.nameInput.error = "Name cannot be empty"
+            isValid = false
+        } else {
+            binding.nameInput.error = null
+        }
+
+        if (phone.isEmpty()) {
+            binding.phoneInput.error = "Phone number cannot be empty"
+            isValid = false
+        } else {
+            binding.phoneInput.error = null
+        }
+
+        if (addressText.isEmpty()) {
+            binding.addressInput.error = "Address cannot be empty"
+            isValid = false
+        } else {
+            binding.addressInput.error = null
+        }
+
+        return isValid
+    }
+
+    private fun saveAddress() {
+        val name = binding.nameInput.text.toString().trim()
+        val phone = binding.phoneInput.text.toString().trim()
+        val addressText = binding.addressInput.text.toString().trim()
+        val isDefault = binding.isDefaultCheckbox.isChecked
+
+        val addressResponse = AddressModel(addressId, name, phone, addressText, isDefault)
+
+        if (action == "add") {
+            viewModel.addAddress(addressResponse)
+        } else {
+            viewModel.updateAddress(addressResponse)
+        }
+    }
+
+    private fun observeViewModel() = with(binding){
+        collectState(viewModel.shippingAddressUiState) { state ->
+
+            when (state.addAddress) {
+                is UiState.Loading -> {progressBar.root.visibility = View.VISIBLE}
                 is UiState.Success -> {
-                    if (fromCheckout) {
-                        val result = Bundle().apply {
-                            putString("newAddressId", state.data.id)
-                        }
-                        Log.d(TAG, "observe: ${state.data.id}")
-                        setFragmentResult("addAddressRequestKey", result)
-                        findNavController().popBackStack()
-                    } else {
-                        findNavController().navigate(R.id.action_addEditAddressFragment_to_shippingAddressFragment)
-                        findNavController().popBackStack()
-                    }
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        handleAddressSuccess(state.addAddress.data.id ?: "")
+                        viewModel.resetAddAddressState()
+                    }, 400)
                 }
                 is UiState.Error -> {
-                    Log.d(TAG, "Error: ${state.message}")
-                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    binding.progressBar.root.visibility = View.GONE
+                    requireContext().toast(state.error)
                 }
                 else -> {}
             }
+
+            when (state.deleteAddress) {
+                is UiState.Loading -> {progressBar.root.visibility = View.VISIBLE}
+                is UiState.Success -> {
+                    requireContext().toast("Delete Address successfully")
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        findNavController().popBackStack()
+                        viewModel.resetDeleteAddressState()
+                    }, 400)
+                }
+                is UiState.Error -> {
+                    progressBar.root.visibility = View.GONE
+                    requireContext().toast(state.error)
+                }
+                else -> {}
+            }
+
+            when (state.updateAddress) {
+                is UiState.Loading -> {progressBar.root.visibility = View.VISIBLE}
+                is UiState.Success -> {
+                    requireContext().toast("Address updated successfully")
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        findNavController().popBackStack()
+                    }, 400)
+                }
+                is UiState.Error -> {
+                    progressBar.root.visibility = View.GONE
+                    requireContext().toast(state.error)
+                }
+                else -> {}
+            }
+
         }
     }
 
+    private fun handleAddressSuccess(addressId: String) {
+        requireContext().toast("Add new address successfully")
+
+        if (fromCheckout) {
+            val result = Bundle().apply {
+                putString("newAddressId", addressId)
+            }
+            setFragmentResult("addAddressRequestKey", result)
+        }
+
+        findNavController().popBackStack()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
