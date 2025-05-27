@@ -9,8 +9,8 @@ A modern e-commerce app for buying fresh flowers, gifts, and decorations. Built 
 
 ## 🚀 **Main Features**
 
-* 🌼 **Product Categories**: Browse flowers and gifts by occasion, type, or price.
-* 🛒 **Cart & Checkout**: Add/remove items, support multiple payment methods (VNPay, MoMo, COD).
+* 🌼 **Product Categories**: Browse flowers and type, or price.
+* 🛒 **Cart & Checkout**: Add/remove items, support multiple payment methods (VNPay, MoMo).
 * 📦 **Order Tracking**: Get real-time updates and push notifications for order status.
 * 👤 **User Account**: Sign in with email, save address, and view order history.
 * 🔔 **Push Notifications**: Powered by Firebase Cloud Messaging.
